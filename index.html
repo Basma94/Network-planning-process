@@ -34,7 +34,7 @@
 
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
-.wrap { max-width: 1280px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 22px; }
+.wrap { max-width: 1480px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 22px; }
 .eyebrow { font: 600 12px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
 h1 { font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
 h2 { font-size: 20px; margin: 0; text-wrap: balance; }
@@ -71,11 +71,10 @@ h2 { font-size: 20px; margin: 0; text-wrap: balance; }
 .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
 
-/* diagram frame: fixed lane headers + horizontally scrolling canvas */
-.frame { display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--lane-a); }
-.frame .heads { flex: none; border-right: 1px solid var(--line); background: var(--head); }
-.frame .canvas { flex: 1; min-width: 0; overflow-x: auto; overflow-y: hidden; }
-.frame .canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+/* diagram frame: each row of the flow is scaled to fit the frame width, rows stack vertically */
+.frame { display: grid; gap: 10px; min-width: 0; }
+.band { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--lane-a); justify-self: start; max-width: 100%; }
+svg.fit { display: block; width: 100%; height: auto; }
 .hint { font-size: 12px; color: var(--muted); margin: 0; }
 
 svg.bpmn { display: block; font-family: var(--f-body); }
@@ -171,8 +170,8 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
       </div>
       <div class="stats" id="lc-stats"></div>
     </div>
-    <div class="frame" id="lc-frame"><div class="heads"></div><div class="canvas" tabindex="0" aria-label="Lifecycle diagram, scrolls sideways"></div></div>
-    <p class="hint">Each box is a collapsed sub-process. Select one to open its task-level diagram below.</p>
+    <div class="frame" id="lc-frame"></div>
+    <p class="hint">Each box is a collapsed sub-process. Select one to open its task-level diagram below. Long flows wrap onto rows joined by link events.</p>
   </section>
 
   <section class="card" id="phase">
@@ -185,18 +184,14 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
       <div class="tools">
         <button class="btn" id="prev" type="button">← Previous</button>
         <button class="btn" id="next" type="button">Next →</button>
-        <span style="width:8px"></span>
-        <button class="btn" data-zoom="0.6" type="button" aria-pressed="false">60%</button>
-        <button class="btn" data-zoom="0.8" type="button" aria-pressed="false">80%</button>
-        <button class="btn" data-zoom="1" type="button" aria-pressed="true">100%</button>
       </div>
     </div>
     <div class="chips" id="chips" aria-label="Phases"></div>
-    <div class="frame" id="ph-frame"><div class="heads"></div><div class="canvas" tabindex="0" aria-label="Phase diagram, scrolls sideways"></div></div>
+    <div class="frame" id="ph-frame"></div>
     <div class="legend" aria-label="Legend">
       <span><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="none" stroke="var(--start)" stroke-width="1.8"/></svg>Start</span>
       <span><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--end)" stroke-width="3.5"/></svg>End</span>
-      <span><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="none" stroke="var(--link)" stroke-width="1.3"/><circle cx="11" cy="11" r="6.5" fill="none" stroke="var(--link)" stroke-width="1.3"/></svg>Link to another phase (select to jump)</span>
+      <span><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="none" stroke="var(--link)" stroke-width="1.3"/><circle cx="11" cy="11" r="6.5" fill="none" stroke="var(--link)" stroke-width="1.3"/></svg>Link event: next row, or another phase (select to jump)</span>
       <span><svg width="22" height="22" viewBox="0 0 22 22"><path d="M11 2 L20 11 L11 20 L2 11Z" fill="none" stroke="var(--gw)" stroke-width="1.8"/><path d="M8 8 L14 14 M14 8 L8 14" stroke="var(--gw)" stroke-width="2"/></svg>Exclusive gateway</span>
       <span><svg width="34" height="10" viewBox="0 0 34 10"><path d="M1 5 H32" stroke="var(--edge)" stroke-width="1.4" stroke-dasharray="5 4"/></svg>Rework loop</span>
       <span><b class="st st-C-t">C</b> Confirmed</span>
@@ -604,7 +599,7 @@ if (typeof module !== "undefined") module.exports = SNIP_DATA;
 <script>
 // BPMN layout + SVG rendering + BPMN 2.0 XML export. Pure string output, runs in browser and node.
 var BPMN = (function () {
-  var K = { colW: 196, laneH: 150, headW: 156, padL: 24, padR: 40, chan: 22 };
+  var K = { colW: 196, laneH: 150, headW: 156, padL: 24, padR: 40, chan: 22, termOff: 50 };
   var SIZE = { task: [150, 72], sub: [158, 76], gw: [40, 40], start: [34, 34], end: [34, 34], linkIn: [34, 34], linkOut: [34, 34] };
 
   var LANES = [
@@ -641,9 +636,46 @@ var BPMN = (function () {
   }
 
   var gwSeq = 0;
+  function copyBr(br) { return (br || []).map(function (b) { return { l: b.l, to: b.to }; }); }
+  function refName(id) { return /^P\d+$/.test(id) ? "Phase " + id.slice(1) : id; }
+  // Split a graph into stacked bands of at most maxCols columns, joined by link events.
+  function bands(g, maxCols) {
+    var nodes = g.nodes, w = nodes.map(function (n) { return 1 + (n.type === "gw" && (n.br || []).some(function (b) { return /^(end|phase):/.test(b.to); }) ? 1 : 0); });
+    var total = w.reduce(function (a, b) { return a + b; }, 0), k = Math.ceil(total / maxCols);
+    if (k <= 1) return [g];
+    var pos = {}; nodes.forEach(function (n, i) { pos[n.id] = i; });
+    function cutOk(i) { // cut before node i
+      if (!(nodes[i].type === "task" || nodes[i].type === "sub" || nodes[i].type === "end")) return false;
+      return !nodes.some(function (n, j) { return n.jump && j < i && pos[n.jump] >= i; });
+    }
+    var cuts = [], acc = 0, target = total / k;
+    for (var i = 0; i < nodes.length && cuts.length < k - 1; i++) {
+      acc += w[i];
+      if (acc >= target * (cuts.length + 1) - 0.5) { var c = i + 1; while (c < nodes.length - 1 && !cutOk(c)) c++; if (c < nodes.length - 1 && (!cuts.length || c > cuts[cuts.length - 1])) cuts.push(c); }
+    }
+    var out = [], starts = [0].concat(cuts), ends = cuts.concat([nodes.length]);
+    starts.forEach(function (s, b) {
+      var chunk = nodes.slice(s, ends[b]), ids = {};
+      chunk.forEach(function (n) { ids[n.id] = 1; });
+      chunk = chunk.map(function (n) {
+        var m = {}; for (var key in n) m[key] = n[key];
+        if (m.br) m.br = m.br.map(function (br) {
+          var t = br.to.charAt(0) === "@" ? br.to.slice(1) : null;
+          if (t && !ids[t]) return { l: br.l, to: "goto:" + (pos[t] > pos[n.id] ? "To " : "Back to ") + refName(t) + (pos[t] > pos[n.id] ? " (below)" : " (above)") };
+          return { l: br.l, to: br.to };
+        });
+        if (m.jump && !ids[m.jump]) delete m.jump;
+        return m;
+      });
+      if (b > 0) chunk.unshift({ id: "CONT_IN_" + b, type: "linkIn", lane: chunk[0].lane, label: "Continued from row " + b, cont: true });
+      if (b < starts.length - 1) chunk.push({ id: "CONT_OUT_" + b, type: "linkOut", lane: chunk[chunk.length - 1].lane, label: "Continues in row " + (b + 2), cont: true });
+      out.push({ nodes: chunk, mode: g.mode, plan: g.plan, lanes: g.lanes });
+    });
+    return out;
+  }
   function gwNodes(spec, lane) {
     var arr = Array.isArray(spec) ? spec : [spec];
-    return arr.map(function (g) { return { id: "GW_" + (++gwSeq), type: "gw", lane: lane, label: g.q, main: g.main, br: g.br }; });
+    return arr.map(function (g) { return { id: "GW_" + (++gwSeq), type: "gw", lane: lane, label: g.q, main: g.main, br: copyBr(g.br) }; });
   }
   function phaseTitle(ph) { return "Phase " + ph.n + " · " + ph.name; }
 
@@ -693,7 +725,7 @@ var BPMN = (function () {
       if (o.ph) {
         var ph = plan.phases[o.ph - 1];
         nodes.push({ id: "P" + ph.n, type: "sub", lane: lane, label: ph.name, ph: ph.n, count: parseTasks(ph).length });
-      } else nodes.push({ id: "GW_" + (++gwSeq), type: "gw", lane: lane, label: o.gw, main: o.main, br: o.br });
+      } else nodes.push({ id: "GW_" + (++gwSeq), type: "gw", lane: lane, label: o.gw, main: o.main, br: copyBr(o.br) });
     });
     nodes.push({ id: "END", type: "end", lane: lane, label: plan.end });
     return { nodes: nodes, mode: "overview", plan: plan, lanes: [lane] };
@@ -706,16 +738,16 @@ var BPMN = (function () {
       byId[n.id] = n; n.col = col++;
       var s = SIZE[n.type]; n.w = s[0]; n.h = s[1];
       if (n.type === "gw") {
-        var tb = (n.br || []).filter(function (b) { return /^(end|phase):/.test(b.to); });
+        var tb = (n.br || []).filter(function (b) { return /^(end|phase|goto):/.test(b.to); });
         if (tb.length) {
           tb.forEach(function (b, i) {
-            var isEnd = b.to.indexOf("end:") === 0;
-            var t = { id: n.id + "_T" + i, type: isEnd ? "end" : "linkOut", lane: n.lane, label: isEnd ? b.to.slice(4) : "To Phase " + b.to.slice(6),
-              toPhase: isEnd ? null : +b.to.slice(6), col: col, slot: i, w: 34, h: 34, term: true };
-            if (!isEnd) { var p = g.plan.phases[t.toPhase - 1]; t.label = "To Phase " + p.n + " · " + p.name; }
+            var isEnd = b.to.indexOf("end:") === 0, isGo = b.to.indexOf("goto:") === 0;
+            var t = { id: n.id + "_T" + i, type: isEnd ? "end" : "linkOut", lane: n.lane, label: isEnd ? b.to.slice(4) : isGo ? b.to.slice(5) : "",
+              toPhase: isEnd || isGo ? null : +b.to.slice(6), col: col + Math.floor(i / 2), slot: i, w: 34, h: 34, term: true };
+            if (t.toPhase) { var p = g.plan.phases[t.toPhase - 1]; t.label = "To Phase " + p.n + " · " + p.name; }
             b.node = t; terms.push(t); byId[t.id] = t;
           });
-          col++;
+          col += Math.ceil(tb.length / 2);
         }
       }
     });
@@ -747,7 +779,7 @@ var BPMN = (function () {
     nodes.concat(terms).forEach(function (n) {
       n.x = K.padL + n.col * K.colW + K.colW / 2;
       n.y = laneY[n.lane];
-      if (n.term) { n.y += n.slot % 2 === 0 ? -50 : 50; n.x -= 30; if (n.slot > 1) n.x += 64; }
+      if (n.term) { n.y += n.slot % 2 === 0 ? -K.termOff : K.termOff; n.x -= 30; }
     });
     edges.forEach(function (e) { route(e, topH, lanesBottom); });
     var width = K.padL + col * K.colW + K.padR;
@@ -853,7 +885,7 @@ var BPMN = (function () {
       s.push("</g>");
     } else {
       var cls = "ev ev-" + n.type, r = 17;
-      s.push('<g class="' + cls + '"' + (n.toPhase ? ' data-goto="' + n.toPhase + '" tabindex="0" role="button"' : "") + (n.type === "linkIn" && opts.fromPhase ? ' data-goto="' + opts.fromPhase + '" tabindex="0" role="button"' : "") + ">");
+      s.push('<g class="' + cls + '"' + (n.toPhase ? ' data-goto="' + n.toPhase + '" tabindex="0" role="button"' : "") + (n.type === "linkIn" && !n.cont && opts.fromPhase ? ' data-goto="' + opts.fromPhase + '" tabindex="0" role="button"' : "") + ">");
       s.push('<circle class="ev-c" cx="' + x + '" cy="' + y + '" r="' + r + '"/>');
       if (n.type === "linkIn" || n.type === "linkOut") {
         s.push('<circle class="ev-c2" cx="' + x + '" cy="' + y + '" r="' + (r - 3.5) + '"/>');
@@ -932,7 +964,7 @@ var BPMN = (function () {
     return x.join("\n");
   }
 
-  return { K: K, layout: layout, buildPhase: buildPhase, buildOverview: buildOverview, buildFlat: buildFlat, renderDiagram: renderDiagram, renderLaneHeads: renderLaneHeads, parseTasks: parseTasks, toXml: toXml };
+  return { K: K, SIZE: SIZE, bands: bands, layout: layout, buildPhase: buildPhase, buildOverview: buildOverview, buildFlat: buildFlat, renderDiagram: renderDiagram, renderLaneHeads: renderLaneHeads, parseTasks: parseTasks, toXml: toXml };
 })();
 if (typeof module !== "undefined") module.exports = BPMN;
 
@@ -940,22 +972,23 @@ if (typeof module !== "undefined") module.exports = BPMN;
 <script>
 (function () {
   var D = SNIP_DATA, B = BPMN;
-  var state = { plan: "on", ph: 1, task: null, zoom: 1 };
-  try { var z = parseFloat(localStorage.getItem("snip-zoom")); if (z) state.zoom = z; } catch (e) {}
+  var state = { plan: "on", ph: 1, task: null };
   if (location.hash === "#off-plan") state.plan = "off";
 
   var $ = function (id) { return document.getElementById(id); };
   function plan() { return D[state.plan]; }
   function phase() { return plan().phases[state.ph - 1]; }
 
-  function fill(frame, L, pool, opts, zoom) {
-    var heads = frame.querySelector(".heads"), canvas = frame.querySelector(".canvas");
-    heads.innerHTML = B.renderLaneHeads(L, pool);
-    canvas.innerHTML = B.renderDiagram(L, opts);
-    [heads.firstChild, canvas.firstChild].forEach(function (svg) {
-      svg.setAttribute("width", Math.round(svg.viewBox.baseVal.width * zoom));
-      svg.setAttribute("height", Math.round(svg.viewBox.baseVal.height * zoom));
-    });
+  function inner(s) { return s.replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, ""); }
+  // Split the flow into rows of at most 9 columns; every row is drawn at the same scale and fits the frame width.
+  function fill(frame, g, pool, opts) {
+    var bs = B.bands(g, 9), Ls = bs.map(B.layout), hw = B.K.headW;
+    var maxW = Math.max.apply(null, Ls.map(function (L) { return L.width + hw; }));
+    frame.innerHTML = Ls.map(function (L, i) {
+      var W = L.width + hw, label = Ls.length > 1 ? pool + " · row " + (i + 1) + " of " + Ls.length : pool;
+      return '<div class="band" style="width:' + (W / maxW * 100).toFixed(3) + '%"><svg xmlns="http://www.w3.org/2000/svg" class="bpmn fit" viewBox="0 0 ' + W + " " + L.height + '" role="img" aria-label="' + (opts.aria || "") + ", row " + (i + 1) + '">' +
+        inner(B.renderLaneHeads(L, label)) + '<g transform="translate(' + hw + ',0)">' + inner(B.renderDiagram(L, opts)) + "</g></svg></div>";
+    }).join("");
   }
 
   function renderPlan() {
@@ -973,8 +1006,7 @@ if (typeof module !== "undefined") module.exports = BPMN;
   }
 
   function renderOverview() {
-    var L = B.layout(B.buildOverview(plan()));
-    fill($("lc-frame"), L, "SNIP", { selected: state.ph, aria: plan().title + " lifecycle" }, 0.85);
+    fill($("lc-frame"), B.buildOverview(plan()), "SNIP", { selected: state.ph, aria: plan().title + " lifecycle" });
   }
 
   function renderPhase() {
@@ -985,9 +1017,7 @@ if (typeof module !== "undefined") module.exports = BPMN;
     $("prev").disabled = ph.n === 1;
     $("next").disabled = ph.n === p.phases.length;
     document.querySelectorAll(".chip").forEach(function (c) { var on = +c.dataset.ph === ph.n; c.setAttribute("aria-current", String(on)); if (on) { var box = c.parentNode; box.scrollLeft = c.offsetLeft - box.offsetLeft - 8; } });
-    document.querySelectorAll("[data-zoom]").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.zoom === state.zoom)); });
-    var L = B.layout(B.buildPhase(p, ph));
-    fill($("ph-frame"), L, p.label + " · Phase " + ph.n, { selected: state.task, fromPhase: ph.n > 1 ? ph.n - 1 : null, aria: "Phase " + ph.n + " " + ph.name }, state.zoom);
+    fill($("ph-frame"), B.buildPhase(p, ph), p.label + " · Phase " + ph.n, { selected: state.task, fromPhase: ph.n > 1 ? ph.n - 1 : null, aria: "Phase " + ph.n + " " + ph.name });
     var tasks = B.parseTasks(ph);
     $("rows").innerHTML = tasks.map(function (t) {
       return '<tr data-task="' + t.id + '"' + (t.id === state.task ? ' class="is-sel"' : "") + '><td class="id">' + t.id + "</td><td>" + t.name + "</td><td>" + t.team + "</td><td>" + t.tool + "</td><td>" + (t.output || "—") + "</td><td>" + (t.status ? '<span class="st st-' + t.status + '-t">' + t.status + "</span>" : "—") + "</td></tr>";
@@ -1021,14 +1051,11 @@ if (typeof module !== "undefined") module.exports = BPMN;
   function setPhase(n, scroll) {
     state.ph = n; state.task = null;
     renderOverview(); renderPhase();
-    $("ph-frame").querySelector(".canvas").scrollLeft = 0;
     if (scroll) $("phase").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   }
   function selectTask(id) {
     state.task = id;
-    var c = $("ph-frame").querySelector(".canvas"), sl = c.scrollLeft;
     renderPhase();
-    c.scrollLeft = sl;
   }
 
   $("slider").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) setPlan(b.dataset.plan); });
@@ -1038,9 +1065,6 @@ if (typeof module !== "undefined") module.exports = BPMN;
   $("chips").addEventListener("click", function (e) { var b = e.target.closest(".chip"); if (b) setPhase(+b.dataset.ph); });
   $("prev").addEventListener("click", function () { if (state.ph > 1) setPhase(state.ph - 1); });
   $("next").addEventListener("click", function () { if (state.ph < plan().phases.length) setPhase(state.ph + 1); });
-  document.querySelectorAll("[data-zoom]").forEach(function (b) {
-    b.addEventListener("click", function () { state.zoom = +b.dataset.zoom; try { localStorage.setItem("snip-zoom", state.zoom); } catch (e) {} selectTask(state.task); });
-  });
   function activate(e) {
     var ph = e.target.closest("[data-ph]"), tk = e.target.closest("[data-task]"), go = e.target.closest("[data-goto]");
     if (ph && e.currentTarget.id === "lc-frame") setPhase(+ph.dataset.ph, true);
