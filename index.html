@@ -9,35 +9,37 @@
 <title>SNIP Investment Lifecycle BPMN</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: header + plan slider, then L3 lifecycle strip (collapsed sub-processes), then the selected phase as an L4 swimlane pool, then task detail. */
 :root {
-  --bg: #f2f4f6; --surface: #ffffff; --ink: #15222c; --muted: #5a6a76; --line: #c6d0d8; --edge: #4a5a66;
-  --accent: #0e6a72; --accent-soft: #dcecee; --gw: #a56300; --start: #207447; --end: #ae2a20;
-  --lane-a: #f9fafb; --lane-b: #eef2f5; --task: #ffffff; --sub: #e4f0f1;
-  --c: #1f7a4a; --v: #a56300; --t: #6a45b8;
-  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
-  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  /* Vodafone palette: red #E60000, anthracite #25282B, grey #4A4D4E, light greys; turquoise / fresh orange / red violet as secondary cues */
+  --bg: #f4f4f4; --surface: #ffffff; --ink: #25282b; --muted: #666a6b; --line: #d9d9d9; --edge: #4a4d4e;
+  --accent: #e60000; --accent-ink: #ffffff; --accent-soft: #fdecec; --gw: #a35f00; --start: #007c92; --end: #e60000; --link: #4a4d4e;
+  --lane-a: #ffffff; --lane-b: #f7f7f7; --task: #ffffff; --sub: #ffffff; --head: #f2f2f2;
+  --c: #007c92; --v: #a35f00; --t: #9c2aa0;
+  --f-body: "Inter", "Segoe UI", Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0e151a; --surface: #152027; --ink: #e3ebf0; --muted: #93a3ae; --line: #2d3c46; --edge: #8fa1ad;
-  --accent: #52b8c0; --accent-soft: #173539; --gw: #e2a23c; --start: #5cc28d; --end: #f06a60;
-  --lane-a: #121b21; --lane-b: #172229; --task: #1a2730; --sub: #163238;
-  --c: #5cc28d; --v: #e2a23c; --t: #a98cf0; color-scheme: dark; } }
+  --bg: #161718; --surface: #202224; --ink: #f2f2f2; --muted: #a8abac; --line: #3a3d3f; --edge: #b4b7b8;
+  --accent: #ff3b3b; --accent-ink: #ffffff; --accent-soft: #3a1f1f; --gw: #eb9700; --start: #2fc0d6; --end: #ff3b3b; --link: #c9cbcc;
+  --lane-a: #1c1e1f; --lane-b: #222426; --task: #25282b; --sub: #25282b; --head: #25282b;
+  --c: #2fc0d6; --v: #eb9700; --t: #c96bd0; color-scheme: dark; } }
 :root[data-theme="dark"] {
-  --bg: #0e151a; --surface: #152027; --ink: #e3ebf0; --muted: #93a3ae; --line: #2d3c46; --edge: #8fa1ad;
-  --accent: #52b8c0; --accent-soft: #173539; --gw: #e2a23c; --start: #5cc28d; --end: #f06a60;
-  --lane-a: #121b21; --lane-b: #172229; --task: #1a2730; --sub: #163238;
-  --c: #5cc28d; --v: #e2a23c; --t: #a98cf0; color-scheme: dark; }
+  --bg: #161718; --surface: #202224; --ink: #f2f2f2; --muted: #a8abac; --line: #3a3d3f; --edge: #b4b7b8;
+  --accent: #ff3b3b; --accent-ink: #ffffff; --accent-soft: #3a1f1f; --gw: #eb9700; --start: #2fc0d6; --end: #ff3b3b; --link: #c9cbcc;
+  --lane-a: #1c1e1f; --lane-b: #222426; --task: #25282b; --sub: #25282b; --head: #25282b;
+  --c: #2fc0d6; --v: #eb9700; --t: #c96bd0; color-scheme: dark; }
 
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
 .wrap { max-width: 1280px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 22px; }
-.eyebrow { font: 500 12px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
+.eyebrow { font: 600 12px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
 h1 { font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
 h2 { font-size: 20px; margin: 0; text-wrap: balance; }
 .lede { color: var(--muted); max-width: 70ch; margin: 10px 0 0; }
+.brandbar { height: 4px; background: var(--accent); border-radius: 2px; width: 56px; margin-bottom: 14px; }
 .top { display: flex; flex-wrap: wrap; gap: 20px; align-items: end; justify-content: space-between; }
 .top > div { min-width: 0; }
 
@@ -47,11 +49,11 @@ h2 { font-size: 20px; margin: 0; text-wrap: balance; }
 .slider[data-pos="1"] .thumb { transform: translateX(100%); }
 .slider button { position: relative; z-index: 1; border: 0; background: none; font: 600 15px var(--f-body); color: var(--ink); padding: 10px 22px; border-radius: 999px; cursor: pointer; display: grid; gap: 1px; justify-items: center; transition: color .2s; }
 .slider button small { font: 400 11px var(--f-mono); color: var(--muted); transition: color .2s; }
-.slider button[aria-selected="true"], .slider button[aria-selected="true"] small { color: var(--surface); }
+.slider button[aria-selected="true"], .slider button[aria-selected="true"] small { color: var(--accent-ink); }
 .slider button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .slider .thumb, .slider button { transition: none; } }
 
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
 .card-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
 .card-head > div { min-width: 0; }
 .sub { color: var(--muted); font-size: 14px; margin: 4px 0 0; max-width: 80ch; }
@@ -70,8 +72,8 @@ h2 { font-size: 20px; margin: 0; text-wrap: balance; }
 .btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
 
 /* diagram frame: fixed lane headers + horizontally scrolling canvas */
-.frame { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--lane-a); }
-.frame .heads { flex: none; border-right: 1px solid var(--line); background: var(--surface); }
+.frame { display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--lane-a); }
+.frame .heads { flex: none; border-right: 1px solid var(--line); background: var(--head); }
 .frame .canvas { flex: 1; min-width: 0; overflow-x: auto; overflow-y: hidden; }
 .frame .canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .hint { font-size: 12px; color: var(--muted); margin: 0; }
@@ -79,9 +81,9 @@ h2 { font-size: 20px; margin: 0; text-wrap: balance; }
 svg.bpmn { display: block; font-family: var(--f-body); }
 .lane-a { fill: var(--lane-a); } .lane-b { fill: var(--lane-b); }
 .lane-edge { stroke: var(--line); }
-.pool-band { fill: var(--accent-soft); }
-.pool-label { font: 600 12px var(--f-body); fill: var(--accent); letter-spacing: .04em; }
-.lane-head { stroke: var(--line); stroke-width: 1; }
+.pool-band { fill: var(--accent); }
+.pool-label { font: 600 12px var(--f-body); fill: var(--accent-ink); letter-spacing: .04em; }
+.lane-head { stroke: var(--line); stroke-width: 1; fill: var(--head); }
 .lane-label { font: 500 12.5px var(--f-body); fill: var(--ink); }
 .flow { fill: none; stroke: var(--edge); stroke-width: 1.4; stroke-linejoin: round; }
 .flow-loop { stroke-dasharray: 5 4; }
@@ -89,7 +91,7 @@ svg.bpmn { display: block; font-family: var(--f-body); }
 .flow-label { font: 500 11px var(--f-body); fill: var(--muted); paint-order: stroke; stroke: var(--lane-a); stroke-width: 4px; stroke-linejoin: round; }
 .node { cursor: pointer; outline: none; }
 .node .box { fill: var(--task); stroke: var(--line); stroke-width: 1.3; transition: stroke .15s; }
-.node.sub .box { fill: var(--sub); stroke: var(--accent); stroke-opacity: .5; }
+.node.sub .box { fill: var(--sub); stroke: var(--edge); stroke-width: 1.4; }
 .node:hover .box, .node:focus-visible .box { stroke: var(--accent); stroke-width: 2; }
 .node.is-sel .box { stroke: var(--accent); stroke-width: 2.6; }
 .t-id { font: 500 10px var(--f-mono); fill: var(--muted); letter-spacing: .03em; }
@@ -98,24 +100,26 @@ svg.bpmn { display: block; font-family: var(--f-body); }
 .pill { fill: none; stroke-width: 1.2; } .pill-C { stroke: var(--c); } .pill-V { stroke: var(--v); } .pill-T { stroke: var(--t); }
 .pill-t { font: 600 9px var(--f-mono); }
 .st-C .pill-t { fill: var(--c); } .st-V .pill-t { fill: var(--v); } .st-T .pill-t { fill: var(--t); }
-.plus { fill: none; stroke: var(--accent); stroke-width: 1.2; } .plus-m { stroke: var(--accent); stroke-width: 1.4; }
+.plus { fill: none; stroke: var(--edge); stroke-width: 1.2; } .plus-m { stroke: var(--edge); stroke-width: 1.4; }
 .gw-shape { fill: var(--surface); stroke: var(--gw); stroke-width: 1.8; }
 .gw-x { stroke: var(--gw); stroke-width: 2.4; stroke-linecap: round; }
 .gw-label { font: 600 11.5px var(--f-body); fill: var(--gw); paint-order: stroke; stroke: var(--lane-a); stroke-width: 4px; }
 .ev-c { fill: var(--surface); stroke: var(--start); stroke-width: 1.8; }
 .ev-end .ev-c { stroke: var(--end); stroke-width: 4; }
-.ev-linkIn .ev-c, .ev-linkOut .ev-c, .ev-c2 { stroke: var(--accent); stroke-width: 1.4; fill: var(--surface); }
+.ev-linkIn .ev-c, .ev-linkOut .ev-c, .ev-c2 { stroke: var(--link); stroke-width: 1.4; fill: var(--surface); }
 .ev-c2 { fill: none; }
-.ev-sym { fill: none; stroke: var(--accent); stroke-width: 1.3; } .ev-sym-fill { fill: var(--accent); }
+.ev-sym { fill: none; stroke: var(--link); stroke-width: 1.3; } .ev-sym-fill { fill: var(--link); }
 .ev-label { font: 500 11px var(--f-body); fill: var(--muted); }
 [data-goto] { cursor: pointer; }
 [data-goto]:hover .ev-c { stroke-width: 2.6; }
 [data-goto]:hover .ev-label { fill: var(--accent); }
 
 /* phase picker chips */
-.chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
-.chip { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font: 500 12px var(--f-mono); padding: 5px 10px; border-radius: 999px; cursor: pointer; font-variant-numeric: tabular-nums; }
-.chip[aria-current="true"] { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+.chip { flex: none; display: inline-flex; gap: 6px; align-items: baseline; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 500 13px var(--f-body); padding: 6px 12px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.chip b { font: 600 11px var(--f-mono); color: var(--accent); }
+.chip[aria-current="true"] b { color: var(--accent-ink); }
+.chip[aria-current="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .split { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 22px; align-items: start; }
@@ -128,6 +132,7 @@ td.id { font: 500 12px var(--f-mono); color: var(--muted); white-space: nowrap; 
 tbody tr { cursor: pointer; }
 tbody tr:hover td { background: var(--lane-b); }
 tbody tr.is-sel td { background: var(--accent-soft); }
+tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
 .st { display: inline-block; font: 600 11px var(--f-mono); border: 1.2px solid currentColor; border-radius: 4px; padding: 0 5px; }
 .st-C-t { color: var(--c); } .st-V-t { color: var(--v); } .st-T-t { color: var(--t); }
 
@@ -145,6 +150,7 @@ tbody tr.is-sel td { background: var(--accent-soft); }
 <div class="wrap">
   <header class="top">
     <div>
+      <div class="brandbar" aria-hidden="true"></div>
       <p class="eyebrow">SNIP · End-to-end network investment lifecycle</p>
       <h1>Network investment process in BPMN 2.0</h1>
       <p class="lede">The on-plan and off-plan demand journeys, drawn as BPMN pools with swimlanes per team. Pick a journey, open a phase in the lifecycle strip, then select a task to see its activity, tool and output.</p>
@@ -190,7 +196,7 @@ tbody tr.is-sel td { background: var(--accent-soft); }
     <div class="legend" aria-label="Legend">
       <span><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="none" stroke="var(--start)" stroke-width="1.8"/></svg>Start</span>
       <span><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--end)" stroke-width="3.5"/></svg>End</span>
-      <span><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="none" stroke="var(--accent)" stroke-width="1.3"/><circle cx="11" cy="11" r="6.5" fill="none" stroke="var(--accent)" stroke-width="1.3"/></svg>Link to another phase (select to jump)</span>
+      <span><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="none" stroke="var(--link)" stroke-width="1.3"/><circle cx="11" cy="11" r="6.5" fill="none" stroke="var(--link)" stroke-width="1.3"/></svg>Link to another phase (select to jump)</span>
       <span><svg width="22" height="22" viewBox="0 0 22 22"><path d="M11 2 L20 11 L11 20 L2 11Z" fill="none" stroke="var(--gw)" stroke-width="1.8"/><path d="M8 8 L14 14 M14 8 L8 14" stroke="var(--gw)" stroke-width="2"/></svg>Exclusive gateway</span>
       <span><svg width="34" height="10" viewBox="0 0 34 10"><path d="M1 5 H32" stroke="var(--edge)" stroke-width="1.4" stroke-dasharray="5 4"/></svg>Rework loop</span>
       <span><b class="st st-C-t">C</b> Confirmed</span>
@@ -963,7 +969,7 @@ if (typeof module !== "undefined") module.exports = BPMN;
     var tasks = 0, gws = 0;
     p.phases.forEach(function (ph) { tasks += B.parseTasks(ph).length; Object.keys(ph.gws || {}).forEach(function (k) { gws += [].concat(ph.gws[k]).length; }); });
     $("lc-stats").innerHTML = "<span><b>" + p.phases.length + "</b> phases</span><span><b>" + tasks + "</b> tasks</span><span><b>" + gws + "</b> decision points</span>";
-    $("chips").innerHTML = p.phases.map(function (ph) { return '<button class="chip" type="button" data-ph="' + ph.n + '" title="' + ph.name + '">P' + ph.n + "</button>"; }).join("");
+    $("chips").innerHTML = p.phases.map(function (ph) { return '<button class="chip" type="button" data-ph="' + ph.n + '"><b>P' + ph.n + "</b>" + ph.name + "</button>"; }).join("");
   }
 
   function renderOverview() {
@@ -978,7 +984,7 @@ if (typeof module !== "undefined") module.exports = BPMN;
     $("ph-obj").textContent = ph.obj;
     $("prev").disabled = ph.n === 1;
     $("next").disabled = ph.n === p.phases.length;
-    document.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-current", String(+c.dataset.ph === ph.n)); });
+    document.querySelectorAll(".chip").forEach(function (c) { var on = +c.dataset.ph === ph.n; c.setAttribute("aria-current", String(on)); if (on) { var box = c.parentNode; box.scrollLeft = c.offsetLeft - box.offsetLeft - 8; } });
     document.querySelectorAll("[data-zoom]").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.zoom === state.zoom)); });
     var L = B.layout(B.buildPhase(p, ph));
     fill($("ph-frame"), L, p.label + " · Phase " + ph.n, { selected: state.task, fromPhase: ph.n > 1 ? ph.n - 1 : null, aria: "Phase " + ph.n + " " + ph.name }, state.zoom);
