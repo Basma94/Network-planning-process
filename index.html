@@ -152,12 +152,12 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
       <div class="brandbar" aria-hidden="true"></div>
       <p class="eyebrow">SNIP · End-to-end network investment lifecycle</p>
       <h1>Network investment process in BPMN 2.0</h1>
-      <p class="lede">The on-plan and off-plan demand journeys, drawn as BPMN pools with swimlanes per team. Pick a journey, open a phase in the lifecycle strip, then select a task to see its activity, tool and output.</p>
+      <p class="lede">The on-plan and off-plan demand journeys, drawn as BPMN pools with swimlanes per team, including the governance and reporting flows from the Vodafone process booklet. Pick a journey, open a phase in the lifecycle strip, then select a task to see its activity, tool and output.</p>
     </div>
     <div class="slider" id="slider" role="tablist" aria-label="Demand journey" data-pos="0">
       <span class="thumb" aria-hidden="true"></span>
-      <button role="tab" id="tab-on" data-plan="on" aria-selected="true">On-plan<small>10 phases · 110 tasks</small></button>
-      <button role="tab" id="tab-off" data-plan="off" aria-selected="false">Off-plan<small>15 phases · 149 tasks</small></button>
+      <button role="tab" id="tab-on" data-plan="on" aria-selected="true">On-plan<small id="cnt-on"></small></button>
+      <button role="tab" id="tab-off" data-plan="off" aria-selected="false">Off-plan<small id="cnt-off"></small></button>
     </div>
   </header>
 
@@ -210,11 +210,11 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
     </section>
     <div style="display:grid;gap:22px;min-width:0">
       <section class="card detail" id="detail" aria-live="polite"></section>
-      <section class="card" id="notes-card"><h2>From the analysis</h2><div class="notes" id="notes"></div></section>
+      <section class="card" id="notes-card"><h2>Notes</h2><div class="notes" id="notes"></div></section>
     </div>
   </div>
 
-  <p class="foot">Source: SNIP End-to-End Network Investment Lifecycle (L3/L4 analysis). This is a consolidated model; Vodafone does not yet run one workflow connecting every activity. Swimlanes group each task under its lead team (the first team named); the full team is shown in the task detail. Decision points are taken from the document; where it names an outcome but not the next step, the flow follows the document's sequence.</p>
+  <p class="foot">Sources: SNIP End-to-End Network Investment Lifecycle (L3/L4 analysis) and the Vodafone process booklet (phases marked as from the booklet). The analysis is a consolidated model; Vodafone does not yet run one workflow connecting every activity. Swimlanes group each task under its lead team (the first team named); the full team is shown in the task detail. Decision points are taken from the document; where it names an outcome but not the next step, the flow follows the document's sequence.</p>
 </div>
 
 <script>
@@ -595,6 +595,232 @@ ON-110|Capture Lessons Learned|Record improvement opportunities|Delivery / Plann
 };
 if (typeof module !== "undefined") module.exports = SNIP_DATA;
 
+// Process flows transcribed from the Vodafone process booklet, merged into the On-plan and Off-plan journeys.
+(function (D) {
+  var SRC = "Vodafone process booklet";
+  var NEPL = ["NW Director & NW Leadership Team", "CNO", "Engagement Executives", "Demand & Planning", "Market CEO", "NW Finance BPR & Local Controller", "NW Architect", "NW Function Budget SPOC"];
+  var DML = ["Requestor", "Demand Assurance Manager (DAM)", "Demand Governance Team", "NW Vertical Function SPOC", "Global Product Board", "NSE Planning", "Other NW Functions", "IT", "NSE", "Cyber Security & Privacy"];
+  var DLML = ["EIM", "Market Delivery Manager (MDM)", "Local Cross Functions", "Solution Authority", "EIM / EDM", "Team in Vertical", "Infrastructure Team in Vertical"];
+  var MIL = ["Demand Governance Team", "NSE Engagement Executives", "CNO / CIO", "NW Functions Engagement Executives", "Market Finance", "Digital & IT", "Strategic Planner", "Market CEO"];
+  var RFL = ["NW Director & NW Leadership Team", "CNO", "Engagement Executives", "Demand & Planning", "Market CEO", "Market Finance", "NW Function Budget SPOC"];
+  var REPL = ["Vertical & Planning Communities", "BP&A", "Vertical SPOCs", "NMP"];
+
+  var NEW = {
+    nep: { name: "Network Evolution Plan (NEP)", src: SRC, laneOrder: NEPL,
+      obj: "May/June to beginning of October: collect demand, build and cost the NEP, agree it at LT and CNO level, then present it to Local ExCo for approval.",
+      tasks: `NEP-01|Provide Strategic Pre-guidance for Network|Provide strategic pre-guidance for Network|NW Architect||May/June|C
+NEP-02|Collect Demand|Collect traffic, service, business priorities and financial guidelines from markets, business functions, VF NW functions, VF Digital and IT|Demand & Planning|||C
+NEP-03|Market Analysis and Scenario Definition|Market analysis and forecasting (coverage, capabilities, competitors); scenario definition based on VF strategy, local priorities and group guidance|Demand & Planning|||C
+NEP-04|High-Level Cost Evaluation|Evaluate unitary costs for access rollout, innovation and BAU projects to implement the plan|Demand & Planning / NW Finance / NW Function Budget SPOC|||C
+NEP-05|Review NEP against Business Priorities & VF Strategy|Review NEP against business priorities and VF strategy|Engagement Executives / NW Finance / NW Function Budget SPOC|||C
+NEP-06|Review and Agree on the NEP|Review and agree on the NEP (governance meeting)|NW Director & NW Leadership Team / Demand & Planning||Governance meeting|C
+NEP-07|NEP Presented with Local ExCo|Present the NEP to Local ExCo|CNO / Market CEO||Beginning of October|C
+NEP-08|Identify Challenges and Actions|Identification of challenges and actions|Market CEO|||C
+NEP-09|Inform NW Leadership and NW Director|Inform NW Leadership and NW Director|NW Director & NW Leadership Team||Governance meeting|C
+NEP-10|Approve NW Rollout Strategy and 3-Year Plan|Approve NW rollout strategy and high-level 3-year plan per market|Market CEO|||C
+NEP-11|Provide Feedback to NW Architecture Team|Provide feedback on alignment on strategy to NW Architecture Team|Demand & Planning|||C`,
+      gws: { "NEP-06": { q: "NEP agreed at LT and CNO level?", main: "Yes", br: [{ l: "No: review again", to: "@NEP-05" }] } },
+      notes: { "Phases": ["NEP build-up (from beginning of June)", "NEP review and agreement (from beginning of October)", "Approval by Market CEOs"] } },
+
+    dblrp1: { name: "DB/LRP consolidation and sign-off", src: SRC, laneOrder: NEPL,
+      obj: "Mid October to mid December, milestones M0 to M5: refine the NEP into the DB/LRP, consolidate and validate it in Demand & Planning, and agree it with CNO, CEO, NW Director and LT.",
+      tasks: `DB-01|Share DB/LRP Calendar|Share the calendar for DB/LRP with major milestones, including CEO review and submission deadlines|NW Finance BPR & Local Controller||M0 Process kick-off (mid October)|C
+DB-02|Share Network Projects and HL Cost|Share network projects and high-level cost from NEP and other strategic boards (Rollout Board, Tech Guidance)|Demand & Planning|||C
+DB-03|Collect Updated Demand and Envelope|Collect updated traffic demand, financial envelope and commercial priorities per project across all VF NW functions|Demand & Planning|||C
+DB-04|Prepare Detailed Cost Plan per Function|Prepare NW DB/LRP detailed cost plan for CAPEX and OPEX considering financial envelope and market priorities (per function: NO, NSE, NQ, CF)|NW Function Budget SPOC / Demand & Planning||M1 EE review and sign-off (mid November)|C
+DB-05|E2E Integrate DB/LRP CAPEX Plan|E2E integrate NW DB/LRP CAPEX plan per market including priorities, benefits, risks and KPIs; prepare E2E executive material for CNO|Demand & Planning / NW Finance BPR & Local Controller|||C
+DB-06|Optimise Plan|Optimise plan considering risk and KPI impact|Engagement Executives / Demand & Planning / NW Function Budget SPOC|||C
+DB-07|Prioritise and Agree Market Plan|Prioritise and agree market plan against commercial priorities, demand, VF strategy and financial envelope|Engagement Executives / NW Finance BPR & Local Controller|||C
+DB-08|Review and Agree DB/LRP Plan|Review and agree on the DB/LRP plan|NW Director & NW Leadership Team / Demand & Planning||M2 E2E network prioritised plan agreed with CNO|C
+DB-09|Plan Submitted to Local Market|Plan submitted to Local Market|CNO / Demand & Planning||M3 Finance interlock; M4 Leadership sign-off|C
+DB-10|Plan Discussion with Local ExCo|Plan discussion with Local ExCo|Market CEO / Demand & Planning / NW Finance BPR & Local Controller||M5 Market ExCo review (1st submission)|C
+DB-11|Embed Changes Based on CEO Priorities|Assess and embed changes into plan based on CEO priorities|Demand & Planning / NW Function Budget SPOC|||C
+DB-12|Inform NW Leadership Team|Inform NW Leadership Team|NW Director & NW Leadership Team|||C
+DB-13|Plan Approved at Market Level|Plan approved at Market level; final CAPEX/OPEX targets per function|Market CEO||Final CAPEX/OPEX targets|C`,
+      gws: { "DB-08": { q: "Plan agreed at LT + CNO?", main: "Yes", br: [{ l: "No: optimise again", to: "@DB-06" }] },
+             "DB-10": { q: "Target changed?", main: "Yes", br: [{ l: "No", to: "@DB-13" }] } },
+      notes: { "Between M2 and M4 (optional)": ["CNO-driven governance with Local ExCo", "EE SPOC-driven governance within each network domain"],
+               "Cost types": ["OPEX by design during NEP", "Finance accountability for OPEX consolidation", "CAPEX/OPEX optimisation", "CAPEX supervision by NSE Planning", "Strategic optimisation assurance by vertical budget SPOCs and Strategic Planner"] } },
+
+    dblrp2: { name: "DB/LRP approval and submission", src: SRC,
+      laneOrder: ["Digital & IT Leadership Team"].concat(NEPL.slice(0, 6)),
+      obj: "Mid January to beginning of March, milestones M6 to M9: market plan handshake, CAR preparation and meetings, CEO review, then final technical and financial submission.",
+      tasks: `LRP-14|Market Plan Handshake per Function|Market plan handshake per function (NW and IT & Digital)|Digital & IT Leadership Team / NW Finance BPR & Local Controller||M6 Market plan handshake (mid January)|C
+LRP-15A|Alternative Scenarios|Prepare alternative scenarios|CNO|||C
+LRP-15B|CAR Material Preparation|CAR material preparation and review input from Market (CAR decks submitted by markets by 11 January)|CNO / NW Finance BPR & Local Controller||M7 CAR preparation meeting (end January)|C
+LRP-16|CAR Meeting|CAR meeting|CNO||M8 CAR meetings and CEO reviews (early to mid February)|C
+LRP-17|VF CEO Review and Sign-off|VF CEO review and sign-off|NW Director & NW Leadership Team||Governance meeting|C
+LRP-18|Submission of Technical KPIs|Submission of technical KPIs|Demand & Planning||M9 Final submission (beginning of March)|C
+LRP-19|Submission of Financials|Submission of financials|NW Finance BPR & Local Controller||M9 Final submission|C`,
+      gws: { "LRP-14": { q: "Plan agreed?", main: "No", br: [{ l: "Yes", to: "@LRP-15B" }] } },
+      jumps: { "LRP-15A": "LRP-14" },
+      notes: { "Formal milestones": ["M0 Process kick-off", "M1 EE review and sign-off", "M2 E2E prioritised plan agreed with CNO", "M3 Finance interlock", "M4 Leadership team sign-off", "M5 Market ExCo review (1st submission)", "M6 Market plan handshake", "M7 CAR material preparation", "M8 CAR meeting", "M9 Final submission"] } },
+
+    rolling: { name: "In-year rolling forecast", src: SRC, laneOrder: RFL,
+      obj: "Collect in-year demand, assess it against strategy, revise the plan and rolling forecast, agree changes at LT + CNO and Local ExCo, then submit to Finance.",
+      tasks: `RF-01|In-year Demand Collection|In-year demand collection from markets, business functions and VF NW functions|Engagement Executives / NW Function Budget SPOC||Spend Approval Board|C
+RF-02|Assure and Evaluate New Demand|Assurance and evaluation of the new demand against the strategy|Engagement Executives / NW Function Budget SPOC||Demand Approval Board|C
+RF-03|Recommend Embedding New Demand|Provide recommendations to embed new demands in the plan, if agreed|Engagement Executives / NW Function Budget SPOC|||C
+RF-04|Evaluate Alternatives on Plan Priorities|Evaluate alternatives on the plan priorities to embed new demand|Engagement Executives / NW Function Budget SPOC|||C
+RF-05|Review and Agree Plan Changes|Review and agree on plan changes|NW Director & NW Leadership Team / Engagement Executives||Governance meeting|C
+RF-06|Updated Plan Submitted to Local Market|Updated plan submitted to Local Market|CNO / Engagement Executives||NCAR|C
+RF-07|Consultation with Local ExCo|Consultation with Local ExCo|Market CEO / NW Function Budget SPOC||Plan discussion with Local ExCo|C
+RF-08|Inform Vertical Directors and NW Director|Inform vertical directors and NW Director|NW Director & NW Leadership Team|||C
+RF-09|Submit Plan (incl. KPIs) to Finance|Final submission of the plan, including KPIs, to Finance|Demand & Planning|||C`,
+      gws: { "RF-05": { q: "Plan changes agreed at LT + CNO?", main: "Yes", br: [{ l: "No: back to alternatives", to: "@RF-04" }] },
+             "RF-07": { q: "Changes agreed (NW Function Budget SPOC)?", main: "Yes", br: [{ l: "No: back to alternatives", to: "@RF-04" }] } },
+      notes: { "Key meetings": ["Spend Approval Board", "Demand Approval Board", "Budget Change Approval Board (NCAR)"] } },
+
+    dmd1: { name: "Demand planning (G0 to G2)", src: SRC, laneOrder: DML,
+      obj: "From G0 (requestor raises demand on the Single Front Door) through triage, impact assessment and high-level design to submission to the Demand Board at G2.",
+      tasks: `DM-01|Raise Demand on Single Front Door|Requestor raises the demand on the Single Front Door|Requestor|Single Front Door (Pega)|G0|C
+DM-02|Triage the Demand|Network Demand Assurance Manager performs triage of the demand|Demand Assurance Manager (DAM)|Pega||C
+DM-03|Other NW Function Handshake|Other NW function PS handshake with NW Demand Assurance Manager (if required)|NW Vertical Function SPOC|||C
+DM-04|Engage NW Vertical SPOC / Other NW Function|Engage NW vertical SPOC or other NW function PS|NW Vertical Function SPOC|||C
+DM-05|Engage NW Vertical Teams for HL Impact|Engage NW vertical teams to start high-level impact assessment (G0 to G1)|Demand Assurance Manager (DAM)|||C
+DM-06|Other NW Functions Impact Assessment|Other NW function vertical teams perform impact assessment|Other NW Functions|||C
+DM-07|IT Impact Assessment|IT teams perform impact assessment|IT|||C
+DM-08|Solution Design Definition|Solution design definition|NSE|||C
+DM-09|Privacy Check|Privacy assessment where the demand is privacy-relevant|Cyber Security & Privacy||Privacy check|C
+DM-10|Complete HL Design and Feasibility|Coordinate to complete high-level design and feasibility from all NW verticals|Demand Governance Team|||C
+DM-11|Reporting and SLA Management|Reporting and SLA management|Demand Governance Team|||C
+DM-12|Check Budget Availability and Priority|Check budget availability and priority from Market Sponsor|Demand Governance Team|||C
+DM-13|Check NW Budget Availability|Check the NW budget availability|NSE Planning|||C
+DM-14|Consolidate and Submit to Demand Board|Consolidation of impact assessment and submission to Demand Board|Demand Governance Team||G2|C`,
+      gws: { "DM-02": { q: "Cross-functional?", main: "Yes", br: [{ l: "No", to: "@DM-04" }] },
+             "DM-08": { q: "Privacy relevant?", main: "Yes", br: [{ l: "No", to: "@DM-10" }] } },
+      notes: { "Demand types": ["NSE-only demand needing integrated delivery coordination", "Other single-NW-function demand", "Cross-functional demands", "Most complex cross-functional demands / programmes", "BAU / SIR integrated delivery"] } },
+
+    dmd2: { name: "Demand approval and mobilisation", src: SRC, laneOrder: DML,
+      obj: "Demand Board approval, NCAR for in-year plan changes, NPRB for funding mobilisation, LRP update and transition to integrated delivery up to G6.",
+      tasks: `DM-15|Demand Board Approval|Demand Board reviews the consolidated impact assessment|Demand Governance Team||Demand approval or rejection|C
+DM-16|Global Product Approval|Global product approval for product scenario C|Global Product Board|||C
+DM-17|NCAR: Approve In-year Plan Changes|NCAR governs approval of changes to the in-year plan, including agreement on prioritisation|Demand Governance Team / Other NW Functions||NCAR|C
+DM-18|Manage In-year Prioritisation|Management of in-year prioritisation|NSE Planning|||C
+DM-19|NPRB: Projects and Funding Mobilisation|NPRB manages projects and funding mobilisation for the in-year project|Demand Governance Team / Other NW Functions||NPRB|C
+DM-20|Update LRP if Needed|Planning team updates the LRP if needed|NSE Planning|||C
+DM-21|Manage Transition to Delivery|Manage transition to integrated delivery|NW Vertical Function SPOC|||C
+DM-22|Delivery Management (G2 to G6)|Delivery management and operational execution, G2 to G6|Other NW Functions|||C
+DM-23|Engagement with Delivery Teams|Engagement with delivery teams if needed|Requestor||G6|C`,
+      gws: { "DM-15": [{ q: "Demand Board approved?", main: "Yes", br: [{ l: "No: DAM informs requestor", to: "end:Demand rejected" }] },
+                       { q: "Product scenario C?", main: "Yes", br: [{ l: "No", to: "@DM-17" }] }],
+             "DM-16": { q: "Global product approved?", main: "Yes", br: [{ l: "No", to: "end:Demand cancelled, requestor informed" }] } },
+      notes: { "Meetings": ["NCAR: approval meeting for in-year changes, including agreement on prioritisation", "NPRB: mobilisation of funding for the in-year project"] } },
+
+    dlm1: { name: "Delivery design (G2 to G3)", src: SRC, laneOrder: DLML,
+      obj: "Allocate the delivery team, engage vendors, kick off, fine-tune high-level design, sign off the project plan, then complete low-level design and the E2E test plan.",
+      tasks: `DLM-01|Delivery Team Allocation|Delivery team allocation|EIM / EDM||G2|C
+DLM-02|Coordinate Vendors Engagement|Coordinate vendors engagement|EIM / EDM|||C
+DLM-03|Project Delivery Kick-off|Project delivery kick-off with all verticals|EIM / EDM|||C
+DLM-04|High-Level Design Fine-tuning|Coordinate verticals and security team for high-level design fine-tuning|EIM / EDM / Solution Authority||Fine-tuned high-level design|C
+DLM-05|Detailed Project Management Plan|Detailed project management plan|EIM / EDM|||C
+DLM-06|Project Plan Sign-off|Detailed project management plan sign-off|Market Delivery Manager (MDM)||Detailed project management plan|C
+DLM-07|Vendor POs for LLD, Build and Test|Vendors POs issuing for LLD, build and test|Team in Vertical|||C
+DLM-08|LLD and E2E Test Plan Definition|Coordinate verticals and security team for LLD and test plan definition; low-level design; E2E test plan definition|EIM / EDM / Team in Vertical / Infrastructure Team in Vertical||Low-level design document; E2E test plan|C
+DLM-09|Geo-redundancy Specifications|Provide detailed geo-redundancy specifications|Solution Authority|||C
+DLM-10|LLD and E2E Test Plan Sign-off|LLD and E2E test plan sign-off|EIM||G3|C`,
+      gws: { "DLM-10": { q: "G3 approved?", main: "Yes", br: [{ l: "No: rework LLD", to: "@DLM-08" }] } },
+      notes: { "SLA": ["EDM should estimate 1.5 months between initiation and closure of the privacy assessment process"] } },
+
+    dlm2: { name: "Delivery build and go-live", src: SRC, laneOrder: DLML,
+      obj: "Hand over specifications, define the implementation plan, deliver and test in lab and live, sign off FOA + UAT, go live, hand over to operations and close the project.",
+      tasks: `DLM-11|Geo-redundancy and Privacy Handover|Geo-redundancy and privacy specifications handover to operations|EIM / EDM|||C
+DLM-12|Implementation Plan Definition|Implementation plan definition|EIM / EDM / Solution Authority / Team in Vertical|||C
+DLM-13|Lab Delivery and Testing|Coordinate verticals for lab delivery and testing; lab delivery; lab testing|EIM / EDM / Team in Vertical / Infrastructure Team in Vertical||Lab test report; G4|C
+DLM-14|Live Delivery and Testing|Coordinate verticals for live delivery and testing; live delivery; live testing; EDM ensures privacy and security remedial actions|EIM / EDM / Team in Vertical / Infrastructure Team in Vertical||Live test report|C
+DLM-15|FOA + UAT Sign-off|First Office Application and User Acceptance Test sign-off|EIM / EDM / Local Cross Functions|||C
+DLM-16|Go-live|Go-live|EIM / EDM|||C
+DLM-17|Final Handover to Operations|Final handover to operations|EIM / EDM|||C
+DLM-18|Project Closing|Project closing|EIM / EDM||Project delivery check list; G6|C
+DLM-19|EIM/EDM PM Performance Review|EIM/EDM project manager performance review|Market Delivery Manager (MDM)||Project closure|C`,
+      gws: { "DLM-13": { q: "G4 lab tests passed?", main: "Yes", br: [{ l: "No: repeat", to: "@DLM-13" }] },
+             "DLM-16": { q: "G5 approved?", main: "Yes", br: [{ l: "No: back to FOA + UAT", to: "@DLM-15" }] } } },
+
+    preclose: { name: "Month pre-closure reporting", src: SRC, laneOrder: REPL,
+      obj: "Every month: NMP shares the WBS list by the 15th, BP&A maps SAP to verticals, vertical SPOCs forecast how each department will close the month, and NMP publishes the snapshot.",
+      tasks: `PC-01|Provide List of WBS by the 15th|Provide the list of WBS by the 15th calendar day of the month to BP&A (if the 15th falls on Saturday, Sunday or Monday, share it by Friday)|NMP|||C
+PC-02|Receive List of WBS|Receive the list of WBS|BP&A|||C
+PC-03|Extract SAP Data for Pre-closure|Extract the SAP data for the pre-closure of month N|NMP|SAP||C
+PC-04|Map SAP View to Verticals|Extract view from SAP and map to all verticals according to BPT forecast|BP&A|SAP / BPT||C
+PC-05|Month N Pre-closure Report|Analyse and request forecast for the way each department will close the month; verticals supply full reasons for any plan deviation with mitigation actions|Vertical SPOCs|||C
+PC-06|Consolidate and Publish Snapshot|Consolidate the report and publish the snapshot to verticals and BP&A|NMP|||C
+PC-07|Aligned Vertical View|Aligned vertical view populated with any feedback received from NMP teams|BP&A|||C
+PC-08|Enhanced Reports Alignment|Enhanced reports alignment (only SDD, DCE and FAE)|Vertical SPOCs||Exceptional task|C
+PC-09|Receive Vertical Pre-closure Report|Receive vertical pre-closure report for all markets|Vertical & Planning Communities|||C` },
+
+    close: { name: "Month closure reporting", src: SRC, laneOrder: REPL,
+      obj: "Month N to N+1: NMP shares the WBS list in the last 2 days of the month, the closure meeting justifies deviations, and BP&A publishes the consolidated financial view by market and vertical.",
+      tasks: `CL-01|Provide List of WBS|Provide the list of WBS within the last 2 calendar days of the month to BP&A (if the last day falls on Saturday, Sunday or Monday, share it by Friday)|NMP|||C
+CL-02|Receive List of WBS|Receive the list of WBS|BP&A|||C
+CL-03|Map SAP View to Verticals|Extract view from SAP and map to all verticals according to BPT forecast|BP&A|SAP / BPT||C
+CL-04|Extract SAP Data for Closure|Extract the SAP data for the closure of month N|NMP|SAP||C
+CL-05|Month N Closure Meeting|Closure meeting to justify the deviation in detail and propose possible remediation (recommended, not mandatory in all markets)|Vertical SPOCs|||C
+CL-06|Comments, Justification or Re-planning|Provide comments and justification or re-planning|Vertical SPOCs|||C
+CL-07|Consolidate and Publish Snapshot|Consolidate the report and publish the snapshot to verticals and BP&A|NMP|||C
+CL-08|Aligned View with Month-end Commentary|Aligned vertical view populated with official month-end commentary from NMP teams|BP&A|||C
+CL-09|Enhanced Reports Alignment|Enhanced reports alignment (only SDD, DCE and FAE)|Vertical SPOCs||Exceptional task|C
+CL-10|Network Consolidated Financial View|Network consolidated financial view by market and vertical|Vertical & Planning Communities|||C`,
+      gws: { "CL-05": { q: "Aligned?", main: "No", br: [{ l: "Yes", to: "@CL-07" }] } },
+      notes: { "Reporting principles": ["Network Market Partner leads pre-closure and closure reporting across all network verticals", "Budget Process & Analytics team is accountable for NSE budget execution reporting"] } },
+
+    interlock: { name: "Market Interlock", src: SRC, laneOrder: MIL,
+      obj: "Monthly: confirm the timetable, build the Market Interlock pack (hot topics, operational updates, financials, strategic programmes, CEO update), sign it off and run post-meeting governance.",
+      tasks: `MI-01|Check Market Interlock Timetable|Check the Market Interlock timetable for all future meetings|Demand Governance Team||Timetable accuracy check|C
+MI-02|Consult and Agree Timetable|Consult on timing for Market Interlock and agree the timetable|NSE Engagement Executives / Demand Governance Team|||C
+MI-03|Trigger Pack Completion|Trigger Market Interlock pack completion with all stakeholders (timings differ per market)|Demand Governance Team|||C
+MI-04|Lead Completion of Pack|Lead completion of the pack|NSE Engagement Executives|||C
+MI-05|Agree Hot Topics and Strategic Programmes|Coordinate the discussion to agree hot topics and strategic programmes with CNO/CIO|NSE Engagement Executives|||C
+MI-06|Hot Topics and Programmes Decision|Hot topics, risks and issues agreed by CNO/CIO; strategic programmes decision|CNO / CIO|||C
+MI-07|Strategic Programmes Recommendation|Market CBU/VBU recommendation for strategic programmes to include in the pack|Strategic Planner|||C
+MI-08|Network and Operational Inputs|Provide hot topics, operational updates, operational dashboard and strategic programmes for Network|NW Functions Engagement Executives|||C
+MI-09|Financials Update|Provide financials update|Market Finance|||C
+MI-10|Digital & IT, VBTS and Cyber Inputs|Provide operational dashboard and strategic programmes for Digital & IT, products/services, VBTS and cyber security|Digital & IT|||C
+MI-11|CEO Market Update|Provide CEO market update|Market CEO|||C
+MI-12|Complete Pack and Quality Assurance|Complete the pack and manage quality assurance|Demand Governance Team||Quality assurance|C
+MI-13|Review and Sign-off Content|Review and sign-off of local market vertical and networks content|NW Functions Engagement Executives / CNO / CIO|||C
+MI-14|Final Adjustments and Pre-read|Final adjustments and pre-read submission|NSE Engagement Executives|||C
+MI-15|Communicate Signed-off Pack|Communicate the signed-off Market Interlock pack with stakeholders|Demand Governance Team|Microsoft Teams||C
+MI-16|Governance Post Meeting|Governance post meeting and post Market Interlock activities (minutes, action tracking, additional requests)|Demand Governance Team|Microsoft Teams|Governance meeting|C`,
+      gws: { "MI-01": { q: "Timetable accurate and complete?", main: "No", br: [{ l: "Yes", to: "@MI-03" }] } } }
+  };
+
+  var RENAME = { "On-plan demand activation": "Demand activation", "On-plan financial validation": "Financial validation", "On-plan resource validation": "Resource validation",
+    "On-plan mobilisation": "Mobilisation", "On-plan delivery readiness": "Delivery readiness", "On-plan procurement and delivery": "Procurement and delivery",
+    "On-plan financial execution": "Financial execution", "On-plan closure and benefits": "Closure and benefits" };
+
+  function build(plan, keys, order, overview) {
+    plan.phases.forEach(function (p, i) { p.key = keys[i]; if (RENAME[p.name]) p.name = RENAME[p.name]; });
+    var byN = {}; plan.phases.forEach(function (p) { byN[p.n] = p.key; });
+    plan.phases.forEach(function (p) { Object.keys(p.gws || {}).forEach(function (id) { [].concat(p.gws[id]).forEach(function (g) { g.br.forEach(function (b) { var m = /^phase:(\d+)$/.exec(b.to); if (m) b.to = "phase:" + byN[m[1]]; }); }); }); });
+    var all = {}; plan.phases.forEach(function (p) { all[p.key] = p; });
+    Object.keys(NEW).forEach(function (k) { all[k] = all[k] || NEW[k]; });
+    plan.phases = order.map(function (k) { var p = all[k]; if (!p.key) { p = JSON.parse(JSON.stringify(p)); p.key = k; } return p; });
+    var num = {}; plan.phases.forEach(function (p, i) { p.n = i + 1; num[p.key] = i + 1; delete p._tasks; });
+    plan.phases.forEach(function (p) { Object.keys(p.gws || {}).forEach(function (id) { [].concat(p.gws[id]).forEach(function (g) { g.br.forEach(function (b) { var m = /^phase:(\w+)$/.exec(b.to); if (m && num[m[1]]) b.to = "phase:" + num[m[1]]; }); }); }); });
+    plan.overview = overview.map(function (o) {
+      if (typeof o === "string") return { ph: num[o] };
+      return { gw: o.gw, main: o.main, br: o.br.map(function (b) { var m = /^@(\w+)$/.exec(b.to); return { l: b.l, to: m ? "@P" + num[m[1]] : b.to }; }) };
+    });
+  }
+
+  build(D.on, ["strategy", "db", "activation", "finval", "resval", "mob", "ready", "proc", "finexec", "closure"],
+    ["strategy", "nep", "db", "dblrp1", "dblrp2", "activation", "finval", "resval", "mob", "ready", "dlm1", "proc", "dlm2", "finexec", "preclose", "close", "interlock", "closure"],
+    ["strategy", "nep", { gw: "Planning direction and NEP approved?", main: "Yes", br: [{ l: "No: refine", to: "@nep" }] },
+     "db", { gw: "DB approved?", main: "Yes", br: [{ l: "No: reprioritise", to: "@db" }] },
+     "dblrp1", "dblrp2", "activation", "finval", "resval", "mob", "ready", "dlm1", "proc", "dlm2", "finexec", "preclose", "close", "interlock", "closure"]);
+
+  build(D.off, ["arrival", "triage", "tech", "resource", "fin", "bc", "approval", "order", "mob", "wbs", "budget", "ready", "proc", "grn", "closure"],
+    ["arrival", "dmd1", "triage", "tech", "resource", "fin", "bc", "approval", "dmd2", "rolling", "order", "mob", "wbs", "budget", "ready", "dlm1", "proc", "dlm2", "grn", "preclose", "close", "interlock", "closure"],
+    ["arrival", { gw: "D1 · Demand complete?", main: "Yes", br: [{ l: "No: clarify", to: "@arrival" }] }, "dmd1",
+     "triage", { gw: "D2 · Covered by approved investment?", main: "No", br: [{ l: "Yes: link to existing investment", to: "@approval" }] },
+     "tech", { gw: "D3 · Technically feasible?", main: "Yes", br: [{ l: "Conditional: revise", to: "@tech" }, { l: "No", to: "end:Returned or rejected" }] },
+     "resource", { gw: "D4 · Can it be resourced?", main: "Yes", br: [{ l: "No: revise plan", to: "@resource" }] },
+     "fin", { gw: "D5 · Approved funding available?", main: "No", br: [{ l: "Yes: reuse approval", to: "@approval" }] },
+     "bc", "approval", { gw: "D6 · Expenditure authorised?", main: "Approved", br: [{ l: "Conditional / deferred", to: "@approval" }, { l: "Rejected", to: "end:Closed or revised" }] },
+     "dmd2", "rolling", { gw: "Order Management route applies?", main: "Yes", br: [{ l: "No: internal investment", to: "@mob" }] },
+     "order", "mob", "wbs", "budget", "ready", "dlm1", "proc", "dlm2", "grn", "preclose", "close", "interlock", "closure"]);
+})(typeof SNIP_DATA !== "undefined" ? SNIP_DATA : require("./data.js"));
+
 </script>
 <script>
 // BPMN layout + SVG rendering + BPMN 2.0 XML export. Pure string output, runs in browser and node.
@@ -629,7 +855,8 @@ var BPMN = (function () {
     ph._tasks = ph.tasks.trim().split("\n").map(function (line) {
       var f = line.split("|");
       var t = { id: f[0].trim(), name: f[1], activity: f[2], team: f[3], tool: f[4], output: f[5] || "", status: (f[6] || "").trim(), phase: ph.n };
-      t.lane = (ph.lanes && ph.lanes[t.id]) || laneOf(t.team);
+      var first = t.team.split(" / ")[0].trim();
+      t.lane = (ph.lanes && ph.lanes[t.id]) || (ph.laneOrder && ph.laneOrder.indexOf(first) >= 0 ? first : laneOf(t.team));
       return t;
     });
     return ph._tasks;
@@ -695,7 +922,7 @@ var BPMN = (function () {
     nodes.push(last
       ? { id: "END", type: "end", lane: tail, label: plan.end }
       : { id: "OUT", type: "linkOut", lane: tail, label: "To Phase " + nx.n + " · " + nx.name, toPhase: nx.n });
-    return { nodes: nodes, mode: "phase", plan: plan };
+    return { nodes: nodes, mode: "phase", plan: plan, lanes: ph.laneOrder };
   }
 
   function buildFlat(plan) {
@@ -751,7 +978,8 @@ var BPMN = (function () {
         }
       }
     });
-    var laneNames = g.lanes || LANE_ORDER.filter(function (l) { return nodes.some(function (n) { return n.lane === l; }); });
+    var used = []; nodes.forEach(function (n) { if (used.indexOf(n.lane) < 0) used.push(n.lane); });
+    var laneNames = g.lanes ? g.lanes.filter(function (l) { return used.indexOf(l) >= 0; }) : LANE_ORDER.filter(function (l) { return used.indexOf(l) >= 0; }).concat(used.filter(function (l) { return LANE_ORDER.indexOf(l) < 0; }));
 
     // edges
     var edges = [];
@@ -1011,7 +1239,7 @@ if (typeof module !== "undefined") module.exports = BPMN;
 
   function renderPhase() {
     var p = plan(), ph = phase();
-    $("ph-eyebrow").textContent = "Level 4 · phase " + ph.n + " of " + p.phases.length;
+    $("ph-eyebrow").textContent = "Level 4 · phase " + ph.n + " of " + p.phases.length + (ph.src ? " · from the " + ph.src : "");
     $("ph-title").textContent = "Phase " + ph.n + " · " + ph.name;
     $("ph-obj").textContent = ph.obj;
     $("prev").disabled = ph.n === 1;
@@ -1078,6 +1306,7 @@ if (typeof module !== "undefined") module.exports = BPMN;
   $("rows").addEventListener("click", function (e) { var r = e.target.closest("tr"); if (r) selectTask(r.dataset.task); });
   window.addEventListener("hashchange", function () { setPlan(location.hash === "#off-plan" ? "off" : "on"); });
 
+  ["on", "off"].forEach(function (k) { var t = 0; D[k].phases.forEach(function (ph) { t += B.parseTasks(ph).length; }); $("cnt-" + k).textContent = D[k].phases.length + " phases · " + t + " tasks"; });
   renderPlan(); renderOverview(); renderPhase();
 })();
 </script>
