@@ -214,7 +214,7 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
     </div>
   </div>
 
-  <p class="foot">Sources: SNIP End-to-End Network Investment Lifecycle (L3/L4 analysis) and the Vodafone process booklet (phases marked as from the booklet). The analysis is a consolidated model; Vodafone does not yet run one workflow connecting every activity. Swimlanes group each task under its lead team (the first team named); the full team is shown in the task detail. Decision points are taken from the document; where it names an outcome but not the next step, the flow follows the document's sequence.</p>
+  <p class="foot">Sources: SNIP End-to-End Network Investment Lifecycle (L3/L4 analysis) , the Vodafone process booklet and the HVS 4 and 5 Mobilisation Capability pack (phases marked with their source). The analysis is a consolidated model; Vodafone does not yet run one workflow connecting every activity. Swimlanes group each task under its lead team (the first team named); the full team is shown in the task detail. Decision points are taken from the document; where it names an outcome but not the next step, the flow follows the document's sequence.</p>
 </div>
 
 <script>
@@ -600,8 +600,8 @@ if (typeof module !== "undefined") module.exports = SNIP_DATA;
   var SRC = "Vodafone process booklet";
   var NEPL = ["NW Director & NW Leadership Team", "CNO", "Engagement Executives", "Demand & Planning", "Market CEO", "NW Finance BPR & Local Controller", "NW Architect", "NW Function Budget SPOC"];
   var DML = ["Requestor", "Demand Assurance Manager (DAM)", "Demand Governance Team", "NW Vertical Function SPOC", "Global Product Board", "NSE Planning", "Other NW Functions", "IT", "NSE", "Cyber Security & Privacy"];
-  var DLML = ["EIM", "Market Delivery Manager (MDM)", "Local Cross Functions", "Solution Authority", "EIM / EDM", "Team in Vertical", "Infrastructure Team in Vertical"];
-  var MIL = ["Demand Governance Team", "NSE Engagement Executives", "CNO / CIO", "NW Functions Engagement Executives", "Market Finance", "Digital & IT", "Strategic Planner", "Market CEO"];
+  var DLML = ["EIM", "Market Delivery Manager (MDM)", "Local Cross Functions", "Solution Authority", "EIM/EDM", "Team in Vertical", "Infrastructure Team in Vertical"];
+  var MIL = ["Demand Governance Team", "NSE Engagement Executives", "CNO/CIO", "NW Functions Engagement Executives", "Market Finance", "Digital & IT", "Strategic Planner", "Market CEO"];
   var RFL = ["NW Director & NW Leadership Team", "CNO", "Engagement Executives", "Demand & Planning", "Market CEO", "Market Finance", "NW Function Budget SPOC"];
   var REPL = ["Vertical & Planning Communities", "BP&A", "Vertical SPOCs", "NMP"];
 
@@ -709,14 +709,14 @@ DM-23|Engagement with Delivery Teams|Engagement with delivery teams if needed|Re
 
     dlm1: { name: "Delivery design (G2 to G3)", src: SRC, laneOrder: DLML,
       obj: "Allocate the delivery team, engage vendors, kick off, fine-tune high-level design, sign off the project plan, then complete low-level design and the E2E test plan.",
-      tasks: `DLM-01|Delivery Team Allocation|Delivery team allocation|EIM / EDM||G2|C
-DLM-02|Coordinate Vendors Engagement|Coordinate vendors engagement|EIM / EDM|||C
-DLM-03|Project Delivery Kick-off|Project delivery kick-off with all verticals|EIM / EDM|||C
-DLM-04|High-Level Design Fine-tuning|Coordinate verticals and security team for high-level design fine-tuning|EIM / EDM / Solution Authority||Fine-tuned high-level design|C
-DLM-05|Detailed Project Management Plan|Detailed project management plan|EIM / EDM|||C
+      tasks: `DLM-01|Delivery Team Allocation|Delivery team allocation|EIM/EDM||G2|C
+DLM-02|Coordinate Vendors Engagement|Coordinate vendors engagement|EIM/EDM|||C
+DLM-03|Project Delivery Kick-off|Project delivery kick-off with all verticals|EIM/EDM|||C
+DLM-04|High-Level Design Fine-tuning|Coordinate verticals and security team for high-level design fine-tuning|EIM/EDM / Solution Authority||Fine-tuned high-level design|C
+DLM-05|Detailed Project Management Plan|Detailed project management plan|EIM/EDM|||C
 DLM-06|Project Plan Sign-off|Detailed project management plan sign-off|Market Delivery Manager (MDM)||Detailed project management plan|C
 DLM-07|Vendor POs for LLD, Build and Test|Vendors POs issuing for LLD, build and test|Team in Vertical|||C
-DLM-08|LLD and E2E Test Plan Definition|Coordinate verticals and security team for LLD and test plan definition; low-level design; E2E test plan definition|EIM / EDM / Team in Vertical / Infrastructure Team in Vertical||Low-level design document; E2E test plan|C
+DLM-08|LLD and E2E Test Plan Definition|Coordinate verticals and security team for LLD and test plan definition; low-level design; E2E test plan definition|EIM/EDM / Team in Vertical / Infrastructure Team in Vertical||Low-level design document; E2E test plan|C
 DLM-09|Geo-redundancy Specifications|Provide detailed geo-redundancy specifications|Solution Authority|||C
 DLM-10|LLD and E2E Test Plan Sign-off|LLD and E2E test plan sign-off|EIM||G3|C`,
       gws: { "DLM-10": { q: "G3 approved?", main: "Yes", br: [{ l: "No: rework LLD", to: "@DLM-08" }] } },
@@ -724,14 +724,14 @@ DLM-10|LLD and E2E Test Plan Sign-off|LLD and E2E test plan sign-off|EIM||G3|C`,
 
     dlm2: { name: "Delivery build and go-live", src: SRC, laneOrder: DLML,
       obj: "Hand over specifications, define the implementation plan, deliver and test in lab and live, sign off FOA + UAT, go live, hand over to operations and close the project.",
-      tasks: `DLM-11|Geo-redundancy and Privacy Handover|Geo-redundancy and privacy specifications handover to operations|EIM / EDM|||C
-DLM-12|Implementation Plan Definition|Implementation plan definition|EIM / EDM / Solution Authority / Team in Vertical|||C
-DLM-13|Lab Delivery and Testing|Coordinate verticals for lab delivery and testing; lab delivery; lab testing|EIM / EDM / Team in Vertical / Infrastructure Team in Vertical||Lab test report; G4|C
-DLM-14|Live Delivery and Testing|Coordinate verticals for live delivery and testing; live delivery; live testing; EDM ensures privacy and security remedial actions|EIM / EDM / Team in Vertical / Infrastructure Team in Vertical||Live test report|C
-DLM-15|FOA + UAT Sign-off|First Office Application and User Acceptance Test sign-off|EIM / EDM / Local Cross Functions|||C
-DLM-16|Go-live|Go-live|EIM / EDM|||C
-DLM-17|Final Handover to Operations|Final handover to operations|EIM / EDM|||C
-DLM-18|Project Closing|Project closing|EIM / EDM||Project delivery check list; G6|C
+      tasks: `DLM-11|Geo-redundancy and Privacy Handover|Geo-redundancy and privacy specifications handover to operations|EIM/EDM|||C
+DLM-12|Implementation Plan Definition|Implementation plan definition|EIM/EDM / Solution Authority / Team in Vertical|||C
+DLM-13|Lab Delivery and Testing|Coordinate verticals for lab delivery and testing; lab delivery; lab testing|EIM/EDM / Team in Vertical / Infrastructure Team in Vertical||Lab test report; G4|C
+DLM-14|Live Delivery and Testing|Coordinate verticals for live delivery and testing; live delivery; live testing; EDM ensures privacy and security remedial actions|EIM/EDM / Team in Vertical / Infrastructure Team in Vertical||Live test report|C
+DLM-15|FOA + UAT Sign-off|First Office Application and User Acceptance Test sign-off|EIM/EDM / Local Cross Functions|||C
+DLM-16|Go-live|Go-live|EIM/EDM|||C
+DLM-17|Final Handover to Operations|Final handover to operations|EIM/EDM|||C
+DLM-18|Project Closing|Project closing|EIM/EDM||Project delivery check list; G6|C
 DLM-19|EIM/EDM PM Performance Review|EIM/EDM project manager performance review|Market Delivery Manager (MDM)||Project closure|C`,
       gws: { "DLM-13": { q: "G4 lab tests passed?", main: "Yes", br: [{ l: "No: repeat", to: "@DLM-13" }] },
              "DLM-16": { q: "G5 approved?", main: "Yes", br: [{ l: "No: back to FOA + UAT", to: "@DLM-15" }] } } },
@@ -770,19 +770,131 @@ MI-02|Consult and Agree Timetable|Consult on timing for Market Interlock and agr
 MI-03|Trigger Pack Completion|Trigger Market Interlock pack completion with all stakeholders (timings differ per market)|Demand Governance Team|||C
 MI-04|Lead Completion of Pack|Lead completion of the pack|NSE Engagement Executives|||C
 MI-05|Agree Hot Topics and Strategic Programmes|Coordinate the discussion to agree hot topics and strategic programmes with CNO/CIO|NSE Engagement Executives|||C
-MI-06|Hot Topics and Programmes Decision|Hot topics, risks and issues agreed by CNO/CIO; strategic programmes decision|CNO / CIO|||C
+MI-06|Hot Topics and Programmes Decision|Hot topics, risks and issues agreed by CNO/CIO; strategic programmes decision|CNO/CIO|||C
 MI-07|Strategic Programmes Recommendation|Market CBU/VBU recommendation for strategic programmes to include in the pack|Strategic Planner|||C
 MI-08|Network and Operational Inputs|Provide hot topics, operational updates, operational dashboard and strategic programmes for Network|NW Functions Engagement Executives|||C
 MI-09|Financials Update|Provide financials update|Market Finance|||C
 MI-10|Digital & IT, VBTS and Cyber Inputs|Provide operational dashboard and strategic programmes for Digital & IT, products/services, VBTS and cyber security|Digital & IT|||C
 MI-11|CEO Market Update|Provide CEO market update|Market CEO|||C
 MI-12|Complete Pack and Quality Assurance|Complete the pack and manage quality assurance|Demand Governance Team||Quality assurance|C
-MI-13|Review and Sign-off Content|Review and sign-off of local market vertical and networks content|NW Functions Engagement Executives / CNO / CIO|||C
+MI-13|Review and Sign-off Content|Review and sign-off of local market vertical and networks content|NW Functions Engagement Executives / CNO/CIO|||C
 MI-14|Final Adjustments and Pre-read|Final adjustments and pre-read submission|NSE Engagement Executives|||C
 MI-15|Communicate Signed-off Pack|Communicate the signed-off Market Interlock pack with stakeholders|Demand Governance Team|Microsoft Teams||C
 MI-16|Governance Post Meeting|Governance post meeting and post Market Interlock activities (minutes, action tracking, additional requests)|Demand Governance Team|Microsoft Teams|Governance meeting|C`,
       gws: { "MI-01": { q: "Timetable accurate and complete?", main: "No", br: [{ l: "Yes", to: "@MI-03" }] } } }
   };
+
+
+  var MOB = "HVS 4 and 5 Mobilisation Capability pack";
+  var OML = ["Order Requester", "Networks Function SME", "Networks Order Manager", "Delivery Manager"];
+  NEW.ocapture = { name: "Order capture and assurance", src: MOB, laneOrder: OML,
+    obj: "L3 Order Management: the requester raises the order in the Networks Front Door; the Networks Order Manager assures it, then checks the commercial contract (external) or the approved business case and budget (internal).",
+    tasks: `OC-01|Create or Update Order in Front Door|Create or update the order in the Networks Front Door (external: commercial function or partner; internal: local market lead); select Order Request and the quote ID|Order Requester|Networks Front Door (Pega)|Order creation|C
+OC-02|Submit Order|Submit the order in Pega to formally raise it|Order Requester|Pega|Submitted order|C
+OC-03|Review Order and Complete Assurance|Review the submission and complete order assurance: check the quotation date for 90-day expiry, confirm external customer commitment and budget cover, PO if applicable, signed contract for external customers|Networks Order Manager|Pega||C
+OC-04|Validate Signed Contract, Funding and SLAs|Validate signed contract details, funding and agreed SLAs with the Account Service Delivery Lead (CSA, VSA, TSA)|Networks Order Manager|Pega||C
+OC-05|Validate Scope and Volumes of Contract|Validate the order is within the scope and volumes of the contract|Networks Order Manager|Pega||C
+OC-06|Check Business Case and Budget (Internal)|Confirm an approved business case is attached and the work has been approved by local market governance with allocated budget|Networks Order Manager|Pega||C
+OC-07|Discuss and Clarify with Requester|Discuss with the order requester, clarify requirements and trigger a requote if required|Networks Order Manager|Pega||C
+OC-08|Reject Order for Updates|Reject the order so the requester can make updates before resubmission|Networks Order Manager|Pega|Order rejected|C`,
+    gws: { "OC-03": [{ q: "Order assurance completed?", main: "Yes", br: [{ l: "No", to: "@OC-07" }] },
+                     { q: "Customer type?", main: "External", br: [{ l: "Internal", to: "@OC-06" }] },
+                     { q: "Linked to existing commercial contract?", main: "Yes", br: [{ l: "No: requote", to: "@OC-07" }] }],
+           "OC-05": { q: "Order within contract terms?", main: "Yes", mainTo: "@OUT", br: [{ l: "No: requote", to: "@OC-07" }] },
+           "OC-06": { q: "Approved business case and budget attached?", main: "Yes", mainTo: "@OUT", br: [{ l: "No", to: "@OC-07" }] },
+           "OC-08": { q: "Order updated by requester?", main: null, br: [{ l: "Yes: resubmit", to: "@OC-01" }, { l: "No", to: "end:Order rejected" }] } } };
+
+  NEW.oaccept = { name: "Order acceptance and handover to delivery", src: MOB, laneOrder: OML,
+    obj: "L3 Order Management: decompose the order, get functional acceptance from every impacted Networks function, confirm acceptance in Pega, then mobilise (WBS, budget load) and hand over to delivery.",
+    tasks: `OA-01|Decompose Order and Route Service Elements|After order assurance, record the order in Pega; this triggers automatic routing of the service elements to each impacted function|Networks Order Manager|Pega||C
+OA-02|Confirm Service Element Order Receipt|Confirm receipt of the service element order|Networks Function SME|Pega||C
+OA-03|Review Order vs Quotation|Review the order against the quotation (volume, resources, scheduling) and validate it|Networks Function SME|Pega||C
+OA-04|Align with External Functions or Suppliers|Align with external functions or suppliers if required (IT, cyber security, TCTS, other external partners)|Networks Function SME|||C
+OA-05|Request Up-to-date SoW|Request an up-to-date SoW from suppliers if required|Networks Function SME|||C
+OA-06|Secure Resources for Delivery|Secure resources for delivery (hard book) and commit resources and schedule|Networks Function SME|WFM||C
+OA-07|Record Functional Acceptance|Record functional acceptance of the order in Pega|Networks Function SME|Pega|Functional acceptance|C
+OA-08|Confirm Order Acceptance|Confirm order acceptance in Pega once all impacted functions have accepted; Group Networks Finance is informed|Networks Order Manager|Pega|Order accepted|C
+OA-09|Confirm WBS Allocation|Confirm WBS allocation stated in the business case or finance annex|Networks Order Manager|Pega|T3 timestamp|C
+OA-10|Timesheet WBS Creation|Create timesheet WBS codes (see the Timesheet WBS creation phase)|Networks Order Manager|SAP MDG||C
+OA-11|Budget Load|Manage budget loading on the project CAPEX WBS codes with Finance (FDS) and the off-shore team|Networks Order Manager|SAP|T4 timestamp|C
+OA-12|Move Order to Delivery Queue|Order moved to the delivery queue and handed over to delivery|Networks Order Manager|Pega||C
+OA-13|Confirm SoWs and Request PO|Pick up the order from the delivery queue, confirm SoWs, request a PO if applicable and update delivery tracking in Pega|Delivery Manager|Pega / EVO|To delivery|C`,
+    gws: { "OA-07": { q: "All impacted functions accepted?", main: "Yes", br: [{ l: "No: discuss options with delivery function", to: "@OA-03" }] },
+           "OA-08": { q: "Order type?", main: "Internal", br: [{ l: "Commercial or external", to: "@OA-12" }] } } };
+
+  NEW.wbsts = { name: "Timesheet WBS creation", src: MOB, laneOrder: ["Networks Order Manager", "Service Owner", "Network Market Planning (NMP)", "IP&H"],
+    obj: "L3 Order Management: after order acceptance, create the timesheet WBS codes per resource country through SAP MDG and load them into the Time Buddy bot, ahead of budget load.",
+    tasks: `TW-01|Communicate WBS Can Be Created|Communicate that the WBS can be created (from order acceptance)|Networks Order Manager|||C
+TW-02|Review Booked Resources|Review booked resources with the Service Owner and Market Planner to confirm the country location; a separate WBS is needed per country|Service Owner|||C
+TW-03|Prepare MDG Template|Prepare the MDG template for WBS creation, except the project code (NMP for local market delivery, Service Owner for central NSE delivery)|Network Market Planning (NMP)|Excel MDG template||C
+TW-04|Finalise MDG Template|Finalise the MDG template with the project code and verify the WBS(s)|IP&H|Excel MDG template||C
+TW-05|Create New Project and WBS(s)|Create a new project and WBS(s) to cover all resource locations|IP&H|SAP MDG||C
+TW-06|Create Additional WBS(s)|If required, create new WBS(s) for an additional resource location|IP&H|SAP MDG||C
+TW-07|Upload Template in SAP MDG|Template upload in SAP MDG|IP&H|SAP MDG||C
+TW-08|Update WBS Database|Update status in the WBS database once created in SAP MDG|IP&H|WBS database||C
+TW-09|Upload WBS Data into Time Buddy|Upload WBS data into the Time Buddy bot so employees can find the right WBS codes for timesheets|IP&H|Time Buddy bot||C
+TW-10|Monitor WBS Status in Plan|Self-serve: monitor WBS status change in the master plan|Service Owner|Master plan|To budget load|C`,
+    gws: { "TW-04": { q: "Project already exists?", main: "No", br: [{ l: "Yes", to: "@TW-06" }] } },
+    jumps: { "TW-05": "TW-07" } };
+
+  var SABL = ["Requester & Sponsor", "Governance", "Finance", "SAB", "Approval Authority"];
+  NEW.sab = { name: "Spend Approval Board (SAB)", src: MOB, laneOrder: SABL,
+    obj: "Trigger: investment or spend request raised. Result: approved, funded and closed investment case. Five stages: request intake, quality check, SAB governance, spend approval, fulfilment.",
+    tasks: `SAB-1.1|Create Spend Request|Create the spend request|Requester & Sponsor|||C
+SAB-1.2|Determine Request Type|Determine the request type|Requester & Sponsor|||C
+SAB-1.3|Validate Draft Request|Validate the draft request|Requester & Sponsor|||C
+SAB-1.4|Check Funds Availability|Check funds availability|Requester & Sponsor|||C
+SAB-1.5|Suggest Compliance Checks|Suggest compliance checks|Requester & Sponsor|||C
+SAB-1.6|Notify Investment Stakeholders|Notify investment stakeholders|Requester & Sponsor||Validated request|C
+SAB-2.1|Assess Submission Quality|Assess submission quality|Governance|||C
+SAB-2.2|Rectify Submission Exceptions|Rectify submission exceptions|Governance||Quality-cleared submission|C
+SAB-3.1|Determine Governance Pack|Determine the governance pack|SAB|||C
+SAB-3.2|Finance Endorsement|Finance endorsement|Finance|||C
+SAB-3.3|Finance Approval|Finance approval|Finance|||C
+SAB-3.4|Draft SAB Agenda|Draft the SAB agenda|SAB|||C
+SAB-3.5|Generate Review Summary|Generate the review summary|SAB|||C
+SAB-3.6|Assess SAB Meeting Outcome|Assess the SAB meeting outcome|SAB||Governance decision|C
+SAB-4.1|Identify Approval Threshold|Identify the approval threshold|Approval Authority|||C
+SAB-4.2|Route to Approval Authority|Route to the approval authority|Approval Authority|||C
+SAB-4.3|Review Request Summary|Review the request summary|Approval Authority|||C
+SAB-4.4|Obtain Spend Approval|Obtain spend approval|Approval Authority|||C
+SAB-4.5|Surface Final Approval|Surface the final approval|Approval Authority|||C
+SAB-4.6|Update Approval Records|Update approval records|Governance|||C
+SAB-4.7|Notify Stakeholders|Notify stakeholders|Governance||Approved spend request|C
+SAB-5.1|Allocate Budget|Allocate budget|Finance|||C
+SAB-5.2|Confirm Budget Load|Confirm budget load|Finance|||C
+SAB-5.3|Request Fund Transfer|Request fund transfer|Finance|||C
+SAB-5.4|Trigger Budget Transfer|Trigger budget transfer|Finance|||C
+SAB-5.5|Produce Close-out Case|Produce the close-out case|Finance||Budget fulfilled|C`,
+    gws: { "SAB-2.1": { q: "Exceptions found?", main: "Yes", br: [{ l: "No", to: "@SAB-3.1" }] },
+           "SAB-4.4": { q: "Spend approved?", main: "Yes", br: [{ l: "No", to: "end:Request rejected" }] } },
+    notes: { "Swimlanes": ["The pack lists SAB activities by stage, not by role; the swimlanes here are an interpretation of who does each stage"] } };
+
+  var BML = ["Governance SPOC & Market Finance Lead", "Market Planning Lead", "Market Finance Lead", "Requester for Mobilisation", "Functional SPOCs & NW Vertical Alignment", "Decision Makers"];
+  NEW.budgetmob = { name: "Budget mobilisation (Capex)", src: MOB, laneOrder: BML,
+    obj: "Submit, validate and refine the mobilisation request, review it and decide (G2 approval if applicable), then record the decision and load the funding. Actors can vary by market.",
+    tasks: `BM-01|Request Mobilisation|Submit the mobilisation request (PPM tool, email or SharePoint form, depending on the market)|Requester for Mobilisation|PPM / email / SharePoint||C
+BM-02|Validate Plan Details and Justification|4a: ensure the plan has sufficient, up-to-date business justification|Market Planning Lead|||C
+BM-03|Validate Plan Financial Elements|4b: ensure the plan has sufficient detail on benefits, dependencies and cost assumptions|Market Finance Lead|||C
+BM-04|Manage Updates to Documentation|2: refine the existing business case or create new mobilisation documentation (business case, change request, mobilisation proposal, detailed finance document)|Requester for Mobilisation|||C
+BM-05|Include Stakeholder Feedback|3: ensure all costs, considerations and feedback from impacted areas are included|Requester for Mobilisation|||C
+BM-06|Check Alignment to KPIs and Budget|4c: check the request is aligned to KPIs and the approved budget|Market Planning Lead|||C
+BM-07|Financial Assurance and Benefits Validation|4d: validate all financial elements and guidance|Market Finance Lead|||C
+BM-08|Confirm Vertical Alignment and Impact|4e: confirm network vertical alignment and impact on supply chain, network operations and other teams|Functional SPOCs & NW Vertical Alignment|||C
+BM-09|Ensure Documentation Complete|4f: ensure mobilisation documentation content and stakeholder feedback are complete (meeting or email confirmation)|Governance SPOC & Market Finance Lead|||C
+BM-10|Finalise Documentation and Set Up Meeting|5: finalise documentation and set up the meeting if required (off-line approval by email for small or urgent requests)|Governance SPOC & Market Finance Lead|||C
+BM-11|Send Decision Documentation|6: send documentation to decision makers and requesters|Governance SPOC & Market Finance Lead|||C
+BM-12|Review Mobilisation Requests|7: decide based on validation of costs and benefits and NW vertical alignment|Decision Makers||G2 approval if applicable|C
+BM-13|Record Decisions and Actions|8: formally record all decisions and actions in the mobilisation tracker|Governance SPOC & Market Finance Lead|Mobilisation tracker||C
+BM-14|Communicate Decisions|9: formal communication to all sponsors and stakeholders|Governance SPOC & Market Finance Lead|||C
+BM-15|Manage SAP Project Creation and Funds Loading|10: manage creation of WBS codes and funds with the off-shore team; POs then follow the SAP purchase order process|Market Finance Lead|SAP||C`,
+    gws: { "BM-01": { q: "Mobilise directly from latest approved plan?", main: "Yes", br: [{ l: "No: additional justification", to: "@BM-04" }] },
+           "BM-06": { q: "Aligned to KPIs and approved budget?", main: "Yes", br: [{ l: "No", to: "goto:To in-year plan change management" }] },
+           "BM-07": { q: "Financials confirmed?", main: "Yes", br: [{ l: "Updates required", to: "@BM-04" }] },
+           "BM-08": { q: "Vertical alignment confirmed?", main: "Yes", br: [{ l: "Updates required", to: "@BM-04" }] },
+           "BM-12": { q: "Alignment and budget approved?", main: "Approved", br: [{ l: "Rejected with actions", to: "@BM-04" }] } },
+    jumps: { "BM-03": "BM-06" },
+    notes: { "Local market adaptations": ["Who is accountable for each task can vary by market", "If the DB justification is not sufficient or out of date, it must be restated before mobilising", "Mobilisation documentation can be a business case, change request, mobilisation proposal or detailed finance document", "Decision makers and the type of decision (meeting or email) are set by the market's RAPIDs"] } };
 
   var RENAME = { "On-plan demand activation": "Demand activation", "On-plan financial validation": "Financial validation", "On-plan resource validation": "Resource validation",
     "On-plan mobilisation": "Mobilisation", "On-plan delivery readiness": "Delivery readiness", "On-plan procurement and delivery": "Procurement and delivery",
@@ -804,21 +916,21 @@ MI-16|Governance Post Meeting|Governance post meeting and post Market Interlock 
   }
 
   build(D.on, ["strategy", "db", "activation", "finval", "resval", "mob", "ready", "proc", "finexec", "closure"],
-    ["strategy", "nep", "db", "dblrp1", "dblrp2", "activation", "finval", "resval", "mob", "ready", "dlm1", "proc", "dlm2", "finexec", "preclose", "close", "interlock", "closure"],
+    ["strategy", "nep", "db", "dblrp1", "dblrp2", "activation", "finval", "sab", "resval", "mob", "budgetmob", "ready", "dlm1", "proc", "dlm2", "finexec", "preclose", "close", "interlock", "closure"],
     ["strategy", "nep", { gw: "Planning direction and NEP approved?", main: "Yes", br: [{ l: "No: refine", to: "@nep" }] },
      "db", { gw: "DB approved?", main: "Yes", br: [{ l: "No: reprioritise", to: "@db" }] },
-     "dblrp1", "dblrp2", "activation", "finval", "resval", "mob", "ready", "dlm1", "proc", "dlm2", "finexec", "preclose", "close", "interlock", "closure"]);
+     "dblrp1", "dblrp2", "activation", "finval", "sab", "resval", "mob", "budgetmob", "ready", "dlm1", "proc", "dlm2", "finexec", "preclose", "close", "interlock", "closure"]);
 
   build(D.off, ["arrival", "triage", "tech", "resource", "fin", "bc", "approval", "order", "mob", "wbs", "budget", "ready", "proc", "grn", "closure"],
-    ["arrival", "dmd1", "triage", "tech", "resource", "fin", "bc", "approval", "dmd2", "rolling", "order", "mob", "wbs", "budget", "ready", "dlm1", "proc", "dlm2", "grn", "preclose", "close", "interlock", "closure"],
+    ["arrival", "dmd1", "triage", "tech", "resource", "fin", "bc", "approval", "sab", "dmd2", "rolling", "order", "ocapture", "oaccept", "wbsts", "mob", "budgetmob", "wbs", "budget", "ready", "dlm1", "proc", "dlm2", "grn", "preclose", "close", "interlock", "closure"],
     ["arrival", { gw: "D1 · Demand complete?", main: "Yes", br: [{ l: "No: clarify", to: "@arrival" }] }, "dmd1",
      "triage", { gw: "D2 · Covered by approved investment?", main: "No", br: [{ l: "Yes: link to existing investment", to: "@approval" }] },
      "tech", { gw: "D3 · Technically feasible?", main: "Yes", br: [{ l: "Conditional: revise", to: "@tech" }, { l: "No", to: "end:Returned or rejected" }] },
      "resource", { gw: "D4 · Can it be resourced?", main: "Yes", br: [{ l: "No: revise plan", to: "@resource" }] },
      "fin", { gw: "D5 · Approved funding available?", main: "No", br: [{ l: "Yes: reuse approval", to: "@approval" }] },
      "bc", "approval", { gw: "D6 · Expenditure authorised?", main: "Approved", br: [{ l: "Conditional / deferred", to: "@approval" }, { l: "Rejected", to: "end:Closed or revised" }] },
-     "dmd2", "rolling", { gw: "Order Management route applies?", main: "Yes", br: [{ l: "No: internal investment", to: "@mob" }] },
-     "order", "mob", "wbs", "budget", "ready", "dlm1", "proc", "dlm2", "grn", "preclose", "close", "interlock", "closure"]);
+     "sab", "dmd2", "rolling", { gw: "Order Management route applies?", main: "Yes", br: [{ l: "No: internal investment", to: "@mob" }] },
+     "order", "ocapture", "oaccept", "wbsts", "mob", "budgetmob", "wbs", "budget", "ready", "dlm1", "proc", "dlm2", "grn", "preclose", "close", "interlock", "closure"]);
 })(typeof SNIP_DATA !== "undefined" ? SNIP_DATA : require("./data.js"));
 
 </script>
@@ -856,7 +968,7 @@ var BPMN = (function () {
       var f = line.split("|");
       var t = { id: f[0].trim(), name: f[1], activity: f[2], team: f[3], tool: f[4], output: f[5] || "", status: (f[6] || "").trim(), phase: ph.n };
       var first = t.team.split(" / ")[0].trim();
-      t.lane = (ph.lanes && ph.lanes[t.id]) || (ph.laneOrder && ph.laneOrder.indexOf(first) >= 0 ? first : laneOf(t.team));
+      t.lane = (ph.lanes && ph.lanes[t.id]) || (ph.laneOrder && ph.laneOrder.indexOf(t.team) >= 0 ? t.team : ph.laneOrder && ph.laneOrder.indexOf(first) >= 0 ? first : laneOf(t.team));
       return t;
     });
     return ph._tasks;
@@ -902,7 +1014,7 @@ var BPMN = (function () {
   }
   function gwNodes(spec, lane) {
     var arr = Array.isArray(spec) ? spec : [spec];
-    return arr.map(function (g) { return { id: "GW_" + (++gwSeq), type: "gw", lane: lane, label: g.q, main: g.main, br: copyBr(g.br) }; });
+    return arr.map(function (g) { return { id: g.id || "GW_" + (++gwSeq), type: "gw", lane: lane, label: g.q, main: g.main, br: copyBr(g.br), jump: g.mainTo ? g.mainTo.slice(1) : undefined }; });
   }
   function phaseTitle(ph) { return "Phase " + ph.n + " · " + ph.name; }
 
@@ -979,14 +1091,14 @@ var BPMN = (function () {
       }
     });
     var used = []; nodes.forEach(function (n) { if (used.indexOf(n.lane) < 0) used.push(n.lane); });
-    var laneNames = g.lanes ? g.lanes.filter(function (l) { return used.indexOf(l) >= 0; }) : LANE_ORDER.filter(function (l) { return used.indexOf(l) >= 0; }).concat(used.filter(function (l) { return LANE_ORDER.indexOf(l) < 0; }));
+    var laneNames = g.lanes ? g.lanes.filter(function (l) { return used.indexOf(l) >= 0; }).concat(used.filter(function (l) { return g.lanes.indexOf(l) < 0; })) : LANE_ORDER.filter(function (l) { return used.indexOf(l) >= 0; }).concat(used.filter(function (l) { return LANE_ORDER.indexOf(l) < 0; }));
 
     // edges
     var edges = [];
     nodes.forEach(function (n, i) {
       if (n.type === "end" || n.type === "linkOut" || i === nodes.length - 1) return;
-      var tgt = n.jump ? byId[n.jump] : nodes[i + 1];
-      edges.push({ s: n, t: tgt, label: n.type === "gw" ? n.main : "", kind: "main" });
+      var tgt = (n.jump && byId[n.jump]) || nodes[i + 1];
+      if (!(n.type === "gw" && n.main == null)) edges.push({ s: n, t: tgt, label: n.type === "gw" ? n.main : "", kind: "main" });
       (n.br || []).forEach(function (b) {
         if (b.node) edges.push({ s: n, t: b.node, label: b.l, kind: "term" });
         else edges.push({ s: n, t: byId[b.to.slice(1)], label: b.l, kind: "br" });
