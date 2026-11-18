@@ -1,0 +1,1056 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+</head>
+<body>
+<title>SNIP Investment Lifecycle BPMN</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: header + plan slider, then L3 lifecycle strip (collapsed sub-processes), then the selected phase as an L4 swimlane pool, then task detail. */
+:root {
+  --bg: #f2f4f6; --surface: #ffffff; --ink: #15222c; --muted: #5a6a76; --line: #c6d0d8; --edge: #4a5a66;
+  --accent: #0e6a72; --accent-soft: #dcecee; --gw: #a56300; --start: #207447; --end: #ae2a20;
+  --lane-a: #f9fafb; --lane-b: #eef2f5; --task: #ffffff; --sub: #e4f0f1;
+  --c: #1f7a4a; --v: #a56300; --t: #6a45b8;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e151a; --surface: #152027; --ink: #e3ebf0; --muted: #93a3ae; --line: #2d3c46; --edge: #8fa1ad;
+  --accent: #52b8c0; --accent-soft: #173539; --gw: #e2a23c; --start: #5cc28d; --end: #f06a60;
+  --lane-a: #121b21; --lane-b: #172229; --task: #1a2730; --sub: #163238;
+  --c: #5cc28d; --v: #e2a23c; --t: #a98cf0; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0e151a; --surface: #152027; --ink: #e3ebf0; --muted: #93a3ae; --line: #2d3c46; --edge: #8fa1ad;
+  --accent: #52b8c0; --accent-soft: #173539; --gw: #e2a23c; --start: #5cc28d; --end: #f06a60;
+  --lane-a: #121b21; --lane-b: #172229; --task: #1a2730; --sub: #163238;
+  --c: #5cc28d; --v: #e2a23c; --t: #a98cf0; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 22px; }
+.eyebrow { font: 500 12px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
+h1 { font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+h2 { font-size: 20px; margin: 0; text-wrap: balance; }
+.lede { color: var(--muted); max-width: 70ch; margin: 10px 0 0; }
+.top { display: flex; flex-wrap: wrap; gap: 20px; align-items: end; justify-content: space-between; }
+.top > div { min-width: 0; }
+
+/* plan slider */
+.slider { position: relative; display: inline-grid; grid-template-columns: 1fr 1fr; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px; min-width: min(360px, 100%); }
+.slider .thumb { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px; background: var(--accent); transition: transform .28s cubic-bezier(.3,.7,.2,1); }
+.slider[data-pos="1"] .thumb { transform: translateX(100%); }
+.slider button { position: relative; z-index: 1; border: 0; background: none; font: 600 15px var(--f-body); color: var(--ink); padding: 10px 22px; border-radius: 999px; cursor: pointer; display: grid; gap: 1px; justify-items: center; transition: color .2s; }
+.slider button small { font: 400 11px var(--f-mono); color: var(--muted); transition: color .2s; }
+.slider button[aria-selected="true"], .slider button[aria-selected="true"] small { color: var(--surface); }
+.slider button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .slider .thumb, .slider button { transition: none; } }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.card-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.card-head > div { min-width: 0; }
+.sub { color: var(--muted); font-size: 14px; margin: 4px 0 0; max-width: 80ch; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 18px; font: 500 13px var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.stats b { color: var(--ink); font-weight: 500; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); align-items: center; }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+.legend svg { flex: none; }
+
+.tools { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 500 13px var(--f-body); padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+.btn:hover { border-color: var(--accent); }
+.btn:disabled { opacity: .4; cursor: default; border-color: var(--line); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+
+/* diagram frame: fixed lane headers + horizontally scrolling canvas */
+.frame { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--lane-a); }
+.frame .heads { flex: none; border-right: 1px solid var(--line); background: var(--surface); }
+.frame .canvas { flex: 1; min-width: 0; overflow-x: auto; overflow-y: hidden; }
+.frame .canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.hint { font-size: 12px; color: var(--muted); margin: 0; }
+
+svg.bpmn { display: block; font-family: var(--f-body); }
+.lane-a { fill: var(--lane-a); } .lane-b { fill: var(--lane-b); }
+.lane-edge { stroke: var(--line); }
+.pool-band { fill: var(--accent-soft); }
+.pool-label { font: 600 12px var(--f-body); fill: var(--accent); letter-spacing: .04em; }
+.lane-head { stroke: var(--line); stroke-width: 1; }
+.lane-label { font: 500 12.5px var(--f-body); fill: var(--ink); }
+.flow { fill: none; stroke: var(--edge); stroke-width: 1.4; stroke-linejoin: round; }
+.flow-loop { stroke-dasharray: 5 4; }
+.m-arr { fill: var(--edge); }
+.flow-label { font: 500 11px var(--f-body); fill: var(--muted); paint-order: stroke; stroke: var(--lane-a); stroke-width: 4px; stroke-linejoin: round; }
+.node { cursor: pointer; outline: none; }
+.node .box { fill: var(--task); stroke: var(--line); stroke-width: 1.3; transition: stroke .15s; }
+.node.sub .box { fill: var(--sub); stroke: var(--accent); stroke-opacity: .5; }
+.node:hover .box, .node:focus-visible .box { stroke: var(--accent); stroke-width: 2; }
+.node.is-sel .box { stroke: var(--accent); stroke-width: 2.6; }
+.t-id { font: 500 10px var(--f-mono); fill: var(--muted); letter-spacing: .03em; }
+.t-name { font: 600 12px var(--f-body); fill: var(--ink); }
+.t-tool { font: 400 10px var(--f-mono); fill: var(--muted); }
+.pill { fill: none; stroke-width: 1.2; } .pill-C { stroke: var(--c); } .pill-V { stroke: var(--v); } .pill-T { stroke: var(--t); }
+.pill-t { font: 600 9px var(--f-mono); }
+.st-C .pill-t { fill: var(--c); } .st-V .pill-t { fill: var(--v); } .st-T .pill-t { fill: var(--t); }
+.plus { fill: none; stroke: var(--accent); stroke-width: 1.2; } .plus-m { stroke: var(--accent); stroke-width: 1.4; }
+.gw-shape { fill: var(--surface); stroke: var(--gw); stroke-width: 1.8; }
+.gw-x { stroke: var(--gw); stroke-width: 2.4; stroke-linecap: round; }
+.gw-label { font: 600 11.5px var(--f-body); fill: var(--gw); paint-order: stroke; stroke: var(--lane-a); stroke-width: 4px; }
+.ev-c { fill: var(--surface); stroke: var(--start); stroke-width: 1.8; }
+.ev-end .ev-c { stroke: var(--end); stroke-width: 4; }
+.ev-linkIn .ev-c, .ev-linkOut .ev-c, .ev-c2 { stroke: var(--accent); stroke-width: 1.4; fill: var(--surface); }
+.ev-c2 { fill: none; }
+.ev-sym { fill: none; stroke: var(--accent); stroke-width: 1.3; } .ev-sym-fill { fill: var(--accent); }
+.ev-label { font: 500 11px var(--f-body); fill: var(--muted); }
+[data-goto] { cursor: pointer; }
+[data-goto]:hover .ev-c { stroke-width: 2.6; }
+[data-goto]:hover .ev-label { fill: var(--accent); }
+
+/* phase picker chips */
+.chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.chip { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font: 500 12px var(--f-mono); padding: 5px 10px; border-radius: 999px; cursor: pointer; font-variant-numeric: tabular-nums; }
+.chip[aria-current="true"] { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.split { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+@media (max-width: 860px) { .split { grid-template-columns: minmax(0, 1fr); } }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { text-align: left; font: 500 11px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.id { font: 500 12px var(--f-mono); color: var(--muted); white-space: nowrap; }
+tbody tr { cursor: pointer; }
+tbody tr:hover td { background: var(--lane-b); }
+tbody tr.is-sel td { background: var(--accent-soft); }
+.st { display: inline-block; font: 600 11px var(--f-mono); border: 1.2px solid currentColor; border-radius: 4px; padding: 0 5px; }
+.st-C-t { color: var(--c); } .st-V-t { color: var(--v); } .st-T-t { color: var(--t); }
+
+.detail dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 14px; margin: 0; font-size: 14px; }
+.detail dt { font: 500 11px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+.detail dd { margin: 0; min-width: 0; }
+.detail h3 { margin: 0; font-size: 17px; }
+.notes { display: grid; gap: 12px; }
+.notes h4 { margin: 0 0 4px; font: 500 11px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.notes ul { margin: 0; padding-left: 18px; font-size: 14px; display: grid; gap: 2px; }
+.empty { color: var(--muted); font-size: 14px; margin: 0; }
+.foot { font-size: 12.5px; color: var(--muted); max-width: 90ch; margin: 0; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">SNIP · End-to-end network investment lifecycle</p>
+      <h1>Network investment process in BPMN 2.0</h1>
+      <p class="lede">The on-plan and off-plan demand journeys, drawn as BPMN pools with swimlanes per team. Pick a journey, open a phase in the lifecycle strip, then select a task to see its activity, tool and output.</p>
+    </div>
+    <div class="slider" id="slider" role="tablist" aria-label="Demand journey" data-pos="0">
+      <span class="thumb" aria-hidden="true"></span>
+      <button role="tab" id="tab-on" data-plan="on" aria-selected="true">On-plan<small>10 phases · 110 tasks</small></button>
+      <button role="tab" id="tab-off" data-plan="off" aria-selected="false">Off-plan<small>15 phases · 149 tasks</small></button>
+    </div>
+  </header>
+
+  <section class="card" id="lifecycle" role="tabpanel" aria-labelledby="tab-on">
+    <div class="card-head">
+      <div>
+        <p class="eyebrow" id="lc-eyebrow">Level 3 · lifecycle</p>
+        <h2 id="lc-title">On-plan demand</h2>
+        <p class="sub" id="lc-scope"></p>
+      </div>
+      <div class="stats" id="lc-stats"></div>
+    </div>
+    <div class="frame" id="lc-frame"><div class="heads"></div><div class="canvas" tabindex="0" aria-label="Lifecycle diagram, scrolls sideways"></div></div>
+    <p class="hint">Each box is a collapsed sub-process. Select one to open its task-level diagram below.</p>
+  </section>
+
+  <section class="card" id="phase">
+    <div class="card-head">
+      <div>
+        <p class="eyebrow" id="ph-eyebrow">Level 4 · phase 1 of 10</p>
+        <h2 id="ph-title"></h2>
+        <p class="sub" id="ph-obj"></p>
+      </div>
+      <div class="tools">
+        <button class="btn" id="prev" type="button">← Previous</button>
+        <button class="btn" id="next" type="button">Next →</button>
+        <span style="width:8px"></span>
+        <button class="btn" data-zoom="0.6" type="button" aria-pressed="false">60%</button>
+        <button class="btn" data-zoom="0.8" type="button" aria-pressed="false">80%</button>
+        <button class="btn" data-zoom="1" type="button" aria-pressed="true">100%</button>
+      </div>
+    </div>
+    <div class="chips" id="chips" aria-label="Phases"></div>
+    <div class="frame" id="ph-frame"><div class="heads"></div><div class="canvas" tabindex="0" aria-label="Phase diagram, scrolls sideways"></div></div>
+    <div class="legend" aria-label="Legend">
+      <span><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="none" stroke="var(--start)" stroke-width="1.8"/></svg>Start</span>
+      <span><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8" fill="none" stroke="var(--end)" stroke-width="3.5"/></svg>End</span>
+      <span><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="none" stroke="var(--accent)" stroke-width="1.3"/><circle cx="11" cy="11" r="6.5" fill="none" stroke="var(--accent)" stroke-width="1.3"/></svg>Link to another phase (select to jump)</span>
+      <span><svg width="22" height="22" viewBox="0 0 22 22"><path d="M11 2 L20 11 L11 20 L2 11Z" fill="none" stroke="var(--gw)" stroke-width="1.8"/><path d="M8 8 L14 14 M14 8 L8 14" stroke="var(--gw)" stroke-width="2"/></svg>Exclusive gateway</span>
+      <span><svg width="34" height="10" viewBox="0 0 34 10"><path d="M1 5 H32" stroke="var(--edge)" stroke-width="1.4" stroke-dasharray="5 4"/></svg>Rework loop</span>
+      <span><b class="st st-C-t">C</b> Confirmed</span>
+      <span><b class="st st-V-t">V</b> Variable</span>
+      <span><b class="st st-T-t">T</b> Target</span>
+    </div>
+  </section>
+
+  <div class="split">
+    <section class="card">
+      <h2>Phase tasks</h2>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ID</th><th>Task</th><th>Team</th><th>Tool</th><th>Output</th><th>Status</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+    </section>
+    <div style="display:grid;gap:22px;min-width:0">
+      <section class="card detail" id="detail" aria-live="polite"></section>
+      <section class="card" id="notes-card"><h2>From the analysis</h2><div class="notes" id="notes"></div></section>
+    </div>
+  </div>
+
+  <p class="foot">Source: SNIP End-to-End Network Investment Lifecycle (L3/L4 analysis). This is a consolidated model; Vodafone does not yet run one workflow connecting every activity. Swimlanes group each task under its lead team (the first team named); the full team is shown in the task detail. Decision points are taken from the document; where it names an outcome but not the next step, the flow follows the document's sequence.</p>
+</div>
+
+<script>
+// Process content transcribed from "SNIP | End-to-End Network Investment Lifecycle".
+// Task line: ID|Name|Activity|Performing team|Tool|Output|Status
+var SNIP_DATA = {
+  off: {
+    key: "off", label: "Off-plan", title: "Off-plan demand",
+    start: "New requirement arrives outside the approved DB",
+    end: "Delivered, reconciled, benefits assessed",
+    scope: "A new commercial, internal or network requirement arrives outside the approved Detailed Budget. It ends when the requirement is delivered, financial transactions are reconciled and investment benefits are assessed.",
+    overview: [
+      { ph: 1 },
+      { gw: "D1 · Demand complete?", main: "Yes", br: [{ l: "No: clarify", to: "@P1" }] },
+      { ph: 2 },
+      { gw: "D2 · Covered by approved investment?", main: "No", br: [{ l: "Yes: link to existing investment", to: "@P7" }] },
+      { ph: 3 },
+      { gw: "D3 · Technically feasible?", main: "Yes", br: [{ l: "Conditional: revise", to: "@P3" }, { l: "No", to: "end:Returned or rejected" }] },
+      { ph: 4 },
+      { gw: "D4 · Can it be resourced?", main: "Yes", br: [{ l: "No: revise plan", to: "@P4" }] },
+      { ph: 5 },
+      { gw: "D5 · Approved funding available?", main: "No", br: [{ l: "Yes: reuse approval", to: "@P7" }] },
+      { ph: 6 },
+      { ph: 7 },
+      { gw: "D6 · Expenditure authorised?", main: "Approved", br: [{ l: "Conditional / deferred", to: "@P7" }, { l: "Rejected", to: "end:Closed or revised" }] },
+      { gw: "Order Management route applies?", main: "Yes", br: [{ l: "No: internal investment", to: "@P9" }] },
+      { ph: 8 }, { ph: 9 }, { ph: 10 }, { ph: 11 }, { ph: 12 }, { ph: 13 }, { ph: 14 }, { ph: 15 }
+    ],
+    phases: [
+      { n: 1, name: "Demand arrival and registration", obj: "Convert an incoming business requirement into a structured, traceable demand.",
+        tasks: `OFF-001|Identify Requirement|Identify a new commercial, internal or technical requirement|Business / Commercial / Network Requestor|Email, customer request, business documentation|Requirement|V
+OFF-002|Define Business Need|Describe the business problem, expected outcome and urgency|Requestor|Demand documentation|Business requirement|C
+OFF-003|Identify Request Type|Determine whether the request is commercial, internal, strategic or operational|Requestor|Pega Demand Front Door|Demand classification|C
+OFF-004|Identify Impacted Markets|Specify affected countries and network organisations|Requestor|Pega|Market information|C
+OFF-005|Identify Sponsor|Record business sponsor and accountable contact|Requestor|Pega|Sponsor details|C
+OFF-006|Define Required Date|Record requested delivery date and business deadlines|Requestor|Pega|Required delivery date|C
+OFF-007|Estimate Initial Effort|Provide preliminary effort or resource expectations|Requestor|Pega|Initial estimate|C
+OFF-008|Identify Funding Position|Indicate whether funding or WBS codes already exist|Requestor|Pega|Funding information|C
+OFF-009|Identify Dependencies|Record contractual, technical and system dependencies|Requestor|Pega|Dependency information|C
+OFF-010|Attach Supporting Evidence|Attach business case, scope, quotations or supporting material|Requestor|Pega|Supporting documents|C
+OFF-011|Submit Demand|Formally submit request|Requestor|Pega|Demand record|C
+OFF-012|Generate Demand Reference|Register the request for subsequent tracking|Demand Management|Pega|Demand identifier|C`,
+        gws: { "OFF-012": { q: "D1 · Demand complete?", main: "Yes", br: [{ l: "No: return to requestor", to: "@OFF-002" }] } },
+        notes: { "Simplify": ["Single guided submission experience", "Conditional forms based on demand type", "Auto-populate known organisational information"], "AI": ["Demand intake assistant", "Requirement extraction from emails and documents", "Missing-information and duplicate-demand detection"], "KPI": ["First-time-right demand submission rate"] } },
+      { n: 2, name: "Demand triage and qualification", obj: "Determine whether the requirement is valid, genuinely new and suitable for further assessment.",
+        tasks: `OFF-013|Review Submitted Demand|Examine request completeness and supporting information|Demand Management|Pega|Review result|C
+OFF-014|Validate Request Classification|Confirm internal/external demand route|Demand Management|Pega|Confirmed classification|C
+OFF-015|Check Existing Demand|Identify related or previously submitted requests|Demand Management|Pega / existing records|Duplicate assessment|T
+OFF-016|Check Existing Programme|Determine whether the requirement belongs to an existing programme|Planning / Demand Management|BPT / planning records|Programme alignment|V
+OFF-017|Check Approved DB|Determine whether investment is already included in the financial plan|Network Market Planning|BPT|In-plan/off-plan assessment|V
+OFF-018|Identify Responsible Network Function|Determine impacted network verticals|Demand Management|Pega|Functional assignment|C
+OFF-019|Assign Technical Assessment|Route demand to relevant technical stakeholders|Demand Management|Pega|Assessment ownership|C
+OFF-020|Assess Initial Priority|Evaluate urgency and business significance|Business Sponsor / Planning|Assessment criteria|Priority|V
+OFF-021|Confirm Qualification|Accept demand for detailed assessment or return/reject|Demand Management|Pega|Qualification decision|C`,
+        gws: { "OFF-021": [{ q: "Qualified?", main: "Accept", br: [{ l: "Return", to: "phase:1" }, { l: "Reject", to: "end:Demand rejected" }] },
+                           { q: "D2 · Covered by approved investment?", main: "No", br: [{ l: "Yes: link to existing investment", to: "phase:7" }] }] },
+        notes: { "Simplify": ["Automated matching against approved investments", "Common demand taxonomy", "Rules-based ownership assignment", "Explicit accountable owner and SLA"], "AI": ["Investment matching assistant: is the demand already covered by an existing programme?", "Semantic duplicate detection"] } },
+      { n: 3, name: "Technical assessment", obj: "Determine whether the demand is technically feasible and establish the proposed delivery solution.",
+        tasks: `OFF-022|Review Technical Requirement|Examine functional and non-functional requirements|Network Engineering|Pega / documents|Requirement assessment|V
+OFF-023|Identify Network Domains|Identify transmission, IP, RAN, Core or other impacted domains|Network Engineering|Network documentation|Domain assessment|V
+OFF-024|Analyse Existing Capacity|Assess available infrastructure and capacity|Network Planning / Engineering|Network analytics|Capacity assessment|V
+OFF-025|Identify Technical Options|Develop feasible solution alternatives|Solution Architecture|Design tools|Solution options|V
+OFF-026|Assess Dependencies|Identify systems, infrastructure and delivery dependencies|Engineering|Design documentation|Dependency register|V
+OFF-027|Assess Security Impact|Determine whether security assessment is required|Security / Engineering|Security process|Security requirements|V
+OFF-028|Assess Supplier Dependencies|Identify vendor equipment or services|Engineering / Supply Chain|Supplier information|Supplier requirements|V
+OFF-029|Estimate Delivery Effort|Estimate engineering activities and implementation complexity|Engineering / Delivery|Estimation templates|Effort estimate|V
+OFF-030|Estimate Technical Costs|Calculate equipment and implementation costs|Engineering / Finance|Excel / costing tools|Cost estimate|V
+OFF-031|Identify Delivery Risks|Evaluate technical and implementation risks|Engineering / Delivery|Risk register|Risk assessment|V
+OFF-032|Confirm Preferred Solution|Select technically appropriate option|Engineering / Solution Architecture|Design approval process|Preferred solution|V
+OFF-033|Complete Technical Assessment|Confirm feasibility and outstanding conditions|Engineering|Pega / documents|Technical assessment|V`,
+        gws: { "OFF-033": { q: "D3 · Technically feasible?", main: "Yes", br: [{ l: "Conditional: revise solution", to: "@OFF-025" }, { l: "No", to: "end:Returned or rejected" }] } },
+        notes: { "AI": ["Network capacity forecasting", "AI-assisted technical impact analysis", "Similar-project retrieval", "Cost estimation from historical projects", "Risk prediction"], "Control": ["Engineering must approve the proposed technical solution"] } },
+      { n: 4, name: "Resource and workforce assessment", obj: "Determine whether the organisation has the people and skills needed to deliver the requirement.",
+        tasks: `OFF-034|Identify Resource Roles|Define required engineering and delivery roles|Engineering / Delivery|Pega / estimates|Role requirements|V
+OFF-035|Estimate Resource Effort|Estimate person-days or FTE requirements|Engineering / Delivery|Estimation tools|Resource estimate|V
+OFF-036|Create Resource Demand|Register workforce requirements|Resource Management|WFM / local process|Resource request|V
+OFF-037|Check Workforce Capacity|Identify available resources|Resource Management|WFM|Capacity position|V
+OFF-038|Identify Skills Gaps|Compare required skills with available workforce|Resource Management|WFM|Skills gap|V
+OFF-039|Assess Competing Commitments|Identify conflicts with existing projects|Resource Management|WFM|Resource conflicts|V
+OFF-040|Determine Booking Requirement|Establish whether soft booking is necessary|Resource Management|WFM / local process|Booking decision|V
+OFF-041|Perform Soft Booking|Tentatively reserve resources where required|Resource Management|WFM|Provisional allocation|V
+OFF-042|Identify External Resource Needs|Determine whether contractors or suppliers are required|Delivery / Resource Management|Workforce / procurement tools|External resource needs|V
+OFF-043|Confirm Resource Feasibility|Validate likely resource availability|Resource Management / Delivery|WFM|Resource assessment|V`,
+        gws: { "OFF-040": { q: "Soft booking needed?", main: "Yes", br: [{ l: "No", to: "@OFF-042" }] },
+               "OFF-043": { q: "D4 · Can it be resourced?", main: "Yes", br: [{ l: "No: revise timeline, scope or plan", to: "@OFF-034" }] } },
+        notes: { "Current state": ["Soft- and hard-booking practices differ across demand routes"], "Simplify": ["Book only when workforce allocation is required", "Reuse existing allocations", "Trigger hard booking once approvals are complete"] } },
+      { n: 5, name: "Financial assessment", obj: "Establish the investment cost, funding position and business justification.",
+        tasks: `OFF-044|Prepare CAPEX Estimate|Calculate capital investment|Engineering / Finance|Costing models|CAPEX estimate|V
+OFF-045|Prepare OPEX Estimate|Calculate recurring and non-capital costs|Engineering / Finance|Costing models|OPEX estimate|V
+OFF-046|Estimate Business Benefits|Identify expected financial and operational benefits|Business Sponsor|Business case|Benefits estimate|V
+OFF-047|Validate Cost Assumptions|Review quantities, unit costs and assumptions|Finance / Planning|Excel / BPT|Validated costs|V
+OFF-048|Check Approved Budget|Determine whether sufficient funding already exists|Network Market Planning / Finance|BPT / SAP|Funding position|V
+OFF-049|Identify Funding Gap|Calculate funding shortfall|Finance|Financial model|Funding gap|V
+OFF-050|Assess Funding Alternatives|Consider budget transfers, reprioritisation or new funding|Finance / Planning|BPT / financial models|Funding options|V
+OFF-051|Assess Financial Risks|Review cost uncertainty and financial dependencies|Finance|Business case|Financial risks|V
+OFF-052|Prepare Financial Assessment|Consolidate costs, benefits and funding requirements|Finance / Sponsor|Excel / templates|Financial assessment|V
+OFF-053|Confirm Funding Route|Determine required planning and governance pathway|Finance / Governance|Approval rules|Funding route|V`,
+        gws: { "OFF-053": { q: "D5 · Approved funding available?", main: "No", br: [{ l: "Yes: reuse existing approval", to: "phase:7" }] } },
+        notes: { "BPT": ["BPT holds the planning baseline and budget processes", "Not every off-plan demand must enter BPT before technical assessment; the order depends on market and approval route"] } },
+      { n: 6, name: "Business case and investment justification", obj: "Consolidate the technical, financial, benefit and risk evidence into a decision-ready approval package.",
+        tasks: `OFF-054|Prepare Business Case|Consolidate investment justification|Business Sponsor / Planning|Business case template|Draft business case|V
+OFF-055|Document Technical Solution|Attach preferred technical solution|Engineering|Design documents|Technical evidence|V
+OFF-056|Document Financial Requirements|Record CAPEX, OPEX and funding|Finance|Financial template|Financial evidence|V
+OFF-057|Document Benefits|Describe expected outcomes and measurement|Business Sponsor|Benefits template|Benefits baseline|V
+OFF-058|Document Risks|Record delivery and financial risks|Sponsor / Delivery|Risk register|Risk assessment|V
+OFF-059|Confirm Network Alignment|Obtain required vertical alignment|Network Verticals / Planning|Review process|Alignment evidence|V
+OFF-060|Validate Business Case|Check completeness and consistency|Finance / Planning|Review process|Validated package|V
+OFF-061|Finalise Approval Submission|Prepare decision-ready documentation|Sponsor / Governance|Approval workflow|Approval package|V`,
+        gws: {},
+        notes: { "Simplify": ["Generate the approval package from the same underlying demand data"], "AI": ["Business-case drafting", "Financial assumption validation", "Benefits benchmarking", "Executive-summary generation", "Missing-evidence detection"] } },
+      { n: 7, name: "Investment and spend approval", obj: "Obtain the appropriate financial authority before expenditure is committed.",
+        tasks: `OFF-062|Determine Approval Authority|Identify required decision-makers|Finance / Governance|Approval matrix|Approval route|V
+OFF-063|Check Plan Alignment|Confirm whether the investment must first be incorporated into the financial plan|Planning / Finance|BPT / governance records|Plan alignment|V
+OFF-064|Submit Funding Request|Submit validated request for approval|Sponsor / Requestor|SAB / local process|Approval request|V
+OFF-065|Perform Quality Check|Validate completeness and financial justification|Governance / Finance|Approval workflow|Quality result|C
+OFF-066|Review Financial Assurance|Confirm cost, benefit and funding assumptions|Finance|Financial documents|Assurance result|C
+OFF-067|Confirm Vertical Alignment|Validate impacted network functions|Network Verticals|Governance process|Alignment|C
+OFF-068|Prepare Decision Materials|Consolidate information for approvers|SAB Governance|Approval documents|Decision pack|C
+OFF-069|Conduct Approval Review|Assess the investment|Authorised Decision-Makers|SAB / local process|Decision|V
+OFF-070|Record Decision|Capture approval, rejection or conditions|Governance|Approval record|Recorded decision|C
+OFF-071|Communicate Outcome|Notify requestor and stakeholders|Governance / Finance|Email / workflow|Decision notification|V
+OFF-072|Initiate Funding Fulfilment|Trigger approved funding arrangements|Finance|SAP / financial process|Funding instruction|V`,
+        gws: { "OFF-071": { q: "D6 · Expenditure authorised?", main: "Approved", br: [{ l: "Conditional: complete requirements", to: "@OFF-064" }, { l: "Rejected", to: "end:Closed or revised" }, { l: "Deferred", to: "end:On hold" }] } },
+        notes: { "Control": ["AI supports the decision; it does not make it", "SAB covers intake, quality checks, governance, spend approval and fulfilment"] } },
+      { n: 8, name: "Order Management", obj: "Applies only where the demand follows the Order Management route; not imposed on internal investments that need no order.",
+        tasks: `OFF-073|Raise Order|Create order request|Requestor|Pega Order Management|Order|
+OFF-074|Validate Quote|Check quotation and scope|Networks Order Manager|Pega|Quote validation|
+OFF-075|Validate Contract|Confirm relevant commercial agreement|Commercial / Order Manager|Contract records|Contract validation|
+OFF-076|Validate Funding|Confirm business case or funding|Finance / Order Manager|Approval records|Funding validation|
+OFF-077|Decompose Order|Split into service elements|Networks Order Management|Pega|Service elements|
+OFF-078|Route Service Elements|Assign impacted functions|Networks Order Management|Pega|Functional tasks|
+OFF-079|Review Functional Requirements|Assess scope and dependencies|Network Function SMEs|Pega|Functional assessment|
+OFF-080|Validate Resource Commitment|Confirm required delivery resources|Delivery / Resource Management|WFM / local process|Resource commitment|
+OFF-081|Record Functional Acceptance|Obtain acceptance from impacted functions|Network Function SMEs|Pega|Acceptance records|
+OFF-082|Confirm Order Acceptance|Record overall acceptance|Networks Order Manager|Pega|Accepted order|
+OFF-083|Prepare Delivery Handover|Consolidate accepted scope and dependencies|Order Manager|Pega|Handover package|`,
+        gws: {},
+        notes: { "Simplify": ["Reuse demand assessment evidence", "Avoid repeating funding checks already completed", "Automate service-element routing", "Consolidate order and mobilisation status"] } },
+      { n: 9, name: "Mobilisation", obj: "Convert the approved investment into a financially and operationally executable project.",
+        tasks: `OFF-084|Trigger Mobilisation|Initiate mobilisation following applicable approval|Order Manager / Planning / Sponsor|Pega / local process|Mobilisation request|
+OFF-085|Validate Approval Evidence|Confirm authorised scope and amount|Finance / Governance|Approval records|Approval validation|
+OFF-086|Confirm Delivery Ownership|Identify accountable delivery manager|Network Delivery|PPM / Pega|Delivery owner|
+OFF-087|Validate Financial Structure|Check existing project/WBS structures|Finance / IP&H|SAP|Structure assessment|
+OFF-088|Identify WBS Requirements|Determine required CAPEX, OPEX and people WBS|Finance / IP&H|SAP / templates|WBS requirements|
+OFF-089|Confirm Resource Requirements|Validate required resource commitments|Resource Management|WFM|Resource requirements|
+OFF-090|Confirm Procurement Requirements|Identify required supplier commitments|Delivery / Procurement|Procurement records|Procurement requirements|
+OFF-091|Prepare Mobilisation Checklist|Consolidate remaining prerequisites|Order Manager / Delivery|Workflow / checklist|Readiness checklist|`,
+        gws: {} },
+      { n: 10, name: "SAP project and WBS creation", obj: "Create the approved SAP project and WBS structures through SAP MDG.",
+        tasks: `OFF-092|Check Existing Project Definition|Determine whether SAP project already exists|IP&H / Finance|SAP|Existing/new decision|
+OFF-093|Define Project Structure|Determine required SAP hierarchy|Finance / IP&H|SAP|Project structure|
+OFF-094|Prepare MDG Template|Populate required project attributes|Finance / IP&H|Excel MDG template|Completed template|
+OFF-095|Populate WBS Attributes|Enter WBS elements, company codes and relevant attributes|Finance / IP&H|Excel|WBS master data|
+OFF-096|Validate Master Data|Check required attributes and financial classification|Finance|Excel / SAP|Validated data|
+OFF-097|Submit MDG Request|Upload project/WBS data|Authorised Requestor|SAP MDG|Change request|
+OFF-098|Review MDG Request|Validate proposed master data|APA Approver|SAP MDG|Review result|
+OFF-099|Approve MDG Request|Approve or reject|APA Approver|SAP MDG|Approval|
+OFF-100|Create Project/WBS|Create approved structures|SAP MDG|SAP|Project/WBS|
+OFF-101|Replicate Master Data|Replicate approved data|SAP|SAP S/4HANA|Available WBS|
+OFF-102|Confirm WBS Availability|Verify creation and communicate codes|IP&H / Finance|SAP|WBS confirmation|
+OFF-103|Update Downstream References|Share codes with delivery and timesheet teams|Order Manager / IP&H|Pega / timesheet tools|Updated references|`,
+        lanes: { "OFF-097": "Finance & IP&H" },
+        gws: { "OFF-092": { q: "SAP project exists?", main: "No", br: [{ l: "Yes: reuse structure", to: "@OFF-102" }] },
+               "OFF-099": { q: "MDG approved?", main: "Yes", br: [{ l: "Rejected: correct data", to: "@OFF-096" }] } } },
+      { n: 11, name: "Budget loading", obj: "Load the approved funding against the correct WBS and confirm it is available.",
+        tasks: `OFF-104|Retrieve Approved Budget|Confirm approved funding|Finance|Approval records||
+OFF-105|Match Budget to WBS|Identify correct WBS allocation|Finance / IP&H|SAP||
+OFF-106|Prepare Budget Load|Prepare financial allocation|Finance FDS / Offshore Team|SAP / templates||
+OFF-107|Execute Budget Load|Load funding|Finance|SAP||
+OFF-108|Validate Budget|Confirm amounts and structure|Finance|SAP||
+OFF-109|Confirm Funding Availability|Confirm readiness for financial execution|Finance|SAP||
+OFF-110|Record Mobilisation Status|Update workflow status|Order Manager|Pega||`,
+        gws: {} },
+      { n: 12, name: "Delivery readiness", obj: "Confirm scope, funding, WBS, resources and suppliers are in place before work starts.",
+        tasks: `OFF-111|Confirm Scope|Validate approved delivery scope|Delivery Manager|Pega / PPM||
+OFF-112|Confirm Funding|Verify financial readiness|Finance|SAP||
+OFF-113|Confirm WBS|Verify usable WBS codes|Finance / IP&H|SAP||
+OFF-114|Confirm Resources|Validate committed resources|Resource Management|WFM||
+OFF-115|Perform Hard Booking|Commit resources where applicable|Resource Management|WFM||
+OFF-116|Confirm Supplier Readiness|Validate supplier dependencies|Procurement / Delivery|Supplier records||
+OFF-117|Resolve Outstanding Risks|Address critical mobilisation blockers|Delivery Manager|Risk register||
+OFF-118|Confirm Ready to Deliver|Record readiness decision|Delivery / Mobilisation Owner|Workflow||`,
+        gws: { "OFF-118": { q: "Ready to deliver?", main: "Yes", br: [{ l: "No: resolve blockers", to: "@OFF-117" }] } },
+        notes: { "Open question": ["Formal Ready-to-Deliver criteria are still a target-design question in the Mobilisation Capability work"] } },
+      { n: 13, name: "Procurement and delivery", obj: "Commit supplier spend and deliver the investment.",
+        tasks: `OFF-119|Confirm Statement of Work|Validate supplier scope|Delivery Manager|SoW||
+OFF-120|Raise Shopping Cart|Create procurement request|Authorised Requestor|EVO||
+OFF-121|Approve Shopping Cart|Complete procurement approval|Procurement / Finance|EVO||
+OFF-122|Generate Purchase Order|Create PO|Procurement|SAP / EVO||
+OFF-123|Communicate PO|Issue PO to supplier|Procurement|SAP / EVO||
+OFF-124|Start Delivery|Initiate implementation|Delivery / Supplier|PPM||
+OFF-125|Track Milestones|Monitor delivery progress|Delivery Manager|PPM / Pega||
+OFF-126|Manage Risks|Address implementation issues|Delivery Manager|Risk register||
+OFF-127|Manage Changes|Assess changes to scope, cost or schedule|Delivery / Finance|Change process||
+OFF-128|Confirm Deliverables|Validate completed work|Engineering / Service Owner|Acceptance records||
+OFF-129|Update Delivery Tracker|Record completed work against order|Delivery Manager|Pega||`,
+        lanes: { "OFF-120": "Delivery Management" },
+        gws: {} },
+      { n: 14, name: "GRN, invoicing and actuals", obj: "Receipt delivered services, pay the supplier and reconcile actuals against budget.",
+        tasks: `OFF-130|Receive Supplier Invoice|Receive invoice following delivery|Service Manager / Finance|Invoice process||
+OFF-131|Validate Invoice|Check against PO and delivered services|Service Manager|EVO||
+OFF-132|Select PO for GRN|Locate open purchase order|Authorised Receiver|EVO||
+OFF-133|Record Goods Receipt|Enter accepted amount or quantity|Authorised Receiver|EVO||
+OFF-134|Confirm GRN|Submit goods receipt|Authorised Receiver|EVO||
+OFF-135|Attach Evidence|Attach invoice or supporting evidence|Service Manager|EVO||
+OFF-136|Notify Supplier|Confirm goods receipt completion where required|Service Manager|Email||
+OFF-137|Process Invoice|Complete invoice matching and approval|Accounts Payable|SAP / EVO||
+OFF-138|Process Payment|Execute payment under applicable terms|Finance|SAP / EVO||
+OFF-139|Capture Actuals|Record expenditure|Finance|SAP||
+OFF-140|Reconcile Budget|Compare actuals and commitments against budget|Finance / Planning|SAP / reporting||`,
+        gws: {} },
+      { n: 15, name: "Closure and benefits", obj: "Close technical, financial and delivery records and measure realised benefits.",
+        tasks: `OFF-141|Confirm Technical Completion|Validate final technical outcome|Engineering|Acceptance records||
+OFF-142|Complete Operational Handover|Transfer service to operations|Delivery / Operations|Handover records||
+OFF-143|Reconcile Commitments|Review outstanding POs|Finance|SAP||
+OFF-144|Reconcile Actuals|Validate financial expenditure|Finance|SAP||
+OFF-145|Close Financial Structures|Complete applicable project/WBS closure|Finance / SAP Support|SAP||
+OFF-146|Close Delivery Record|Record completion|Delivery Manager|PPM / Pega||
+OFF-147|Compare Planned Benefits|Review original investment justification|Sponsor / Planning|Business case||
+OFF-148|Measure Actual Benefits|Assess delivered outcomes|Business Owner / Planning|KPI reporting||
+OFF-149|Capture Lessons Learned|Record improvement opportunities|Delivery / Planning|Knowledge repository||`,
+        gws: {} }
+    ]
+  },
+  on: {
+    key: "on", label: "On-plan", title: "On-plan demand",
+    start: "Strategic network planning cycle starts",
+    end: "Investment delivered, closed, benefits measured",
+    scope: "Starts with strategic network planning. The investment is built into the approved planning baseline (NEP and Detailed Budget) before operational mobilisation, so mobilisation reuses approved planning data.",
+    overview: [
+      { ph: 1 },
+      { gw: "Planning direction approved?", main: "Yes", br: [{ l: "No: refine", to: "@P1" }] },
+      { ph: 2 },
+      { gw: "DB approved?", main: "Yes", br: [{ l: "No: reprioritise", to: "@P2" }] },
+      { ph: 3 }, { ph: 4 }, { ph: 5 }, { ph: 6 }, { ph: 7 }, { ph: 8 }, { ph: 9 }, { ph: 10 }
+    ],
+    phases: [
+      { n: 1, name: "Network strategy and demand identification", obj: "Turn market, technology and network-performance inputs into prioritised investment needs for the NEP.",
+        tasks: `ON-001|Collect Strategic Inputs|Gather market, technology and business priorities|Network Strategy|Planning documentation||
+ON-002|Analyse Network Performance|Identify capacity, quality and resilience issues|Network Engineering|Network KPI tools||
+ON-003|Forecast Network Demand|Estimate future traffic and capacity requirements|Network Planning|Forecasting models||
+ON-004|Identify Technology Requirements|Assess new technologies and upgrades|Network Strategy / Engineering|Technology roadmaps||
+ON-005|Identify Investment Needs|Convert network requirements into investment proposals|Network Planning|NEP||
+ON-006|Define Investment Scenarios|Develop alternative investment options|Network Strategy|Planning models||
+ON-007|Estimate Initial Costs|Estimate investment requirements|Engineering / Finance|Excel / costing models||
+ON-008|Evaluate Strategic Alignment|Assess fit with network strategy|Network Leadership / Planning|NEP||
+ON-009|Prioritise Investment Needs|Rank proposed investments|Network Planning / Leadership|NEP||
+ON-010|Prepare NEP Submission|Consolidate planning inputs|Network Planning|NEP templates||
+ON-011|Review NEP|Challenge and refine proposals|Network Leadership|NEP||
+ON-012|Approve Planning Direction|Confirm planning priorities|Authorised Planning Leadership|Governance process||`,
+        gws: { "ON-012": { q: "Direction approved?", main: "Yes", br: [{ l: "No: refine scenarios", to: "@ON-006" }] } },
+        notes: { "AI": ["Automated KPI ingestion", "AI network demand forecasting", "Scenario generation", "Investment prioritisation", "Automated planning-data validation"] } },
+      { n: 2, name: "Detailed budget preparation", obj: "Translate the NEP into an approved Detailed Budget (DB) baseline in BPT.",
+        tasks: `ON-013|Receive Budget Guidelines|Review planning assumptions and constraints|Network Market Planning|Budget guidance||
+ON-014|Translate NEP into DB|Convert strategic investments into detailed budget requirements|Network Planning|BPT||
+ON-015|Define Investment Quantities|Identify equipment and implementation volumes|Network Verticals|BPT / Excel||
+ON-016|Define Unit Costs|Apply approved cost assumptions|Finance / Engineering|Cost models||
+ON-017|Calculate Investment Costs|Calculate quantities × unit costs|Vertical Budget SPOCs|BPT||
+ON-018|Allocate Costs by Period|Distribute expenditure across planning periods|Finance / Planning|BPT||
+ON-019|Assign Financial Attributes|Populate required budget dimensions|Vertical Budget SPOCs|BPT||
+ON-020|Validate Budget Inputs|Check completeness and accuracy|Planning / Finance|BPT||
+ON-021|Submit Budget|Submit detailed budget data|Vertical Budget SPOCs|BPT||
+ON-022|Consolidate Market Budget|Aggregate submissions|Network Market Planning|BPT||
+ON-023|Review CAPEX Constraints|Check affordability and budget limits|Finance / Planning|BPT||
+ON-024|Challenge Investments|Review costs, priorities and assumptions|Network Leadership / Finance|BPT / reviews||
+ON-025|Reprioritise Budget|Adjust investment allocations|Planning / Verticals|BPT||
+ON-026|Finalise DB|Produce agreed budget submission|Planning / Finance|BPT||
+ON-027|Obtain DB Approval|Complete financial governance|Authorised Approvers|Governance process||
+ON-028|Establish DB Baseline|Record approved investment allocations|Planning / Finance|BPT||`,
+        gws: { "ON-027": { q: "DB approved?", main: "Yes", br: [{ l: "No: challenge and reprioritise", to: "@ON-024" }] } } },
+      { n: 3, name: "On-plan demand activation", obj: "Select an approved DB investment and prepare it for mobilisation.",
+        tasks: `ON-029|Identify Investment for Execution|Select approved DB investment|Network Planning / Delivery|BPT||
+ON-030|Retrieve Approved Scope|Obtain investment scope and assumptions|Planning|BPT||
+ON-031|Validate Budget|Confirm approved financial allocation|Finance|BPT / SAP||
+ON-032|Validate Delivery Timing|Confirm planned execution period|Planning / Delivery|Planning records||
+ON-033|Validate Technical Requirements|Confirm technical scope remains valid|Engineering|Design documentation||
+ON-034|Validate Cost Assumptions|Review latest expected costs|Finance / Engineering|Financial models||
+ON-035|Validate Dependencies|Identify outstanding dependencies|Delivery / Engineering|Planning records||
+ON-036|Identify Resource Requirements|Determine workforce requirements|Delivery / Resource Management|WFM / local tools||
+ON-037|Determine Mobilisation Route|Identify required financial and delivery controls|Finance / Planning|Governance rules||
+ON-038|Initiate Mobilisation|Submit request to mobilise approved investment|Planning / Sponsor|Applicable workflow||`,
+        gws: {},
+        notes: { "Simplify": ["Never make the requestor re-enter what BPT already holds", "Auto-retrieve programme identity, approved amount, justification, financial classification, planning period, owning function and existing approvals"] } },
+      { n: 4, name: "On-plan financial validation", obj: "Confirm whether the approved DB gives enough authority to mobilise, and route for extra approval only when needed.",
+        tasks: `ON-039|Retrieve Approval Evidence|Identify existing DB approval|Planning / Finance|BPT||
+ON-040|Confirm Scope Alignment|Check mobilisation scope against approved plan|Planning|BPT||
+ON-041|Confirm Budget Availability|Validate available funding|Finance|BPT / SAP||
+ON-042|Check Financial Variance|Compare expected cost with approved amount|Finance|Financial models||
+ON-043|Determine Additional Approval Need|Assess whether further spend approval is required|Finance / Governance|SAB rules||
+ON-044|Reuse Existing Approval|Reuse valid approval evidence where permitted|Governance|Approval records||
+ON-045|Prepare Additional Justification|Address material changes if required|Sponsor / Planning|Business case||
+ON-046|Submit Conditional Approval|Route only when additional approval is required|Sponsor / Finance|SAB / local process||
+ON-047|Record Approval Outcome|Capture final authority to proceed|Governance|Approval records||
+ON-048|Confirm Funding Instruction|Trigger applicable financial setup|Finance|SAP / workflow||`,
+        gws: { "ON-043": { q: "Does the DB give enough authority?", main: "Yes", br: [{ l: "No: material change", to: "@ON-045" }] } },
+        jumps: { "ON-044": "ON-047" },
+        notes: { "Critical decision": ["Whether the approved DB is sufficient authority depends on Vodafone financial governance rules and the demand's characteristics"] } },
+      { n: 5, name: "On-plan resource validation", obj: "Confirm the resources assumed during planning are still available and allocate them.",
+        tasks: `ON-049|Retrieve Resource Assumptions|Identify resources assumed during planning|Planning / Delivery|Planning records||
+ON-050|Validate Resource Requirements|Confirm actual delivery needs|Engineering / Delivery|Resource estimates||
+ON-051|Check Capacity|Assess workforce availability|Resource Management|WFM||
+ON-052|Check Existing Reservations|Identify existing resource allocations|Resource Management|WFM||
+ON-053|Resolve Conflicts|Address capacity constraints|Resource Management / Delivery|WFM||
+ON-054|Determine Booking Route|Establish whether soft/hard booking is required|Resource Management|WFM||
+ON-055|Confirm Resources|Complete applicable resource allocation|Resource Management|WFM||
+ON-056|Record Resource Readiness|Confirm resource prerequisites|Delivery / Resource Management|Workflow||`,
+        gws: { "ON-054": { q: "Booking required?", main: "Yes", br: [{ l: "No", to: "@ON-056" }] } },
+        notes: { "Simplify": ["Avoid running both soft and hard booking automatically when only one is needed"] } },
+      { n: 6, name: "On-plan mobilisation", obj: "Register the approved investment, create the SAP project/WBS and load budget.",
+        tasks: `ON-057|Initiate Mobilisation Case|Register approved investment for mobilisation|Planning / Delivery|Workflow||
+ON-058|Validate DB Reference|Confirm approved investment record|Planning|BPT||
+ON-059|Validate Financial Approval|Check applicable authority|Finance|Approval records||
+ON-060|Confirm Delivery Owner|Assign delivery responsibility|Delivery Management|PPM||
+ON-061|Identify WBS Requirements|Determine financial structures|Finance / IP&H|SAP||
+ON-062|Check Existing SAP Project|Identify existing project definition|IP&H|SAP||
+ON-063|Prepare MDG Data|Populate required project/WBS information|Finance / IP&H|Excel MDG template||
+ON-064|Submit MDG Request|Submit project/WBS creation|Authorised Requestor|SAP MDG||
+ON-065|Approve MDG Request|Review and approve master data|APA Approver|SAP MDG||
+ON-066|Create WBS|Establish approved financial structures|SAP MDG|SAP||
+ON-067|Validate WBS|Confirm correct codes and attributes|Finance / IP&H|SAP||
+ON-068|Prepare Budget Load|Match approved funding to WBS|Finance|SAP||
+ON-069|Execute Budget Load|Allocate approved budget|Finance|SAP||
+ON-070|Confirm Funding|Verify financial availability|Finance|SAP||
+ON-071|Confirm Resource Allocation|Finalise required booking|Resource Management|WFM||
+ON-072|Confirm Mobilisation Completion|Record completion of required controls|Mobilisation / Delivery Owner|Workflow||`,
+        lanes: { "ON-064": "Finance & IP&H" },
+        gws: { "ON-062": { q: "SAP project exists?", main: "No", br: [{ l: "Yes: reuse structure", to: "@ON-067" }] },
+               "ON-065": { q: "MDG approved?", main: "Yes", br: [{ l: "Rejected: correct data", to: "@ON-063" }] } } },
+      { n: 7, name: "On-plan delivery readiness", obj: "Confirm the investment is ready to deliver against the approved DB scope.",
+        tasks: `ON-073|Validate Approved Scope|Confirm scope remains aligned with DB|Delivery / Planning|BPT / design records||
+ON-074|Confirm Funding|Verify usable budget|Finance|SAP||
+ON-075|Confirm WBS|Verify project financial structures|Finance / IP&H|SAP||
+ON-076|Confirm Resources|Validate resource allocation|Resource Management|WFM||
+ON-077|Confirm Supplier Requirements|Identify external dependencies|Procurement / Delivery|Supplier records||
+ON-078|Confirm Technical Readiness|Validate implementation prerequisites|Engineering|Design records||
+ON-079|Resolve Exceptions|Address outstanding issues|Delivery / Planning|Workflow||
+ON-080|Confirm Ready to Deliver|Record readiness decision|Delivery Owner|Workflow||`,
+        gws: { "ON-080": { q: "Ready to deliver?", main: "Yes", br: [{ l: "No: resolve exceptions", to: "@ON-079" }] } } },
+      { n: 8, name: "On-plan procurement and delivery", obj: "Commit supplier spend and deliver the network investment.",
+        tasks: `ON-081|Prepare Delivery Plan|Confirm milestones and dependencies|Delivery Manager|PPM||
+ON-082|Confirm SoW|Validate supplier deliverables|Delivery / Procurement|SoW||
+ON-083|Raise Shopping Cart|Initiate purchasing|Requestor|EVO||
+ON-084|Obtain Procurement Approval|Complete applicable approvals|Procurement / Finance|EVO||
+ON-085|Generate PO|Create purchase order|Procurement|SAP / EVO||
+ON-086|Issue PO|Communicate purchase order|Procurement|SAP / EVO||
+ON-087|Execute Work|Deliver network investment|Engineering / Supplier|Delivery tools||
+ON-088|Track Progress|Monitor implementation|Delivery Manager|PPM||
+ON-089|Manage Changes|Assess scope, cost and schedule changes|Delivery / Finance|Change process||
+ON-090|Confirm Delivery Acceptance|Validate delivered work|Engineering / Service Owner|Acceptance records||
+ON-091|Update Delivery Status|Record completion|Delivery Manager|PPM||`,
+        lanes: { "ON-083": "Delivery Management" },
+        gws: {} },
+      { n: 9, name: "On-plan financial execution", obj: "Receipt, invoice and pay; then reconcile actuals and update the forecast.",
+        tasks: `ON-092|Receive Invoice|Receive supplier invoice|Service Manager / Finance|Invoice process||
+ON-093|Validate Invoice|Check against PO and delivery|Service Manager|EVO||
+ON-094|Record GRN|Confirm received goods/services|Authorised Receiver|EVO||
+ON-095|Attach Evidence|Attach supporting documentation|Service Manager|EVO||
+ON-096|Process Invoice|Complete invoice validation|Accounts Payable|SAP / EVO||
+ON-097|Process Payment|Execute applicable payment|Finance|SAP / EVO||
+ON-098|Capture Actuals|Record expenditure|Finance|SAP||
+ON-099|Reconcile Commitments|Review open financial obligations|Finance|SAP||
+ON-100|Analyse Variance|Compare budget, commitments and actuals|Finance / Planning|SAP / reporting||
+ON-101|Update Forecast|Reflect latest financial position|Finance / Planning|Forecasting tools||`,
+        gws: {} },
+      { n: 10, name: "On-plan closure and benefits", obj: "Close the investment and compare realised benefits with the planned outcomes.",
+        tasks: `ON-102|Confirm Technical Completion|Validate completed investment|Engineering|Acceptance records||
+ON-103|Complete Operational Handover|Transfer responsibility to operations|Delivery / Operations|Handover documentation||
+ON-104|Complete Financial Reconciliation|Validate final expenditure|Finance|SAP||
+ON-105|Review Open Commitments|Resolve outstanding POs and invoices|Finance|SAP||
+ON-106|Close Financial Structures|Complete applicable project/WBS closure|Finance / SAP Support|SAP||
+ON-107|Close Delivery Record|Record project completion|Delivery Manager|PPM||
+ON-108|Review Planned Benefits|Retrieve original investment outcomes|Planning / Sponsor|Business case / BPT||
+ON-109|Measure Realised Benefits|Compare actual outcomes against targets|Planning / Business Owner|KPI reporting||
+ON-110|Capture Lessons Learned|Record improvement opportunities|Delivery / Planning|Knowledge repository||`,
+        gws: {} }
+    ]
+  }
+};
+if (typeof module !== "undefined") module.exports = SNIP_DATA;
+
+</script>
+<script>
+// BPMN layout + SVG rendering + BPMN 2.0 XML export. Pure string output, runs in browser and node.
+var BPMN = (function () {
+  var K = { colW: 196, laneH: 150, headW: 156, padL: 24, padR: 40, chan: 22 };
+  var SIZE = { task: [150, 72], sub: [158, 76], gw: [40, 40], start: [34, 34], end: [34, 34], linkIn: [34, 34], linkOut: [34, 34] };
+
+  var LANES = [
+    ["Requestor & Sponsor", ["Business", "Requestor", "Sponsor", "Business Sponsor", "Commercial", "Business Owner", "Authorised Requestor"]],
+    ["Demand Management", ["Demand Management"]],
+    ["Network Planning & Strategy", ["Planning", "Network Market Planning", "Network Planning", "Network Strategy", "Network Leadership", "Authorised Planning Leadership"]],
+    ["Network Engineering", ["Network Engineering", "Engineering", "Solution Architecture", "Security"]],
+    ["Network Verticals", ["Network Verticals", "Vertical Budget SPOCs", "Network Function SMEs"]],
+    ["Resource Management (WFM)", ["Resource Management"]],
+    ["Governance & SAB", ["Governance", "SAB Governance", "Authorised Decision-Makers", "Authorised Approvers"]],
+    ["Finance & IP&H", ["Finance", "Finance FDS", "IP&H", "Accounts Payable"]],
+    ["SAP MDG", ["APA Approver", "SAP MDG", "SAP"]],
+    ["Order Management", ["Networks Order Manager", "Networks Order Management", "Order Manager"]],
+    ["Procurement", ["Procurement"]],
+    ["Delivery Management", ["Delivery", "Delivery Manager", "Network Delivery", "Delivery Management", "Delivery Owner", "Mobilisation"]],
+    ["Service Management", ["Service Manager", "Authorised Receiver"]]
+  ];
+  var LANE_ORDER = LANES.map(function (l) { return l[0]; });
+  function laneOf(team) {
+    var first = team.split(" / ")[0].trim();
+    for (var i = 0; i < LANES.length; i++) if (LANES[i][1].indexOf(first) >= 0) return LANES[i][0];
+    return "Delivery Management";
+  }
+
+  function parseTasks(ph) {
+    if (ph._tasks) return ph._tasks;
+    ph._tasks = ph.tasks.trim().split("\n").map(function (line) {
+      var f = line.split("|");
+      var t = { id: f[0].trim(), name: f[1], activity: f[2], team: f[3], tool: f[4], output: f[5] || "", status: (f[6] || "").trim(), phase: ph.n };
+      t.lane = (ph.lanes && ph.lanes[t.id]) || laneOf(t.team);
+      return t;
+    });
+    return ph._tasks;
+  }
+
+  var gwSeq = 0;
+  function gwNodes(spec, lane) {
+    var arr = Array.isArray(spec) ? spec : [spec];
+    return arr.map(function (g) { return { id: "GW_" + (++gwSeq), type: "gw", lane: lane, label: g.q, main: g.main, br: g.br }; });
+  }
+  function phaseTitle(ph) { return "Phase " + ph.n + " · " + ph.name; }
+
+  // mode: "phase" (one phase, link events at the edges) | "flat" (whole plan, for export)
+  function buildPhase(plan, ph) {
+    var tasks = parseTasks(ph), nodes = [];
+    var last = ph.n === plan.phases.length;
+    nodes.push(ph.n === 1
+      ? { id: "START", type: "start", lane: tasks[0].lane, label: plan.start }
+      : { id: "IN", type: "linkIn", lane: tasks[0].lane, label: "From Phase " + (ph.n - 1) });
+    tasks.forEach(function (t) {
+      nodes.push({ id: t.id, type: "task", lane: t.lane, label: t.name, task: t, jump: ph.jumps && ph.jumps[t.id] });
+      if (ph.gws && ph.gws[t.id]) nodes = nodes.concat(gwNodes(ph.gws[t.id], t.lane));
+    });
+    var tail = nodes[nodes.length - 1].lane;
+    var nx = plan.phases[ph.n];
+    nodes.push(last
+      ? { id: "END", type: "end", lane: tail, label: plan.end }
+      : { id: "OUT", type: "linkOut", lane: tail, label: "To Phase " + nx.n + " · " + nx.name, toPhase: nx.n });
+    return { nodes: nodes, mode: "phase", plan: plan };
+  }
+
+  function buildFlat(plan) {
+    var nodes = [], firstOf = {};
+    plan.phases.forEach(function (ph) { firstOf[ph.n] = parseTasks(ph)[0].id; });
+    nodes.push({ id: "START", type: "start", lane: parseTasks(plan.phases[0])[0].lane, label: plan.start });
+    plan.phases.forEach(function (ph) {
+      parseTasks(ph).forEach(function (t) {
+        nodes.push({ id: t.id, type: "task", lane: t.lane, label: t.name, task: t, jump: ph.jumps && ph.jumps[t.id] });
+        if (ph.gws && ph.gws[t.id]) nodes = nodes.concat(gwNodes(ph.gws[t.id], t.lane));
+      });
+    });
+    nodes.forEach(function (n) {
+      if (n.br) n.br = n.br.map(function (b) {
+        var m = /^phase:(\d+)$/.exec(b.to);
+        return m ? { l: b.l + " (Phase " + m[1] + ")", to: "@" + firstOf[m[1]] } : b;
+      });
+    });
+    nodes.push({ id: "END", type: "end", lane: nodes[nodes.length - 1].lane, label: plan.end });
+    return { nodes: nodes, mode: "flat", plan: plan };
+  }
+
+  function buildOverview(plan) {
+    var lane = plan.title + " lifecycle", nodes = [];
+    nodes.push({ id: "START", type: "start", lane: lane, label: plan.start });
+    plan.overview.forEach(function (o) {
+      if (o.ph) {
+        var ph = plan.phases[o.ph - 1];
+        nodes.push({ id: "P" + ph.n, type: "sub", lane: lane, label: ph.name, ph: ph.n, count: parseTasks(ph).length });
+      } else nodes.push({ id: "GW_" + (++gwSeq), type: "gw", lane: lane, label: o.gw, main: o.main, br: o.br });
+    });
+    nodes.push({ id: "END", type: "end", lane: lane, label: plan.end });
+    return { nodes: nodes, mode: "overview", plan: plan, lanes: [lane] };
+  }
+
+  // ---------- layout ----------
+  function layout(g) {
+    var nodes = g.nodes, byId = {}, terms = [], col = 0;
+    nodes.forEach(function (n) {
+      byId[n.id] = n; n.col = col++;
+      var s = SIZE[n.type]; n.w = s[0]; n.h = s[1];
+      if (n.type === "gw") {
+        var tb = (n.br || []).filter(function (b) { return /^(end|phase):/.test(b.to); });
+        if (tb.length) {
+          tb.forEach(function (b, i) {
+            var isEnd = b.to.indexOf("end:") === 0;
+            var t = { id: n.id + "_T" + i, type: isEnd ? "end" : "linkOut", lane: n.lane, label: isEnd ? b.to.slice(4) : "To Phase " + b.to.slice(6),
+              toPhase: isEnd ? null : +b.to.slice(6), col: col, slot: i, w: 34, h: 34, term: true };
+            if (!isEnd) { var p = g.plan.phases[t.toPhase - 1]; t.label = "To Phase " + p.n + " · " + p.name; }
+            b.node = t; terms.push(t); byId[t.id] = t;
+          });
+          col++;
+        }
+      }
+    });
+    var laneNames = g.lanes || LANE_ORDER.filter(function (l) { return nodes.some(function (n) { return n.lane === l; }); });
+
+    // edges
+    var edges = [];
+    nodes.forEach(function (n, i) {
+      if (n.type === "end" || n.type === "linkOut" || i === nodes.length - 1) return;
+      var tgt = n.jump ? byId[n.jump] : nodes[i + 1];
+      edges.push({ s: n, t: tgt, label: n.type === "gw" ? n.main : "", kind: "main" });
+      (n.br || []).forEach(function (b) {
+        if (b.node) edges.push({ s: n, t: b.node, label: b.l, kind: "term" });
+        else edges.push({ s: n, t: byId[b.to.slice(1)], label: b.l, kind: "br" });
+      });
+    });
+    edges.forEach(function (e) {
+      if (e.kind === "term") return;
+      if (e.t.col === e.s.col + 1 || (e.t.col > e.s.col && !between(nodes, e.s, e.t))) e.kind = "seq";
+      else e.kind = e.t.col > e.s.col ? "skip" : "loop";
+    });
+    function between(ns, a, b) { return ns.some(function (n) { return n.col > a.col && n.col < b.col; }); }
+    var topLv = levels(edges.filter(function (e) { return e.kind === "skip"; }));
+    var botLv = levels(edges.filter(function (e) { return e.kind === "loop"; }));
+    var topH = 28 + topLv * K.chan, botH = 24 + botLv * K.chan;
+    var lanes = laneNames.map(function (name, i) { return { name: name, y: topH + i * K.laneH, h: K.laneH }; });
+    var laneY = {}; lanes.forEach(function (l) { laneY[l.name] = l.y + l.h / 2; });
+    var lanesBottom = topH + lanes.length * K.laneH;
+    nodes.concat(terms).forEach(function (n) {
+      n.x = K.padL + n.col * K.colW + K.colW / 2;
+      n.y = laneY[n.lane];
+      if (n.term) { n.y += n.slot % 2 === 0 ? -50 : 50; n.x -= 30; if (n.slot > 1) n.x += 64; }
+    });
+    edges.forEach(function (e) { route(e, topH, lanesBottom); });
+    var width = K.padL + col * K.colW + K.padR;
+    return { nodes: nodes, terms: terms, edges: edges, lanes: lanes, width: width, height: lanesBottom + botH, topH: topH, lanesBottom: lanesBottom };
+  }
+  function levels(list) {
+    list.sort(function (a, b) { return span(a) - span(b); });
+    var used = [];
+    list.forEach(function (e) {
+      var lo = Math.min(e.s.col, e.t.col), hi = Math.max(e.s.col, e.t.col), L = 0;
+      while ((used[L] || []).some(function (r) { return !(hi < r[0] || lo > r[1]); })) L++;
+      (used[L] = used[L] || []).push([lo, hi]); e.level = L;
+    });
+    return used.length;
+  }
+  function span(e) { return Math.abs(e.t.col - e.s.col); }
+  function right(n) { return { x: n.x + n.w / 2, y: n.y }; }
+  function left(n) { return { x: n.x - n.w / 2, y: n.y }; }
+  function route(e, topH, lanesBottom) {
+    var s = e.s, t = e.t, p;
+    if (e.kind === "seq") {
+      var a = right(s), b = left(t);
+      if (Math.abs(a.y - b.y) < 1) p = [a, b];
+      else { var jx = b.x - 16; p = [a, { x: jx, y: a.y }, { x: jx, y: b.y }, b]; }
+      e.lp = { x: a.x + 5, y: a.y - 7 };
+    } else if (e.kind === "skip") {
+      var cy = topH - 14 - e.level * K.chan;
+      p = [{ x: s.x, y: s.y - s.h / 2 }, { x: s.x, y: cy }, { x: t.x, y: cy }, { x: t.x, y: t.y - t.h / 2 }];
+      e.lp = { x: s.x + 6, y: cy - 5 };
+    } else if (e.kind === "loop") {
+      var cy2 = lanesBottom + 12 + e.level * K.chan;
+      p = [{ x: s.x, y: s.y + s.h / 2 }, { x: s.x, y: cy2 }, { x: t.x, y: cy2 }, { x: t.x, y: t.y + t.h / 2 }];
+      e.lp = { x: s.x + 6, y: cy2 - 5 };
+    } else { // term
+      var up = t.y < s.y;
+      p = [{ x: s.x, y: s.y + (up ? -s.h / 2 : s.h / 2) }, { x: s.x, y: t.y }, { x: t.x - 17, y: t.y }];
+      e.lp = { x: s.x + 6, y: t.y - 6 };
+    }
+    e.points = p;
+  }
+
+  // ---------- SVG ----------
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function wrap(s, max) {
+    var words = String(s).split(" "), lines = [], cur = "";
+    words.forEach(function (w) { if ((cur + " " + w).trim().length > max && cur) { lines.push(cur); cur = w; } else cur = (cur + " " + w).trim(); });
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function textLines(lines, x, y, lh, cls, anchor) {
+    return lines.map(function (l, i) { return '<text class="' + cls + '" x="' + x + '" y="' + (y + i * lh) + '" text-anchor="' + (anchor || "middle") + '">' + esc(l) + "</text>"; }).join("");
+  }
+
+  function renderDiagram(L, opts) {
+    opts = opts || {};
+    var o = [];
+    o.push('<svg xmlns="http://www.w3.org/2000/svg" class="bpmn" width="' + L.width + '" height="' + L.height + '" viewBox="0 0 ' + L.width + " " + L.height + '" role="img" aria-label="' + esc(opts.aria || "BPMN diagram") + '">');
+    o.push('<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="m-arr" d="M0,0 L10,5 L0,10 z"/></marker></defs>');
+    L.lanes.forEach(function (l, i) {
+      o.push('<rect class="lane ' + (i % 2 ? "lane-b" : "lane-a") + '" x="0" y="' + l.y + '" width="' + L.width + '" height="' + l.h + '"/>');
+    });
+    o.push('<line class="lane-edge" x1="0" y1="' + L.topH + '" x2="' + L.width + '" y2="' + L.topH + '"/>');
+    o.push('<line class="lane-edge" x1="0" y1="' + L.lanesBottom + '" x2="' + L.width + '" y2="' + L.lanesBottom + '"/>');
+    L.edges.forEach(function (e) {
+      var d = e.points.map(function (p, i) { return (i ? "L" : "M") + p.x + "," + p.y; }).join(" ");
+      o.push('<path class="flow flow-' + e.kind + '" d="' + d + '" marker-end="url(#arr)"/>');
+    });
+    L.edges.forEach(function (e) {
+      if (e.label) o.push('<text class="flow-label" x="' + e.lp.x + '" y="' + e.lp.y + '">' + esc(e.label) + "</text>");
+    });
+    L.nodes.concat(L.terms).forEach(function (n) { o.push(node(n, opts)); });
+    o.push("</svg>");
+    return o.join("");
+  }
+  function node(n, opts) {
+    var x = n.x, y = n.y, s = [];
+    if (n.type === "task" || n.type === "sub") {
+      var t = n.task, sel = opts.selected === n.id || opts.selected === n.ph;
+      var attrs = n.type === "task" ? ' data-task="' + n.id + '"' : ' data-ph="' + n.ph + '"';
+      s.push('<g class="node ' + n.type + (sel ? " is-sel" : "") + (t && t.status ? " st-" + t.status : "") + '"' + attrs + ' tabindex="0" role="button" aria-label="' + esc((t ? n.id + " " : "Phase " + n.ph + " ") + n.label) + '">');
+      s.push('<rect class="box" x="' + (x - n.w / 2) + '" y="' + (y - n.h / 2) + '" width="' + n.w + '" height="' + n.h + '" rx="10"/>');
+      if (n.type === "task") {
+        s.push('<text class="t-id" x="' + (x - n.w / 2 + 9) + '" y="' + (y - n.h / 2 + 15) + '">' + n.id + "</text>");
+        if (t.status) s.push('<rect class="pill pill-' + t.status + '" x="' + (x + n.w / 2 - 24) + '" y="' + (y - n.h / 2 + 6) + '" width="16" height="13" rx="3"/><text class="pill-t" x="' + (x + n.w / 2 - 16) + '" y="' + (y - n.h / 2 + 16) + '" text-anchor="middle">' + t.status + "</text>");
+        var lines = wrap(n.label, 21).slice(0, 2);
+        s.push(textLines(lines, x, y + (lines.length === 1 ? 2 : -5), 14, "t-name"));
+        var tool = t.tool.length > 26 ? t.tool.slice(0, 25) + "…" : t.tool;
+        s.push('<text class="t-tool" x="' + x + '" y="' + (y + n.h / 2 - 9) + '" text-anchor="middle">' + esc(tool) + "</text>");
+        s.push("<title>" + esc(n.id + " · " + n.label + "\n" + t.activity + "\nTeam: " + t.team + "\nTool: " + t.tool) + "</title>");
+      } else {
+        s.push('<text class="t-id" x="' + (x - n.w / 2 + 9) + '" y="' + (y - n.h / 2 + 15) + '">PHASE ' + n.ph + "</text>");
+        s.push('<text class="t-tool" x="' + (x + n.w / 2 - 9) + '" y="' + (y - n.h / 2 + 15) + '" text-anchor="end">' + n.count + " tasks</text>");
+        var l2 = wrap(n.label, 20).slice(0, 3);
+        s.push(textLines(l2, x, y + (l2.length === 1 ? 4 : l2.length === 2 ? -3 : -10), 14, "t-name"));
+        s.push('<rect class="plus" x="' + (x - 7) + '" y="' + (y + n.h / 2 - 16) + '" width="14" height="14" rx="2"/><path class="plus-m" d="M' + (x - 4) + "," + (y + n.h / 2 - 9) + " h8 M" + x + "," + (y + n.h / 2 - 13) + ' v8"/>');
+      }
+      s.push("</g>");
+    } else if (n.type === "gw") {
+      s.push('<g class="gw"><path class="gw-shape" d="M' + x + "," + (y - 20) + " L" + (x + 20) + "," + y + " L" + x + "," + (y + 20) + " L" + (x - 20) + "," + y + ' Z"/>');
+      s.push('<path class="gw-x" d="M' + (x - 7) + "," + (y - 7) + " L" + (x + 7) + "," + (y + 7) + " M" + (x + 7) + "," + (y - 7) + " L" + (x - 7) + "," + (y + 7) + '"/>');
+      var gl = wrap(n.label, 18);
+      s.push(textLines(gl, x - 14, y - 26 - (gl.length - 1) * 13, 13, "gw-label", "end"));
+      s.push("</g>");
+    } else {
+      var cls = "ev ev-" + n.type, r = 17;
+      s.push('<g class="' + cls + '"' + (n.toPhase ? ' data-goto="' + n.toPhase + '" tabindex="0" role="button"' : "") + (n.type === "linkIn" && opts.fromPhase ? ' data-goto="' + opts.fromPhase + '" tabindex="0" role="button"' : "") + ">");
+      s.push('<circle class="ev-c" cx="' + x + '" cy="' + y + '" r="' + r + '"/>');
+      if (n.type === "linkIn" || n.type === "linkOut") {
+        s.push('<circle class="ev-c2" cx="' + x + '" cy="' + y + '" r="' + (r - 3.5) + '"/>');
+        s.push('<path class="' + (n.type === "linkOut" ? "ev-sym-fill" : "ev-sym") + '" d="M' + (x - 7) + "," + (y - 3) + " h7 v-5 l8,8 l-8,8 v-5 h-7 z\"/>");
+      }
+      if (n.term) {
+        s.push(textLines(wrap(n.label, 16), x + 24, y - (wrap(n.label, 16).length - 1) * 6 + 4, 12, "ev-label", "start"));
+      } else {
+        s.push(textLines(wrap(n.label, 22), x, y + r + 15, 13, "ev-label"));
+      }
+      s.push("</g>");
+    }
+    return s.join("");
+  }
+
+  function renderLaneHeads(L, pool) {
+    var o = ['<svg xmlns="http://www.w3.org/2000/svg" class="bpmn heads" width="' + K.headW + '" height="' + L.height + '" viewBox="0 0 ' + K.headW + " " + L.height + '" aria-hidden="true">'];
+    var y0 = L.topH, y1 = L.lanesBottom, cx = 14, cy = (y0 + y1) / 2;
+    o.push('<rect class="pool-band" x="0" y="' + y0 + '" width="28" height="' + (y1 - y0) + '"/>');
+    o.push('<text class="pool-label" transform="translate(' + (cx + 4) + "," + cy + ') rotate(-90)" text-anchor="middle">' + esc(pool) + "</text>");
+    L.lanes.forEach(function (l, i) {
+      o.push('<rect class="lane-head ' + (i % 2 ? "lane-b" : "lane-a") + '" x="28" y="' + l.y + '" width="' + (K.headW - 28) + '" height="' + l.h + '"/>');
+      var lines = wrap(l.name, 15);
+      o.push(textLines(lines, 28 + (K.headW - 28) / 2, l.y + l.h / 2 - (lines.length - 1) * 7 + 4, 14, "lane-label"));
+    });
+    o.push('<line class="lane-edge" x1="0" y1="' + y0 + '" x2="' + K.headW + '" y2="' + y0 + '"/><line class="lane-edge" x1="0" y1="' + y1 + '" x2="' + K.headW + '" y2="' + y1 + '"/>');
+    o.push("</svg>");
+    return o.join("");
+  }
+
+  // ---------- BPMN 2.0 XML ----------
+  function toXml(plan) {
+    var g = buildFlat(plan), L = layout(g), dx = K.headW, x = [];
+    var pid = "Process_" + plan.key, all = L.nodes.concat(L.terms);
+    function tag(n) { return { task: "task", gw: "exclusiveGateway", start: "startEvent", end: "endEvent" }[n.type]; }
+    x.push('<?xml version="1.0" encoding="UTF-8"?>');
+    x.push('<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_' + plan.key + '" targetNamespace="http://snip.example/bpmn" exporter="SNIP process map" exporterVersion="1.0">');
+    x.push('  <bpmn:collaboration id="Collab_' + plan.key + '"><bpmn:participant id="Pool_' + plan.key + '" name="SNIP · ' + esc(plan.title) + '" processRef="' + pid + '"/></bpmn:collaboration>');
+    x.push('  <bpmn:process id="' + pid + '" name="' + esc(plan.title) + '" isExecutable="false">');
+    x.push("    <bpmn:laneSet id=\"LaneSet_" + plan.key + "\">");
+    L.lanes.forEach(function (l, i) {
+      x.push('      <bpmn:lane id="Lane_' + plan.key + "_" + i + '" name="' + esc(l.name) + '">');
+      all.forEach(function (n) { if (n.lane === l.name) x.push("        <bpmn:flowNodeRef>" + n.id.replace(/-/g, "_") + "</bpmn:flowNodeRef>"); });
+      x.push("      </bpmn:lane>");
+    });
+    x.push("    </bpmn:laneSet>");
+    all.forEach(function (n) {
+      var id = n.id.replace(/-/g, "_"), t = n.task;
+      var name = t ? n.id + " " + n.label : n.label;
+      x.push("    <bpmn:" + tag(n) + ' id="' + id + '" name="' + esc(name) + '"' + (t ? ">" : "/>"));
+      if (t) {
+        x.push("      <bpmn:documentation>" + esc("Phase " + t.phase + ". " + t.activity + ". Team: " + t.team + ". Tool: " + t.tool + (t.output ? ". Output: " + t.output : "") + (t.status ? ". Status: " + t.status : "")) + "</bpmn:documentation>");
+        x.push("    </bpmn:task>");
+      }
+    });
+    L.edges.forEach(function (e, i) {
+      e.fid = "Flow_" + plan.key + "_" + i;
+      x.push('    <bpmn:sequenceFlow id="' + e.fid + '" sourceRef="' + e.s.id.replace(/-/g, "_") + '" targetRef="' + e.t.id.replace(/-/g, "_") + '"' + (e.label ? ' name="' + esc(e.label) + '"' : "") + "/>");
+    });
+    x.push("  </bpmn:process>");
+    x.push('  <bpmndi:BPMNDiagram id="Diagram_' + plan.key + '"><bpmndi:BPMNPlane id="Plane_' + plan.key + '" bpmnElement="Collab_' + plan.key + '">');
+    var W = L.width + dx;
+    x.push('    <bpmndi:BPMNShape id="Pool_' + plan.key + '_di" bpmnElement="Pool_' + plan.key + '" isHorizontal="true"><dc:Bounds x="0" y="' + L.topH + '" width="' + W + '" height="' + (L.lanesBottom - L.topH) + '"/></bpmndi:BPMNShape>');
+    L.lanes.forEach(function (l, i) {
+      x.push('    <bpmndi:BPMNShape id="Lane_' + plan.key + "_" + i + '_di" bpmnElement="Lane_' + plan.key + "_" + i + '" isHorizontal="true"><dc:Bounds x="30" y="' + l.y + '" width="' + (W - 30) + '" height="' + l.h + '"/></bpmndi:BPMNShape>');
+    });
+    all.forEach(function (n) {
+      var id = n.id.replace(/-/g, "_");
+      x.push('    <bpmndi:BPMNShape id="' + id + '_di" bpmnElement="' + id + '"' + (n.type === "gw" ? ' isMarkerVisible="true"' : "") + '><dc:Bounds x="' + (n.x - n.w / 2 + dx) + '" y="' + (n.y - n.h / 2) + '" width="' + n.w + '" height="' + n.h + '"/></bpmndi:BPMNShape>');
+    });
+    L.edges.forEach(function (e) {
+      x.push('    <bpmndi:BPMNEdge id="' + e.fid + '_di" bpmnElement="' + e.fid + '">' + e.points.map(function (p) { return '<di:waypoint x="' + (p.x + dx) + '" y="' + p.y + '"/>'; }).join("") + "</bpmndi:BPMNEdge>");
+    });
+    x.push("  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>");
+    x.push("</bpmn:definitions>");
+    return x.join("\n");
+  }
+
+  return { K: K, layout: layout, buildPhase: buildPhase, buildOverview: buildOverview, buildFlat: buildFlat, renderDiagram: renderDiagram, renderLaneHeads: renderLaneHeads, parseTasks: parseTasks, toXml: toXml };
+})();
+if (typeof module !== "undefined") module.exports = BPMN;
+
+</script>
+<script>
+(function () {
+  var D = SNIP_DATA, B = BPMN;
+  var state = { plan: "on", ph: 1, task: null, zoom: 1 };
+  try { var z = parseFloat(localStorage.getItem("snip-zoom")); if (z) state.zoom = z; } catch (e) {}
+  if (location.hash === "#off-plan") state.plan = "off";
+
+  var $ = function (id) { return document.getElementById(id); };
+  function plan() { return D[state.plan]; }
+  function phase() { return plan().phases[state.ph - 1]; }
+
+  function fill(frame, L, pool, opts, zoom) {
+    var heads = frame.querySelector(".heads"), canvas = frame.querySelector(".canvas");
+    heads.innerHTML = B.renderLaneHeads(L, pool);
+    canvas.innerHTML = B.renderDiagram(L, opts);
+    [heads.firstChild, canvas.firstChild].forEach(function (svg) {
+      svg.setAttribute("width", Math.round(svg.viewBox.baseVal.width * zoom));
+      svg.setAttribute("height", Math.round(svg.viewBox.baseVal.height * zoom));
+    });
+  }
+
+  function renderPlan() {
+    var p = plan();
+    var slider = $("slider");
+    slider.dataset.pos = state.plan === "on" ? "0" : "1";
+    slider.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.plan === state.plan)); });
+    $("lifecycle").setAttribute("aria-labelledby", "tab-" + state.plan);
+    $("lc-title").textContent = p.title;
+    $("lc-scope").textContent = p.scope;
+    var tasks = 0, gws = 0;
+    p.phases.forEach(function (ph) { tasks += B.parseTasks(ph).length; Object.keys(ph.gws || {}).forEach(function (k) { gws += [].concat(ph.gws[k]).length; }); });
+    $("lc-stats").innerHTML = "<span><b>" + p.phases.length + "</b> phases</span><span><b>" + tasks + "</b> tasks</span><span><b>" + gws + "</b> decision points</span>";
+    $("chips").innerHTML = p.phases.map(function (ph) { return '<button class="chip" type="button" data-ph="' + ph.n + '" title="' + ph.name + '">P' + ph.n + "</button>"; }).join("");
+  }
+
+  function renderOverview() {
+    var L = B.layout(B.buildOverview(plan()));
+    fill($("lc-frame"), L, "SNIP", { selected: state.ph, aria: plan().title + " lifecycle" }, 0.85);
+  }
+
+  function renderPhase() {
+    var p = plan(), ph = phase();
+    $("ph-eyebrow").textContent = "Level 4 · phase " + ph.n + " of " + p.phases.length;
+    $("ph-title").textContent = "Phase " + ph.n + " · " + ph.name;
+    $("ph-obj").textContent = ph.obj;
+    $("prev").disabled = ph.n === 1;
+    $("next").disabled = ph.n === p.phases.length;
+    document.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-current", String(+c.dataset.ph === ph.n)); });
+    document.querySelectorAll("[data-zoom]").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.zoom === state.zoom)); });
+    var L = B.layout(B.buildPhase(p, ph));
+    fill($("ph-frame"), L, p.label + " · Phase " + ph.n, { selected: state.task, fromPhase: ph.n > 1 ? ph.n - 1 : null, aria: "Phase " + ph.n + " " + ph.name }, state.zoom);
+    var tasks = B.parseTasks(ph);
+    $("rows").innerHTML = tasks.map(function (t) {
+      return '<tr data-task="' + t.id + '"' + (t.id === state.task ? ' class="is-sel"' : "") + '><td class="id">' + t.id + "</td><td>" + t.name + "</td><td>" + t.team + "</td><td>" + t.tool + "</td><td>" + (t.output || "—") + "</td><td>" + (t.status ? '<span class="st st-' + t.status + '-t">' + t.status + "</span>" : "—") + "</td></tr>";
+    }).join("");
+    renderDetail();
+    var notes = ph.notes || {};
+    var keys = Object.keys(notes);
+    $("notes-card").hidden = !keys.length;
+    $("notes").innerHTML = keys.map(function (k) { return "<div><h4>" + k + "</h4><ul>" + notes[k].map(function (n) { return "<li>" + n + "</li>"; }).join("") + "</ul></div>"; }).join("");
+  }
+
+  var STATUS = { C: "Confirmed by documentation", V: "Variable by demand type, market or route", T: "Target design, not confirmed as implemented" };
+  function renderDetail() {
+    var t = state.task && B.parseTasks(phase()).filter(function (x) { return x.id === state.task; })[0];
+    if (!t) {
+      $("detail").innerHTML = '<h2>Task detail</h2><p class="empty">Select a task in the diagram or the table to see what it involves, who performs it and the system used.</p>';
+      return;
+    }
+    $("detail").innerHTML = '<p class="eyebrow">' + t.id + " · Phase " + t.phase + "</p><h3>" + t.name + "</h3><dl>" +
+      "<dt>Activity</dt><dd>" + t.activity + "</dd><dt>Team</dt><dd>" + t.team + "</dd><dt>Swimlane</dt><dd>" + t.lane + "</dd>" +
+      "<dt>Tool</dt><dd>" + t.tool + "</dd>" + (t.output ? "<dt>Output</dt><dd>" + t.output + "</dd>" : "") +
+      (t.status ? '<dt>Status</dt><dd><span class="st st-' + t.status + '-t">' + t.status + "</span> " + STATUS[t.status] + "</dd>" : "") + "</dl>";
+  }
+
+  function setPlan(k) {
+    if (k === state.plan) return;
+    state.plan = k; state.ph = 1; state.task = null;
+    try { history.replaceState(null, "", k === "off" ? "#off-plan" : "#on-plan"); } catch (e) { location.hash = k === "off" ? "off-plan" : "on-plan"; }
+    renderPlan(); renderOverview(); renderPhase();
+  }
+  function setPhase(n, scroll) {
+    state.ph = n; state.task = null;
+    renderOverview(); renderPhase();
+    $("ph-frame").querySelector(".canvas").scrollLeft = 0;
+    if (scroll) $("phase").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  }
+  function selectTask(id) {
+    state.task = id;
+    var c = $("ph-frame").querySelector(".canvas"), sl = c.scrollLeft;
+    renderPhase();
+    c.scrollLeft = sl;
+  }
+
+  $("slider").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) setPlan(b.dataset.plan); });
+  $("slider").addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") { var k = state.plan === "on" ? "off" : "on"; setPlan(k); $("tab-" + k).focus(); e.preventDefault(); }
+  });
+  $("chips").addEventListener("click", function (e) { var b = e.target.closest(".chip"); if (b) setPhase(+b.dataset.ph); });
+  $("prev").addEventListener("click", function () { if (state.ph > 1) setPhase(state.ph - 1); });
+  $("next").addEventListener("click", function () { if (state.ph < plan().phases.length) setPhase(state.ph + 1); });
+  document.querySelectorAll("[data-zoom]").forEach(function (b) {
+    b.addEventListener("click", function () { state.zoom = +b.dataset.zoom; try { localStorage.setItem("snip-zoom", state.zoom); } catch (e) {} selectTask(state.task); });
+  });
+  function activate(e) {
+    var ph = e.target.closest("[data-ph]"), tk = e.target.closest("[data-task]"), go = e.target.closest("[data-goto]");
+    if (ph && e.currentTarget.id === "lc-frame") setPhase(+ph.dataset.ph, true);
+    else if (tk) selectTask(tk.dataset.task);
+    else if (go) setPhase(+go.dataset.goto);
+  }
+  ["lc-frame", "ph-frame"].forEach(function (id) {
+    $(id).addEventListener("click", activate);
+    $(id).addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { activate(e); if (e.target.closest("[data-ph],[data-task],[data-goto]")) e.preventDefault(); } });
+  });
+  $("rows").addEventListener("click", function (e) { var r = e.target.closest("tr"); if (r) selectTask(r.dataset.task); });
+  window.addEventListener("hashchange", function () { setPlan(location.hash === "#off-plan" ? "off" : "on"); });
+
+  renderPlan(); renderOverview(); renderPhase();
+})();
+</script>
+
+</body>
+</html>
