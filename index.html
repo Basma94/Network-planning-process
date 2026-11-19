@@ -93,6 +93,11 @@ svg.bpmn { display: block; font-family: var(--f-body); }
 .node.sub .box { fill: var(--sub); stroke: var(--edge); stroke-width: 1.4; }
 .node:hover .box, .node:focus-visible .box { stroke: var(--accent); stroke-width: 2; }
 .node.is-sel .box { stroke: var(--accent); stroke-width: 2.6; }
+.node.prov .box { stroke-dasharray: 5 3; }
+.conf { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin: 6px 0 0; max-width: 90ch; }
+.badge { font: 600 11px var(--f-body); letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; border: 1.2px solid currentColor; white-space: nowrap; }
+.badge.confirmed { color: var(--c); }
+.badge.provisional { color: var(--v); border-style: dashed; }
 .t-id { font: 500 10px var(--f-mono); fill: var(--muted); letter-spacing: .03em; }
 .t-name { font: 600 12px var(--f-body); fill: var(--ink); }
 .t-tool { font: 400 10px var(--f-mono); fill: var(--muted); }
@@ -152,7 +157,7 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
       <div class="brandbar" aria-hidden="true"></div>
       <p class="eyebrow">SNIP · End-to-end network investment lifecycle</p>
       <h1>Network investment process in BPMN 2.0</h1>
-      <p class="lede">The on-plan and off-plan demand journeys, drawn as BPMN pools with swimlanes per team, including the governance and reporting flows from the Vodafone process booklet. Pick a journey, open a phase in the lifecycle strip, then select a task to see its activity, tool and output.</p>
+      <p class="lede">The on-plan and off-plan demand journeys, drawn as BPMN pools with swimlanes per team, including the governance flows from Booklet_NPDDT_v10.11 and the HVS mobilisation pack. Solid borders are confirmed from an independent source; dashed borders are provisional. Pick a journey, open a phase in the lifecycle strip, then select a task to see its activity, tool and output.</p>
     </div>
     <div class="slider" id="slider" role="tablist" aria-label="Demand journey" data-pos="0">
       <span class="thumb" aria-hidden="true"></span>
@@ -180,6 +185,7 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
         <p class="eyebrow" id="ph-eyebrow">Level 4 · phase 1 of 10</p>
         <h2 id="ph-title"></h2>
         <p class="sub" id="ph-obj"></p>
+        <p class="conf" id="ph-conf"></p>
       </div>
       <div class="tools">
         <button class="btn" id="prev" type="button">← Previous</button>
@@ -197,6 +203,8 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
       <span><b class="st st-C-t">C</b> Confirmed</span>
       <span><b class="st st-V-t">V</b> Variable</span>
       <span><b class="st st-T-t">T</b> Target</span>
+      <span><svg width="30" height="16" viewBox="0 0 30 16"><rect x="1" y="1" width="28" height="14" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.3"/></svg>Confirmed source</span>
+      <span><svg width="30" height="16" viewBox="0 0 30 16"><rect x="1" y="1" width="28" height="14" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.3" stroke-dasharray="5 3"/></svg>Provisional, to verify</span>
     </div>
   </section>
 
@@ -204,7 +212,7 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
     <section class="card">
       <h2>Phase tasks</h2>
       <div class="tbl-wrap"><table>
-        <thead><tr><th>ID</th><th>Task</th><th>Team</th><th>Tool</th><th>Output</th><th>Status</th></tr></thead>
+        <thead><tr><th>ID</th><th>Task</th><th>Team</th><th>Tool</th><th>Output</th><th>Status</th><th>Confidence</th></tr></thead>
         <tbody id="rows"></tbody>
       </table></div>
     </section>
@@ -214,7 +222,7 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
     </div>
   </div>
 
-  <p class="foot">Sources: SNIP End-to-End Network Investment Lifecycle (L3/L4 analysis) , the Vodafone process booklet and the HVS 4 and 5 Mobilisation Capability pack (phases marked with their source). The analysis is a consolidated model; Vodafone does not yet run one workflow connecting every activity. Swimlanes group each task under its lead team (the first team named); the full team is shown in the task detail. Decision points are taken from the document; where it names an outcome but not the next step, the flow follows the document's sequence.</p>
+  <p class="foot">Sources: Booklet_NPDDT_v10.11 (independently authored copy in the Demand Harmonisation SharePoint; NEP, DB/LRP and rolling forecast are confirmed from it); the SNIP End-to-End Network Investment Lifecycle analysis (a consolidated model, provisional); and the HVS 4 and 5 Mobilisation Capability pack (provisional until an independently authored original is confirmed). Solid borders mark steps traceable to an eligible independent source; dashed borders mark steps still to verify. Swimlanes group each task under its lead team; the full team is in the task detail.</p>
 </div>
 
 <script>
@@ -597,7 +605,7 @@ if (typeof module !== "undefined") module.exports = SNIP_DATA;
 
 // Process flows transcribed from the Vodafone process booklet, merged into the On-plan and Off-plan journeys.
 (function (D) {
-  var SRC = "Vodafone process booklet";
+  var SRC = "Booklet_NPDDT_v10.11";
   var NEPL = ["NW Director & NW Leadership Team", "CNO", "Engagement Executives", "Demand & Planning", "Market CEO", "NW Finance BPR & Local Controller", "NW Architect", "NW Function Budget SPOC"];
   var DML = ["Requestor", "Demand Assurance Manager (DAM)", "Demand Governance Team", "NW Vertical Function SPOC", "Global Product Board", "NSE Planning", "Other NW Functions", "IT", "NSE", "Cyber Security & Privacy"];
   var DLML = ["EIM", "Market Delivery Manager (MDM)", "Local Cross Functions", "Solution Authority", "EIM/EDM", "Team in Vertical", "Infrastructure Team in Vertical"];
@@ -695,9 +703,9 @@ DM-14|Consolidate and Submit to Demand Board|Consolidation of impact assessment 
       obj: "Demand Board approval, NCAR for in-year plan changes, NPRB for funding mobilisation, LRP update and transition to integrated delivery up to G6.",
       tasks: `DM-15|Demand Board Approval|Demand Board reviews the consolidated impact assessment|Demand Governance Team||Demand approval or rejection|C
 DM-16|Global Product Approval|Global product approval for product scenario C|Global Product Board|||C
-DM-17|NCAR: Approve In-year Plan Changes|NCAR governs approval of changes to the in-year plan, including agreement on prioritisation|Demand Governance Team / Other NW Functions||NCAR|C
+DM-17|NCAR: Approve In-year Plan Changes|NCAR governs approval of changes to the in-year plan, including agreement on prioritisation (conditional interface; entry criteria and forum order to confirm)|Demand Governance Team / Other NW Functions||NCAR|C
 DM-18|Manage In-year Prioritisation|Management of in-year prioritisation|NSE Planning|||C
-DM-19|NPRB: Projects and Funding Mobilisation|NPRB manages projects and funding mobilisation for the in-year project|Demand Governance Team / Other NW Functions||NPRB|C
+DM-19|NPRB: Projects and Funding Mobilisation|NPRB manages projects and funding mobilisation for the in-year project (conditional interface; entry criteria and forum order to confirm)|Demand Governance Team / Other NW Functions||NPRB|C
 DM-20|Update LRP if Needed|Planning team updates the LRP if needed|NSE Planning|||C
 DM-21|Manage Transition to Delivery|Manage transition to integrated delivery|NW Vertical Function SPOC|||C
 DM-22|Delivery Management (G2 to G6)|Delivery management and operational execution, G2 to G6|Other NW Functions|||C
@@ -709,7 +717,8 @@ DM-23|Engagement with Delivery Teams|Engagement with delivery teams if needed|Re
 
     dlm1: { name: "Delivery design (G2 to G3)", src: SRC, laneOrder: DLML,
       obj: "Allocate the delivery team, engage vendors, kick off, fine-tune high-level design, sign off the project plan, then complete low-level design and the E2E test plan.",
-      tasks: `DLM-01|Delivery Team Allocation|Delivery team allocation|EIM/EDM||G2|C
+      tasks: `DLM-00|Confirm Delivery Route|Confirm whether the work follows project delivery with G0 to G6 gates or the BAU/SIR integrated delivery route|EIM/EDM||Delivery route|
+DLM-01|Delivery Team Allocation|Delivery team allocation|EIM/EDM||G2|C
 DLM-02|Coordinate Vendors Engagement|Coordinate vendors engagement|EIM/EDM|||C
 DLM-03|Project Delivery Kick-off|Project delivery kick-off with all verticals|EIM/EDM|||C
 DLM-04|High-Level Design Fine-tuning|Coordinate verticals and security team for high-level design fine-tuning|EIM/EDM / Solution Authority||Fine-tuned high-level design|C
@@ -719,7 +728,7 @@ DLM-07|Vendor POs for LLD, Build and Test|Vendors POs issuing for LLD, build and
 DLM-08|LLD and E2E Test Plan Definition|Coordinate verticals and security team for LLD and test plan definition; low-level design; E2E test plan definition|EIM/EDM / Team in Vertical / Infrastructure Team in Vertical||Low-level design document; E2E test plan|C
 DLM-09|Geo-redundancy Specifications|Provide detailed geo-redundancy specifications|Solution Authority|||C
 DLM-10|LLD and E2E Test Plan Sign-off|LLD and E2E test plan sign-off|EIM||G3|C`,
-      gws: { "DLM-10": { q: "G3 approved?", main: "Yes", br: [{ l: "No: rework LLD", to: "@DLM-08" }] } },
+      gws: { "DLM-00": { q: "Delivery route?", main: "Project (G0 to G6)", br: [{ l: "BAU / SIR", to: "end:BAU/SIR integrated delivery, not full project gating" }] }, "DLM-10": { q: "G3 approved?", main: "Yes", br: [{ l: "No: rework LLD", to: "@DLM-08" }] } },
       notes: { "SLA": ["EDM should estimate 1.5 months between initiation and closure of the privacy assessment process"] } },
 
     dlm2: { name: "Delivery build and go-live", src: SRC, laneOrder: DLML,
@@ -815,27 +824,32 @@ OA-06|Secure Resources for Delivery|Secure resources for delivery (hard book) an
 OA-07|Record Functional Acceptance|Record functional acceptance of the order in Pega|Networks Function SME|Pega|Functional acceptance|C
 OA-08|Confirm Order Acceptance|Confirm order acceptance in Pega once all impacted functions have accepted; Group Networks Finance is informed|Networks Order Manager|Pega|Order accepted|C
 OA-09|Confirm WBS Allocation|Confirm WBS allocation stated in the business case or finance annex|Networks Order Manager|Pega|T3 timestamp|C
-OA-10|Timesheet WBS Creation|Create timesheet WBS codes (see the Timesheet WBS creation phase)|Networks Order Manager|SAP MDG||C
-OA-11|Budget Load|Manage budget loading on the project CAPEX WBS codes with Finance (FDS) and the off-shore team|Networks Order Manager|SAP|T4 timestamp|C
+OA-10|WBS Arrangements|Arrange WBS where required (see the WBS provision phase)|Networks Order Manager|SAP MDG||C
+OA-11|Budget Load (Where Required)|Where required, manage budget loading on the Project CAPEX WBS codes with Finance (FDS) and the off-shore team|Networks Order Manager|SAP|T4 timestamp|C
 OA-12|Move Order to Delivery Queue|Order moved to the delivery queue and handed over to delivery|Networks Order Manager|Pega||C
 OA-13|Confirm SoWs and Request PO|Pick up the order from the delivery queue, confirm SoWs, request a PO if applicable and update delivery tracking in Pega|Delivery Manager|Pega / EVO|To delivery|C`,
     gws: { "OA-07": { q: "All impacted functions accepted?", main: "Yes", br: [{ l: "No: discuss options with delivery function", to: "@OA-03" }] },
            "OA-08": { q: "Order type?", main: "Internal", br: [{ l: "Commercial or external", to: "@OA-12" }] } } };
 
-  NEW.wbsts = { name: "Timesheet WBS creation", src: MOB, laneOrder: ["Networks Order Manager", "Service Owner", "Network Market Planning (NMP)", "IP&H"],
-    obj: "L3 Order Management: after order acceptance, create the timesheet WBS codes per resource country through SAP MDG and load them into the Time Buddy bot, ahead of budget load.",
-    tasks: `TW-01|Communicate WBS Can Be Created|Communicate that the WBS can be created (from order acceptance)|Networks Order Manager|||C
-TW-02|Review Booked Resources|Review booked resources with the Service Owner and Market Planner to confirm the country location; a separate WBS is needed per country|Service Owner|||C
-TW-03|Prepare MDG Template|Prepare the MDG template for WBS creation, except the project code (NMP for local market delivery, Service Owner for central NSE delivery)|Network Market Planning (NMP)|Excel MDG template||C
-TW-04|Finalise MDG Template|Finalise the MDG template with the project code and verify the WBS(s)|IP&H|Excel MDG template||C
-TW-05|Create New Project and WBS(s)|Create a new project and WBS(s) to cover all resource locations|IP&H|SAP MDG||C
-TW-06|Create Additional WBS(s)|If required, create new WBS(s) for an additional resource location|IP&H|SAP MDG||C
-TW-07|Upload Template in SAP MDG|Template upload in SAP MDG|IP&H|SAP MDG||C
-TW-08|Update WBS Database|Update status in the WBS database once created in SAP MDG|IP&H|WBS database||C
-TW-09|Upload WBS Data into Time Buddy|Upload WBS data into the Time Buddy bot so employees can find the right WBS codes for timesheets|IP&H|Time Buddy bot||C
-TW-10|Monitor WBS Status in Plan|Self-serve: monitor WBS status change in the master plan|Service Owner|Master plan|To budget load|C`,
-    gws: { "TW-04": { q: "Project already exists?", main: "No", br: [{ l: "Yes", to: "@TW-06" }] } },
-    jumps: { "TW-05": "TW-07" } };
+  NEW.wbsts = { name: "WBS provision, timesheet codes and budget load", src: MOB, laneOrder: ["Networks Order Manager", "Service Owner", "Network Market Planning (NMP)", "IP&H"],
+    obj: "Identify how the WBS is provided, create or reuse it, share the codes for timesheet booking and, only where required, load budget on the Project CAPEX WBS.",
+    tasks: `TW-00|Identify WBS Provision|External orders: WBS provided by IP&H with planning and finance support. Internal orders: WBS as detailed in the business case|Networks Order Manager|||
+TW-01|Communicate WBS Can Be Created|Communicate that the WBS can be created (from order acceptance)|Networks Order Manager|||
+TW-02|Review Booked Resources|Review booked resources with the Service Owner and Market Planner to confirm the country location; a separate WBS is needed per country|Service Owner|||
+TW-03|Prepare MDG Template|Prepare the MDG template for WBS creation, except the project code|Network Market Planning (NMP)|Excel MDG template||
+TW-04|Finalise MDG Template|Finalise the MDG template with the project code and verify the WBS(s)|IP&H|Excel MDG template||
+TW-05|Create New Project and WBS(s)|Create a new project and WBS(s) to cover all resource locations (SAP object rules to confirm)|IP&H|SAP MDG||
+TW-06|Create Additional WBS(s)|If required, create new WBS(s) for an additional resource location|IP&H|SAP MDG||
+TW-07|Upload Template in SAP MDG|Template upload in SAP MDG|IP&H|SAP MDG||
+TW-08|Update WBS Database|Update status in the WBS database once created in SAP MDG|IP&H|WBS database||
+TW-09|Use WBS from Business Case (Internal)|Use the WBS detailed in the business case for internal orders|Networks Order Manager|Business case||
+TW-10|Share WBS Codes for Timesheet Booking|Share the WBS codes with delivery and timesheet teams; upload to the Time Buddy bot|IP&H|Time Buddy bot|Timesheet WBS codes|
+TW-11|Monitor WBS Status in Plan|Self-serve: monitor WBS status change in the master plan|Service Owner|Master plan||
+TW-12|Budget Load on Project CAPEX WBS|Where required, manage budget loading on the Project CAPEX WBS codes with Finance (FDS) and the off-shore team|Networks Order Manager|SAP|Budget loaded|`,
+    gws: { "TW-00": { q: "Order type?", main: "External", br: [{ l: "Internal", to: "@TW-09" }] },
+           "TW-04": { q: "Project already exists?", main: "No", br: [{ l: "Yes", to: "@TW-06" }] },
+           "TW-11": { q: "Budget load on Project CAPEX WBS required?", main: "No", mainTo: "@OUT", br: [{ l: "Yes", to: "@TW-12" }] } },
+    jumps: { "TW-05": "TW-07", "TW-08": "TW-10" } };
 
   var SABL = ["Requester & Sponsor", "Governance", "Finance", "SAB", "Approval Authority"];
   NEW.sab = { name: "Spend Approval Board (SAB)", src: MOB, laneOrder: SABL,
@@ -870,7 +884,7 @@ SAB-5.5|Produce Close-out Case|Produce the close-out case|Finance||Budget fulfil
            "SAB-4.4": { q: "Spend approved?", main: "Yes", br: [{ l: "No", to: "end:Request rejected" }] } },
     notes: { "Swimlanes": ["The pack lists SAB activities by stage, not by role; the swimlanes here are an interpretation of who does each stage"] } };
 
-  var BML = ["Governance SPOC & Market Finance Lead", "Market Planning Lead", "Market Finance Lead", "Requester for Mobilisation", "Functional SPOCs & NW Vertical Alignment", "Decision Makers"];
+  var BML = ["Governance SPOC & Market Finance Lead", "Market Planning Lead", "Market Finance Lead", "Requester for Mobilisation", "Functional SPOCs & NW Vertical Alignment", "Decision Makers (market RAPID)"];
   NEW.budgetmob = { name: "Budget mobilisation (Capex)", src: MOB, laneOrder: BML,
     obj: "Submit, validate and refine the mobilisation request, review it and decide (G2 approval if applicable), then record the decision and load the funding. Actors can vary by market.",
     tasks: `BM-01|Request Mobilisation|Submit the mobilisation request (PPM tool, email or SharePoint form, depending on the market)|Requester for Mobilisation|PPM / email / SharePoint||C
@@ -884,7 +898,7 @@ BM-08|Confirm Vertical Alignment and Impact|4e: confirm network vertical alignme
 BM-09|Ensure Documentation Complete|4f: ensure mobilisation documentation content and stakeholder feedback are complete (meeting or email confirmation)|Governance SPOC & Market Finance Lead|||C
 BM-10|Finalise Documentation and Set Up Meeting|5: finalise documentation and set up the meeting if required (off-line approval by email for small or urgent requests)|Governance SPOC & Market Finance Lead|||C
 BM-11|Send Decision Documentation|6: send documentation to decision makers and requesters|Governance SPOC & Market Finance Lead|||C
-BM-12|Review Mobilisation Requests|7: decide based on validation of costs and benefits and NW vertical alignment|Decision Makers||G2 approval if applicable|C
+BM-12|Review Mobilisation Requests|7: decide based on validation of costs and benefits and NW vertical alignment|Decision Makers (market RAPID)||G2 approval if applicable|C
 BM-13|Record Decisions and Actions|8: formally record all decisions and actions in the mobilisation tracker|Governance SPOC & Market Finance Lead|Mobilisation tracker||C
 BM-14|Communicate Decisions|9: formal communication to all sponsors and stakeholders|Governance SPOC & Market Finance Lead|||C
 BM-15|Manage SAP Project Creation and Funds Loading|10: manage creation of WBS codes and funds with the off-shore team; POs then follow the SAP purchase order process|Market Finance Lead|SAP||C`,
@@ -895,6 +909,14 @@ BM-15|Manage SAP Project Creation and Funds Loading|10: manage creation of WBS c
            "BM-12": { q: "Alignment and budget approved?", main: "Approved", br: [{ l: "Rejected with actions", to: "@BM-04" }] } },
     jumps: { "BM-03": "BM-06" },
     notes: { "Local market adaptations": ["Who is accountable for each task can vary by market", "If the DB justification is not sufficient or out of date, it must be restated before mobilising", "Mobilisation documentation can be a business case, change request, mobilisation proposal or detailed finance document", "Decision makers and the type of decision (meeting or email) are set by the market's RAPIDs"] } };
+
+  NEW.feas = { name: "Delivery feasibility (G0 to G2)", src: "NSE 2025 RACI, FA.01 to FA.04", laneOrder: ["Market Delivery Manager (MDM)", "EIM/EDM", "Solution Authority"],
+    obj: "During G0 to G2, delivery accepts the request, allocates an EDM, the team and the Solution Authority, and assesses feasibility before mobilisation.",
+    tasks: `FA.01|Request Acceptance|Accept the delivery request|Market Delivery Manager (MDM)|||
+FA.02|EDM Allocation|Allocate the Engineering Delivery Manager|Market Delivery Manager (MDM)|||
+FA.03|Team and Solution Authority Allocation|Allocate the delivery team and the Solution Authority|EIM/EDM|||
+FA.04|Feasibility Assessment|Assess delivery feasibility|Solution Authority||G2 feasibility|`,
+    gws: {} };
 
   var RENAME = { "On-plan demand activation": "Demand activation", "On-plan financial validation": "Financial validation", "On-plan resource validation": "Resource validation",
     "On-plan mobilisation": "Mobilisation", "On-plan delivery readiness": "Delivery readiness", "On-plan procurement and delivery": "Procurement and delivery",
@@ -908,7 +930,8 @@ BM-15|Manage SAP Project Creation and Funds Loading|10: manage creation of WBS c
     Object.keys(NEW).forEach(function (k) { all[k] = all[k] || NEW[k]; });
     plan.phases = order.map(function (k) { var p = all[k]; if (!p.key) { p = JSON.parse(JSON.stringify(p)); p.key = k; } return p; });
     var num = {}; plan.phases.forEach(function (p, i) { p.n = i + 1; num[p.key] = i + 1; delete p._tasks; });
-    plan.phases.forEach(function (p) { Object.keys(p.gws || {}).forEach(function (id) { [].concat(p.gws[id]).forEach(function (g) { g.br.forEach(function (b) { var m = /^phase:(\w+)$/.exec(b.to); if (m && num[m[1]]) b.to = "phase:" + num[m[1]]; }); }); }); });
+    var ALIAS = { approval: "budgetmob", sab: "budgetmob", finval: "budgetmob", strategy: "nep", db: "dblrp1", order: "ocapture", wbs: "wbsts", budget: "wbsts" };
+    plan.phases.forEach(function (p) { Object.keys(p.gws || {}).forEach(function (id) { [].concat(p.gws[id]).forEach(function (g) { g.br.forEach(function (b) { var m = /^phase:(\w+)$/.exec(b.to); if (m) { var k2 = num[m[1]] ? m[1] : ALIAS[m[1]]; if (num[k2]) b.to = "phase:" + num[k2]; } }); }); }); });
     plan.overview = overview.map(function (o) {
       if (typeof o === "string") return { ph: num[o] };
       return { gw: o.gw, main: o.main, br: o.br.map(function (b) { var m = /^@(\w+)$/.exec(b.to); return { l: b.l, to: m ? "@P" + num[m[1]] : b.to }; }) };
@@ -916,21 +939,61 @@ BM-15|Manage SAP Project Creation and Funds Loading|10: manage creation of WBS c
   }
 
   build(D.on, ["strategy", "db", "activation", "finval", "resval", "mob", "ready", "proc", "finexec", "closure"],
-    ["strategy", "nep", "db", "dblrp1", "dblrp2", "activation", "finval", "sab", "resval", "mob", "budgetmob", "ready", "dlm1", "proc", "dlm2", "finexec", "preclose", "close", "interlock", "closure"],
-    ["strategy", "nep", { gw: "Planning direction and NEP approved?", main: "Yes", br: [{ l: "No: refine", to: "@nep" }] },
-     "db", { gw: "DB approved?", main: "Yes", br: [{ l: "No: reprioritise", to: "@db" }] },
-     "dblrp1", "dblrp2", "activation", "finval", "sab", "resval", "mob", "budgetmob", "ready", "dlm1", "proc", "dlm2", "finexec", "preclose", "close", "interlock", "closure"]);
+    ["nep", "dblrp1", "dblrp2", "activation", "feas", "budgetmob", "resval", "mob", "ready", "dlm1", "proc", "dlm2", "finexec", "preclose", "close", "interlock", "closure"],
+    ["nep", { gw: "NEP agreed and approved?", main: "Yes", br: [{ l: "No: refine", to: "@nep" }] },
+     "dblrp1", "dblrp2", "activation", "feas", "budgetmob", "resval", "mob", "ready", "dlm1", "proc", "dlm2", "finexec", "preclose", "close", "interlock", "closure"]);
 
   build(D.off, ["arrival", "triage", "tech", "resource", "fin", "bc", "approval", "order", "mob", "wbs", "budget", "ready", "proc", "grn", "closure"],
-    ["arrival", "dmd1", "triage", "tech", "resource", "fin", "bc", "approval", "sab", "dmd2", "rolling", "order", "ocapture", "oaccept", "wbsts", "mob", "budgetmob", "wbs", "budget", "ready", "dlm1", "proc", "dlm2", "grn", "preclose", "close", "interlock", "closure"],
-    ["arrival", { gw: "D1 · Demand complete?", main: "Yes", br: [{ l: "No: clarify", to: "@arrival" }] }, "dmd1",
-     "triage", { gw: "D2 · Covered by approved investment?", main: "No", br: [{ l: "Yes: link to existing investment", to: "@approval" }] },
+    ["arrival", "dmd1", "feas", "triage", "tech", "resource", "fin", "bc", "budgetmob", "dmd2", "rolling", "ocapture", "oaccept", "wbsts", "mob", "ready", "dlm1", "proc", "dlm2", "grn", "preclose", "close", "interlock", "closure"],
+    ["arrival", { gw: "D1 · Demand complete?", main: "Yes", br: [{ l: "No: clarify", to: "@arrival" }] }, "dmd1", "feas",
+     "triage", { gw: "D2 · Covered by approved investment?", main: "No", br: [{ l: "Yes: link to existing investment", to: "@budgetmob" }] },
      "tech", { gw: "D3 · Technically feasible?", main: "Yes", br: [{ l: "Conditional: revise", to: "@tech" }, { l: "No", to: "end:Returned or rejected" }] },
      "resource", { gw: "D4 · Can it be resourced?", main: "Yes", br: [{ l: "No: revise plan", to: "@resource" }] },
-     "fin", { gw: "D5 · Approved funding available?", main: "No", br: [{ l: "Yes: reuse approval", to: "@approval" }] },
-     "bc", "approval", { gw: "D6 · Expenditure authorised?", main: "Approved", br: [{ l: "Conditional / deferred", to: "@approval" }, { l: "Rejected", to: "end:Closed or revised" }] },
-     "sab", "dmd2", "rolling", { gw: "Order Management route applies?", main: "Yes", br: [{ l: "No: internal investment", to: "@mob" }] },
-     "order", "ocapture", "oaccept", "wbsts", "mob", "budgetmob", "wbs", "budget", "ready", "dlm1", "proc", "dlm2", "grn", "preclose", "close", "interlock", "closure"]);
+     "fin", { gw: "D5 · Approved funding available?", main: "No", br: [{ l: "Yes: mobilise from approved plan", to: "@budgetmob" }] },
+     "bc", "budgetmob", "dmd2", "rolling", { gw: "Order Management route applies?", main: "Yes", br: [{ l: "No: non-order investment (to confirm)", to: "@mob" }] },
+     "ocapture", "oaccept", "wbsts", "mob", "ready", "dlm1", "proc", "dlm2", "grn", "preclose", "close", "interlock", "closure"]);
+
+  // Confidence flags: confirmed only where an eligible independent Vodafone source supports the flow.
+  var HVSNOTE = "HVS 4 and 5 pack authorship includes the analyst; provisional until an independently authored original is confirmed.";
+  var CONF = {
+    nep: ["confirmed", "Booklet_NPDDT_v10.11, independent copy in the Demand Harmonisation SharePoint."],
+    dblrp1: ["confirmed", "Booklet_NPDDT_v10.11, independent copy in the Demand Harmonisation SharePoint."],
+    dblrp2: ["confirmed", "Booklet_NPDDT_v10.11, independent copy; includes the documented alternative-scenario route."],
+    rolling: ["confirmed", "Booklet_NPDDT_v10.11, independent copy in the Demand Harmonisation SharePoint."],
+    dmd1: ["provisional", "Booklet flow, but the independent WS4 original for Single Front Door, DAM triage and Demand Board is not established; verify before confirming."],
+    dmd2: ["provisional", "NCAR and NPRB are shown as conditional governance interfaces; their entry criteria, thresholds and forum order are not confirmed."],
+    dlm1: ["provisional", "Booklet flow; to be aligned with the NSE 2025 E2E Project Delivery Process (G0 to G2 feasibility, G2 to G6 delivery, BAU/SIR route) and the MDM, EDM and Solution Authority RACI."],
+    dlm2: ["provisional", "Booklet flow; to be aligned with the NSE 2025 E2E Project Delivery Process and RACI, including G6 completion."],
+    preclose: ["provisional", "Recurring monthly governance; the governing procedure for each task is not yet evidenced."],
+    close: ["provisional", "Recurring monthly governance; the governing procedure for each task is not yet evidenced."],
+    interlock: ["provisional", "Recurring monthly governance; the governing procedure for each task is not yet evidenced."],
+    sab: ["provisional", HVSNOTE],
+    budgetmob: ["provisional", HVSNOTE + " Decision authority follows the market RAPID."],
+    ocapture: ["provisional", HVSNOTE],
+    oaccept: ["provisional", HVSNOTE],
+    wbsts: ["provisional", HVSNOTE + " SAP project definition, CAPEX WBS and timesheet WBS creation and reuse rules to confirm."],
+    order: ["provisional", "Consolidated analysis model. Route-selection gateway retained; confirm which non-order investments bypass Order Management."],
+    grn: ["provisional", "No verified source establishes one universal PO, GRN, invoice and payment sequence; route to validate."],
+    finexec: ["provisional", "No verified source establishes one universal PO, GRN, invoice and payment sequence; route to validate."],
+    wbs: ["provisional", "Consolidated analysis model; SAP object creation and reuse rules to confirm."],
+    closure: ["provisional", "Individual SAP and WBS closure rules are unverified; no mandatory financial-close checklist is implied."],
+    feas: ["provisional", "Activities named in the NSE 2025 RACI (FA.01 to FA.04), an independent source not yet reviewed here; owners to confirm against the RACI."],
+    benefits: ["provisional", "No universal benefits-realisation gate is evidenced; monitoring is kept separate from G6 completion and the procedure is to confirm."]
+  };
+  var BEN = { off: ["OFF-147", "OFF-148", "OFF-149"], on: ["ON-108", "ON-109", "ON-110"] };
+  ["on", "off"].forEach(function (k) {
+    var plan = D[k], i = plan.phases.findIndex(function (p) { return p.key === "closure"; }), cl = plan.phases[i];
+    var lines = cl.tasks.trim().split("\n"), keep = [], ben = [];
+    lines.forEach(function (l) { (BEN[k].indexOf(l.split("|")[0]) >= 0 ? ben : keep).push(l); });
+    cl.tasks = keep.join("\n"); cl.name = "Closure (G6 completion)"; cl.obj = "Confirm technical completion, hand over to operations, reconcile and close the delivery and financial records.";
+    plan.phases.splice(i + 1, 0, { key: "benefits", name: "Benefits monitoring", obj: "Compare planned and realised benefits and capture lessons, kept separate from G6 completion.", tasks: ben.join("\n"), gws: {} });
+    plan.phases.forEach(function (p, j) { p.n = j + 1; delete p._tasks; });
+    plan.overview.push({ ph: plan.phases.length });
+    plan.phases.forEach(function (p) {
+      var c = CONF[p.key] || ["provisional", "SNIP consolidated analysis model; verify against the governing Vodafone procedure."];
+      p.conf = c[0]; p.confNote = c[1];
+    });
+  });
 })(typeof SNIP_DATA !== "undefined" ? SNIP_DATA : require("./data.js"));
 
 </script>
@@ -968,6 +1031,8 @@ var BPMN = (function () {
       var f = line.split("|");
       var t = { id: f[0].trim(), name: f[1], activity: f[2], team: f[3], tool: f[4], output: f[5] || "", status: (f[6] || "").trim(), phase: ph.n };
       var first = t.team.split(" / ")[0].trim();
+      t.conf = ph.conf || "provisional"; t.confNote = ph.confNote || "";
+      if (ph.src && t.conf === "provisional") t.status = "";
       t.lane = (ph.lanes && ph.lanes[t.id]) || (ph.laneOrder && ph.laneOrder.indexOf(t.team) >= 0 ? t.team : ph.laneOrder && ph.laneOrder.indexOf(first) >= 0 ? first : laneOf(t.team));
       return t;
     });
@@ -1063,7 +1128,7 @@ var BPMN = (function () {
     plan.overview.forEach(function (o) {
       if (o.ph) {
         var ph = plan.phases[o.ph - 1];
-        nodes.push({ id: "P" + ph.n, type: "sub", lane: lane, label: ph.name, ph: ph.n, count: parseTasks(ph).length });
+        nodes.push({ id: "P" + ph.n, type: "sub", lane: lane, label: ph.name, ph: ph.n, count: parseTasks(ph).length, conf: ph.conf });
       } else nodes.push({ id: "GW_" + (++gwSeq), type: "gw", lane: lane, label: o.gw, main: o.main, br: copyBr(o.br) });
     });
     nodes.push({ id: "END", type: "end", lane: lane, label: plan.end });
@@ -1199,7 +1264,7 @@ var BPMN = (function () {
     if (n.type === "task" || n.type === "sub") {
       var t = n.task, sel = opts.selected === n.id || opts.selected === n.ph;
       var attrs = n.type === "task" ? ' data-task="' + n.id + '"' : ' data-ph="' + n.ph + '"';
-      s.push('<g class="node ' + n.type + (sel ? " is-sel" : "") + (t && t.status ? " st-" + t.status : "") + '"' + attrs + ' tabindex="0" role="button" aria-label="' + esc((t ? n.id + " " : "Phase " + n.ph + " ") + n.label) + '">');
+      s.push('<g class="node ' + n.type + (sel ? " is-sel" : "") + (t && t.status ? " st-" + t.status : "") + (((t && t.conf) || n.conf) === "provisional" ? " prov" : "") + '"' + attrs + ' tabindex="0" role="button" aria-label="' + esc((t ? n.id + " " : "Phase " + n.ph + " ") + n.label) + '">');
       s.push('<rect class="box" x="' + (x - n.w / 2) + '" y="' + (y - n.h / 2) + '" width="' + n.w + '" height="' + n.h + '" rx="10"/>');
       if (n.type === "task") {
         s.push('<text class="t-id" x="' + (x - n.w / 2 + 9) + '" y="' + (y - n.h / 2 + 15) + '">' + n.id + "</text>");
@@ -1208,7 +1273,7 @@ var BPMN = (function () {
         s.push(textLines(lines, x, y + (lines.length === 1 ? 2 : -5), 14, "t-name"));
         var tool = t.tool.length > 26 ? t.tool.slice(0, 25) + "…" : t.tool;
         s.push('<text class="t-tool" x="' + x + '" y="' + (y + n.h / 2 - 9) + '" text-anchor="middle">' + esc(tool) + "</text>");
-        s.push("<title>" + esc(n.id + " · " + n.label + "\n" + t.activity + "\nTeam: " + t.team + "\nTool: " + t.tool) + "</title>");
+        s.push("<title>" + esc(n.id + " · " + n.label + "\n" + t.activity + "\nTeam: " + t.team + "\nTool: " + t.tool + "\nConfidence: " + t.conf) + "</title>");
       } else {
         s.push('<text class="t-id" x="' + (x - n.w / 2 + 9) + '" y="' + (y - n.h / 2 + 15) + '">PHASE ' + n.ph + "</text>");
         s.push('<text class="t-tool" x="' + (x + n.w / 2 - 9) + '" y="' + (y - n.h / 2 + 15) + '" text-anchor="end">' + n.count + " tasks</text>");
@@ -1277,7 +1342,7 @@ var BPMN = (function () {
       var name = t ? n.id + " " + n.label : n.label;
       x.push("    <bpmn:" + tag(n) + ' id="' + id + '" name="' + esc(name) + '"' + (t ? ">" : "/>"));
       if (t) {
-        x.push("      <bpmn:documentation>" + esc("Phase " + t.phase + ". " + t.activity + ". Team: " + t.team + ". Tool: " + t.tool + (t.output ? ". Output: " + t.output : "") + (t.status ? ". Status: " + t.status : "")) + "</bpmn:documentation>");
+        x.push("      <bpmn:documentation>" + esc("Phase " + t.phase + ". " + t.activity + ". Team: " + t.team + ". Tool: " + t.tool + (t.output ? ". Output: " + t.output : "") + (t.status ? ". Status: " + t.status : "") + ". Confidence: " + t.conf + (t.confNote ? " (" + t.confNote + ")" : "")) + "</bpmn:documentation>");
         x.push("    </bpmn:task>");
       }
     });
@@ -1354,13 +1419,14 @@ if (typeof module !== "undefined") module.exports = BPMN;
     $("ph-eyebrow").textContent = "Level 4 · phase " + ph.n + " of " + p.phases.length + (ph.src ? " · from the " + ph.src : "");
     $("ph-title").textContent = "Phase " + ph.n + " · " + ph.name;
     $("ph-obj").textContent = ph.obj;
+    $("ph-conf").innerHTML = '<span class="badge ' + ph.conf + '">' + ph.conf + "</span><span>" + ph.confNote + "</span>";
     $("prev").disabled = ph.n === 1;
     $("next").disabled = ph.n === p.phases.length;
     document.querySelectorAll(".chip").forEach(function (c) { var on = +c.dataset.ph === ph.n; c.setAttribute("aria-current", String(on)); if (on) { var box = c.parentNode; box.scrollLeft = c.offsetLeft - box.offsetLeft - 8; } });
     fill($("ph-frame"), B.buildPhase(p, ph), p.label + " · Phase " + ph.n, { selected: state.task, fromPhase: ph.n > 1 ? ph.n - 1 : null, aria: "Phase " + ph.n + " " + ph.name });
     var tasks = B.parseTasks(ph);
     $("rows").innerHTML = tasks.map(function (t) {
-      return '<tr data-task="' + t.id + '"' + (t.id === state.task ? ' class="is-sel"' : "") + '><td class="id">' + t.id + "</td><td>" + t.name + "</td><td>" + t.team + "</td><td>" + t.tool + "</td><td>" + (t.output || "—") + "</td><td>" + (t.status ? '<span class="st st-' + t.status + '-t">' + t.status + "</span>" : "—") + "</td></tr>";
+      return '<tr data-task="' + t.id + '"' + (t.id === state.task ? ' class="is-sel"' : "") + '><td class="id">' + t.id + "</td><td>" + t.name + "</td><td>" + t.team + "</td><td>" + t.tool + "</td><td>" + (t.output || "—") + "</td><td>" + (t.status ? '<span class="st st-' + t.status + '-t">' + t.status + "</span>" : "—") + '</td><td><span class="badge ' + t.conf + '">' + t.conf + "</span></td></tr>";
     }).join("");
     renderDetail();
     var notes = ph.notes || {};
@@ -1378,7 +1444,7 @@ if (typeof module !== "undefined") module.exports = BPMN;
     }
     $("detail").innerHTML = '<p class="eyebrow">' + t.id + " · Phase " + t.phase + "</p><h3>" + t.name + "</h3><dl>" +
       "<dt>Activity</dt><dd>" + t.activity + "</dd><dt>Team</dt><dd>" + t.team + "</dd><dt>Swimlane</dt><dd>" + t.lane + "</dd>" +
-      "<dt>Tool</dt><dd>" + t.tool + "</dd>" + (t.output ? "<dt>Output</dt><dd>" + t.output + "</dd>" : "") +
+      "<dt>Tool</dt><dd>" + t.tool + "</dd>" + '<dt>Confidence</dt><dd><span class="badge ' + t.conf + '">' + t.conf + "</span> " + t.confNote + "</dd>" + (t.output ? "<dt>Output</dt><dd>" + t.output + "</dd>" : "") +
       (t.status ? '<dt>Status</dt><dd><span class="st st-' + t.status + '-t">' + t.status + "</span> " + STATUS[t.status] + "</dd>" : "") + "</dl>";
   }
 
