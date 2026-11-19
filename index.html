@@ -206,6 +206,7 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
       <span><b class="st st-V-t">V</b> Documented conditional or market variation</span>
       <span><b class="st st-I-t">I</b> Inferred integration point, to confirm</span>
       <span><b class="st st-U-t">U</b> Unsupported by the authorised sources</span>
+      <span><b class="st">T</b> Target state, excluded from AS-IS</span>
       <span><svg width="30" height="16" viewBox="0 0 30 16"><rect x="1" y="1" width="28" height="14" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.3"/></svg>C1, C2 or V</span>
       <span><svg width="30" height="16" viewBox="0 0 30 16"><rect x="1" y="1" width="28" height="14" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.3" stroke-dasharray="5 3"/></svg>I or U, to verify</span>
     </div>
@@ -1029,66 +1030,108 @@ FA.04|Feasibility Assessment|Assess delivery feasibility|Solution Authority||G2 
   select.obj = "Select an approved DB/LRP investment for execution and raise the mobilisation request. Funding, technical and resource checks happen once, in later subprocesses.";
 
   // ---------- demand submission and triage (off-plan) ----------
-  var intake = { key: "intake", name: "Demand submission and triage", src: BOOK + " (WS4 original to confirm)",
+  var WS4 = "WS4 Demand Planning Phase 2 Demand Management Process Userguide", RQG = "Networks Demand Front Door Requester User Guide";
+  var intake = { key: "intake", name: "Demand submission and triage", src: BOOK + " slides 34 and 118; " + WS4 + "; " + RQG,
     laneOrder: ["Requestor", "Demand Assurance Manager (DAM)", "NW Vertical Function SPOC"],
-    obj: "Raise the demand on the Single Front Door, register it, check completeness, triage and classify it, identify impacted functions, then return, reject or progress it to impact assessment.",
-    tasks: `IN-01|Complete Required Demand Submission Information|Business need, request type, impacted markets, sponsor, required date, initial effort, funding position, dependencies and supporting evidence|Requestor|Single Front Door (Pega)||I
-IN-02|Raise Demand on Single Front Door|Submit the demand on the Single Front Door (G0); merges OFF-011 and DM-01|Requestor|Single Front Door (Pega)|G0|I
-IN-03|Generate Demand Reference|Register the demand for tracking|Demand Assurance Manager (DAM)|Pega|Demand reference|I
-IN-04|DAM Completeness Check|Check that the submission is complete|Demand Assurance Manager (DAM)|Pega||I
-IN-05|DAM Triage and Classification|Triage the demand and confirm its classification and route; merges OFF-013, OFF-014 and DM-02|Demand Assurance Manager (DAM)|Pega||I
-IN-06|Identify Impacted Functions|Identify the impacted NW functions and verticals|Demand Assurance Manager (DAM)|Pega||I
-IN-07|Cross-functional Handshake|Handshake with other NW function PS or vertical SPOC for cross-functional demand|NW Vertical Function SPOC|||I`,
-    gws: { "IN-04": { q: "Demand complete?", main: "Yes", br: [{ l: "No: return to requestor", to: "@IN-01" }] },
-           "IN-06": { q: "Cross-functional?", main: "Yes", br: [{ l: "No", to: "@Triage-outcome" }] },
-           "IN-07": { id: "Triage-outcome", q: "Triage outcome?", main: "Progress", br: [{ l: "Reject", to: "end:Demand rejected" }] } },
-    conf: "provisional", confNote: "Single Front Door, DAM triage and Demand Board detail follows the booklet; the independent WS4 original is not established, so nothing here is C1 or C2 until it is." };
+    obj: "The requestor completes and submits the demand through the Networks Single Front Door; the DAM reviews completeness, returns incomplete demand, triages and classifies it, identifies impacted Network Functions and starts a cross-functional handshake where required. Output: the triaged demand for G0 to G2 assessment.",
+    tasks: `IN-01|Complete Required Demand Information|Demand type, impacted markets, sponsor, required delivery date, funding information, existing WBS where applicable, dependencies, business benefits, IT/security impact and supporting documents; only the fields the requester guide marks mandatory are mandatory|Requestor|Networks Single Front Door (Pega)||I|${RQG} (page reference to associate before promotion)
+IN-02|Submit Demand through Networks Single Front Door|The requestor raises the demand on the Single Front Door (G0)|Requestor|Networks Single Front Door (Pega)|G0|C1|Booklet_NPDDT_v10.11 slide 118, step 1; Booklet_NPDDT_v10.11 slide 34
+IN-04|DAM Reviews Submission Completeness|The DAM reviews whether the submission is complete|Demand Assurance Manager (DAM)|Pega||C2|Booklet_NPDDT_v10.11 slide 118, step 2 (DAM triage); Booklet_NPDDT_v10.11 slide 34
+IN-05|DAM Initial Triage and Classification|The DAM performs initial triage and classification of the demand|Demand Assurance Manager (DAM)|Pega||C1|Booklet_NPDDT_v10.11 slide 118, step 2; Booklet_NPDDT_v10.11 slide 34
+IN-06|Identify Impacted Network Functions|The DAM identifies the impacted Network Functions|Demand Assurance Manager (DAM)|Pega||C2|Booklet_NPDDT_v10.11 slide 118, step 4a; Booklet_NPDDT_v10.11 slide 34
+IN-07|Cross-functional Handshake|Other NW Function PS handshake with the DAM, where the demand is cross-functional|NW Vertical Function SPOC|||C1|Booklet_NPDDT_v10.11 slide 118, step 3b and "Cross functional?" gateway`,
+    gws: { "IN-04": { q: "Demand complete?", main: "Yes", br: [{ l: "No: return to requestor for amendment", to: "@IN-01" }] },
+           "IN-06": { q: "Cross-functional?", main: "No", mainTo: "@OUT", br: [{ l: "Yes", to: "@IN-07" }] } },
+    conf: "confirmed", confShort: "Documented with open items", confLabel: "Documented process, field rules to confirm",
+    confNote: "Submission and triage steps follow the independent booklet demand-management flow. The reference-generation mechanism is not shown as a separate activity until confirmed; the field list stays I until linked to the requester guide page." };
 
   // ---------- G0-G2 impact assessment and feasibility (both routes) ----------
-  var impact = { key: "impact", name: "G0 to G2 impact assessment and feasibility", src: NSE + "; " + BOOK,
+  var impact = { key: "impact", name: "G0 to G2 impact assessment and feasibility", src: NSE + "; " + BOOK + " slides 118 and 119",
     laneOrder: ["Market Delivery Manager (MDM)", "Engineering Delivery Manager (EDM)", "Solution Authority", "Team in NSE Vertical", "IT", "Demand Governance Team"],
-    obj: "Accept the delivery request, allocate the EDM, team and Solution Authority, assess functional, technical, security and operational impact, estimate cost and resources, check budget and priority, and consolidate the impact assessment.",
-    tasks: `FA.01.01|Accept Request and Initiate EDM Allocation|Accept the request and initiate EDM allocation|Market Delivery Manager (MDM)|||C1
-FA.01.02|EDM Appointment|Appoint the Engineering Delivery Manager|Market Delivery Manager (MDM)|||C1
-FA.02.01|Team and Solution Authority Allocation|Allocate the delivery team and the Solution Authority|Engineering Delivery Manager (EDM)|||C1
-IA-01|Functional Impact Assessment|NW vertical teams and other NW functions assess impact (from DM-05, DM-06)|Team in NSE Vertical|||I
-IA-02|IT Impact Assessment|IT assesses impact where IT dependencies exist (from DM-07)|IT|||I
-IA-03|Technical Feasibility and HLD|Technical feasibility, high-level design or solution definition (from DM-08, DM-10)|Solution Authority|||I
-FA.03.xx|Security, Privacy, Resilience and Operations Impact|Security, privacy, resilience and operations-impact activities|Team in NSE Vertical|||C1
-FA.04.xx|Feasibility Analysis and Cost Estimation|Feasibility analysis and cost estimation|Solution Authority|||C1
-IA-04|Resource Estimate|Estimate delivery resources; WFM detail not evidenced|Engineering Delivery Manager (EDM)|WFM||I
-IA-05|Budget and Priority Check|Check budget availability and priority with the market sponsor and NSE Planning (from DM-12, DM-13)|Demand Governance Team|||I
-IA-06|Consolidated Impact Assessment|Consolidate the impact assessment; for in-year demand, submit it to the Demand Board (from DM-14)|Demand Governance Team||G2 submission|I`,
+    obj: "Input: the triaged demand. NSE delivery feasibility and the demand impact assessment run in one subprocess without duplication. Output: the consolidated impact assessment and, for in-year demand, the Demand Board submission.",
+    tasks: `FA.01.01|Accept Request and Initiate EDM Allocation|Accept the request and initiate EDM allocation|Market Delivery Manager (MDM)|||C1|NSE E2E Project Delivery Process_2025 and RACI, FA.01.01
+FA.01.02|EDM Appointment|Appoint the Engineering Delivery Manager|Market Delivery Manager (MDM)|||C1|NSE E2E Project Delivery Process_2025 and RACI, FA.01.02
+FA.02.01|Team and Solution Authority Allocation|Allocate the delivery team and the Solution Authority|Engineering Delivery Manager (EDM)|||C1|NSE E2E Project Delivery Process_2025 and RACI, FA.02.01
+IA-01|Cross-functional Impact Assessment|NW vertical teams and other NW functions perform the impact assessment (G0 to G1)|Team in NSE Vertical|||C1|Booklet_NPDDT_v10.11 slide 118, steps 5a, 5b and 5c
+IA-02|Assess Network and IT Impacts|Assess network impacts and IT impacts where IT dependencies exist|IT|||C2|Booklet_NPDDT_v10.11 slide 118, step 5d
+IA-03|Develop HLD and Feasibility Information|Coordinate high-level design and feasibility information from all NW verticals, including solution design definition|Demand Governance Team|||C1|Booklet_NPDDT_v10.11 slide 118, steps 5e, 7a and 7b
+FA.03.xx|Security, Privacy, Resilience and Operations Impact|Security, privacy, resilience and operations-impact activities, where applicable|Team in NSE Vertical|||C1|NSE E2E Project Delivery Process_2025 and RACI, FA.03
+FA.04.xx|Feasibility Analysis and Cost Estimation|Feasibility analysis and cost estimation|Solution Authority|||C1|NSE E2E Project Delivery Process_2025 and RACI, FA.04
+IA-04|Estimate Resources|Estimate delivery resources (cost estimation sits in FA.04)|Engineering Delivery Manager (EDM)|WFM||I|No independent page associated
+IA-05|Check Budget Availability and Priority|Check budget availability and priority with the market sponsor and NW budget availability with NSE Planning|Demand Governance Team|||C1|Booklet_NPDDT_v10.11 slide 118, steps 7a/7b and 8a/8b
+IA-06|Consolidate Impact Assessments|Consolidate the impact assessments|Demand Governance Team|||C1|Booklet_NPDDT_v10.11 slide 119, steps 9a/10b
+IA-07|Prepare Demand Board Submission|Prepare the submission to the Demand Board (in-year demand)|Demand Governance Team||G2 submission|C2|Booklet_NPDDT_v10.11 slide 119, steps 9a/10b`,
     gws: {}, conf: "confirmed", confShort: "Confirmed core process", confLabel: "Confirmed core process · role allocation subject to local validation",
-    confNote: "FA activities and sequence are C1 against " + NSE + "; local role variations require market confirmation. Impact-assessment steps that depend on the WS4 demand process are I until an independently authored WS4 source is established." };
+    confNote: "FA activities from the NSE 2025 RACI; impact-assessment steps from the independent booklet demand-management flow. Identifying impacted functions sits once, in triage. Local role variations require market confirmation." };
 
   // ---------- demand approval (off-plan) ----------
-  var dmd2 = { key: "dmd2", name: "Demand decision and conditional governance routing", src: BOOK + " (WS4 original to confirm)",
-    laneOrder: ["Demand Governance Team", "Market governance (per market)"],
-    obj: "The Demand Board decides; after approval, separate conditional gateways route the demand to NCAR, NPRB or the market's own governance. None of these is a mandatory next step.",
-    tasks: `DM-15|Demand Board Decision|The Demand Board reviews the consolidated impact assessment and decides|Demand Governance Team||Approval or rejection|I
-DM-17|NCAR In-year Change Route|NCAR governs approval of changes to the in-year plan, including agreement on prioritisation|Demand Governance Team||NCAR decision|V
-DM-19|NPRB Route|NPRB manages project and funding mobilisation for the in-year project|Demand Governance Team||NPRB decision|V
-DM-24|Documented Market Governance Route|Follow the market's documented governance route|Market governance (per market)|||V`,
-    gws: { "DM-15": [{ q: "Demand Board approved?", main: "Yes", br: [{ l: "No: DAM informs requestor", to: "end:Demand rejected" }] },
-                     { q: "Does the demand change the approved in-year plan?", main: "Yes", br: [{ l: "No", to: "@NPRB-check" }] }],
-           "DM-17": { id: "NPRB-check", q: "Requires project or funding mobilisation through NPRB?", main: "Yes", br: [{ l: "No", to: "@Market-check" }] },
-           "DM-19": { id: "Market-check", q: "Another market-specific approval applies?", main: "No", mainTo: "@OUT", br: [{ l: "Yes", to: "@DM-24" }] } },
-    conf: "provisional", confNote: "NCAR, NPRB and market routes are conditional (V), not consecutive steps; entry criteria and thresholds are not confirmed. Demand Board detail depends on the WS4 source (I).",
-    notes: { "Open validation points": ["Global Product governance (product scenario C and the Global Product Board) is removed: no eligible independent source covers it", "NCAR and NPRB entry criteria, thresholds and order"] } };
+  var dmd2 = { key: "dmd2", name: "Demand decision and conditional governance routing", src: BOOK + " slides 34 and 119",
+    laneOrder: ["Demand Governance Team", "Demand Assurance Manager (DAM)", "Market governance (per market)"],
+    obj: "The Demand Board decides. A rejection follows the documented DAM notification. NPRB and market governance apply only where their documented criteria apply. An in-year plan change goes through NCAR and the rolling plan; otherwise both are bypassed and the demand goes straight to the mobilisation eligibility check.",
+    tasks: `DM-15|Demand Board Decision|The Demand Board reviews the consolidated impact assessment and decides|Demand Governance Team||Approval or rejection|C1|Booklet_NPDDT_v10.11 slide 119, "Demand Board Approval"; Booklet_NPDDT_v10.11 slide 34
+DM-19|NPRB Route|NPRB manages project and funding mobilisation for the in-year project, only where its documented entry criteria apply|Demand Governance Team||NPRB decision|V|Booklet_NPDDT_v10.11 slide 119, steps 12a/12b; entry criteria not confirmed
+DM-24|Market Governance Route|Follow the market's documented governance route, only where the applicable market procedure requires it|Market governance (per market)|||V|Market procedure to identify
+DM-17|NCAR In-year Change Route|NCAR governs approval of changes to the in-year plan, including agreement on prioritisation; the approved plan or rolling forecast is then updated where required|Demand Governance Team||NCAR decision|V|Booklet_NPDDT_v10.11 slide 119, steps 11a/11b; thresholds not confirmed
+DM-16|DAM Informs Requestor of Rejection|The DAM informs the requestor about the rejection|Demand Assurance Manager (DAM)||Requestor informed|C1|Booklet_NPDDT_v10.11 slide 119, step 10bis`,
+    gws: { "DM-15": [{ q: "Demand Board approved?", main: "Yes", br: [{ l: "No", to: "@DM-16" }] },
+                     { id: "NPRB-check", q: "Do the documented NPRB entry criteria apply?", main: "Yes", br: [{ l: "No", to: "@Market-check" }] }],
+           "DM-19": { id: "Market-check", q: "Does the market procedure require market governance?", main: "Yes", br: [{ l: "No", to: "@Plan-change" }] },
+           "DM-24": { id: "Plan-change", q: "Does the approved demand require an in-year plan change?", main: "Yes", br: [{ l: "No: bypass NCAR and rolling plan", to: "@OM-route" }] },
+           "DM-17": { id: "OM-route", q: "Does the documented Order Management route apply?", main: null, br: [{ l: "Yes", to: "phase:om" }, { l: "No", to: "phase:mobready" }, { l: "Unknown", to: "end:Process-owner validation required" }] } },
+    jumps: { "DM-17": "OUT" },
+    ends: { "DM-16": "Demand rejected" },
+    conf: "provisional", confShort: "Documented decision, conditional routes", confNote: "Demand Board decision and rejection notice are documented (C1). NCAR, NPRB and market governance are conditional routes (V); their entry thresholds still need market-governance confirmation. Gateway decision rules are I.",
+    notes: { "Open validation points": ["Global Product governance (product scenario C, Global Product Board) is excluded: no eligible independent source covers it", "NCAR and NPRB entry criteria and thresholds", "Which market procedures require market governance", "Deferral or rework outcomes of the Demand Board are not shown: not documented"] } };
 
   // ---------- validation placeholders: HVS-derived detail excluded (author rule) ----------
   var PO = "Process owner to confirm";
-  var mobready = { key: "mobready", name: "Mobilisation and delivery readiness", src: "Placeholder: source to be established", laneOrder: [PO],
-    obj: "Confirmed upstream output: an approved investment or approved in-year plan change. Confirmed downstream input: delivery-ready work for the applicable project or BAU/SIR route.",
-    tasks: `MOB-01|Mobilisation Route and Activities (to Confirm)|Mobilisation route and detailed activities require confirmation from an independently authored Vodafone source|Process owner to confirm|||I
-MOB-02|Initiate Required Financial Setup|Initiate the required financial setup (linked subprocess A: SAP project, WBS and budget setup)|Process owner to confirm|||I`,
-    gws: { "MOB-02": { q: "Delivery route?", main: "Project (G2 to G6)", br: [{ l: "BAU / SIR", to: "end:BAU/SIR integrated delivery, not full project gating" }] } },
-    conf: "provisional", confNote: "Validation placeholder. Detailed steps from the HVS 4 and 5 pack are excluded because its authorship includes the analyst." };
-  var om = { key: "om", name: "Order Management (validation required)", src: "Placeholder: source to be established", laneOrder: [PO],
-    obj: "Applies only where the documented Order Management route applies. Its applicability, activities, ownership and system interactions require validation from an independently authored Order Management process.",
-    tasks: `OM-01|Order Management Activities (to Validate)|Order Management applicability, activities, ownership and system interactions require validation from an independently authored Order Management process|Process owner to confirm|||I`,
-    gws: {}, conf: "provisional", confNote: "Validation placeholder. HVS-derived order capture, assurance and acceptance steps are excluded." };
+  var HVSD = "HVS 4 and 5 Mobilisation Capability MOC v0.1 (independently authored original)";
+  var mobready = { key: "mobready", name: "Mobilisation and delivery readiness", src: HVSD + ", slides 9 to 12",
+    laneOrder: ["Requester for Mobilisation", "Market Planning Lead", "Market Finance Lead", "Governance SPOC & Market Finance Lead", "SAB Governance", "Decision Makers (market RAPID)"],
+    obj: "Expected mobilisation input: an approved investment or approved in-year plan change, supported by the required approval evidence. Entry criteria remain subject to process-owner confirmation. Expected mobilisation output: work accepted as delivery-ready for the applicable project or BAU/SIR route.",
+    tasks: `MB-01|Submit Mobilisation Request|Submit the mobilisation request (PPM tool, email or SharePoint form, depending on the market)|Requester for Mobilisation|||C1|HVS 4 and 5 MOC v0.1 slide 12, step 1
+MB-03|Prepare or Refresh Approval Documentation|Manage updates to the mobilisation documentation and include stakeholder feedback|Requester for Mobilisation|||C1|HVS 4 and 5 MOC v0.1 slide 12, steps 2 and 3
+SAB-1|Request Intake|Capture, classify and validate the spend request|SAB Governance||Validated request|C1|HVS 4 and 5 MOC v0.1 slides 10 and 11, stage 1
+SAB-2|Quality Check|Assess submission quality and correct exceptions|SAB Governance||Quality-cleared submission|C1|HVS 4 and 5 MOC v0.1 slides 10 and 11, stage 2
+SAB-3|SAB Governance|Prepare the governance pack and assess the SAB outcome|SAB Governance||Governance decision|C1|HVS 4 and 5 MOC v0.1 slides 10 and 11, stage 3
+SAB-4|Spend Approval|Route, approve, record and communicate the decision|SAB Governance||Approved spend request|C1|HVS 4 and 5 MOC v0.1 slides 10 and 11, stage 4
+SAB-5|Fulfilment|Allocate or transfer budget and close the case; budget loading itself sits in the shared SAP/WBS subprocess|SAB Governance||Budget fulfilled|C1|HVS 4 and 5 MOC v0.1 slides 10 and 11, stage 5
+MB-04|Review and Decide (Applicable Approval Process)|Decision makers review the request; decision authority per market RAPID; G2 approval if applicable|Decision Makers (market RAPID)||Decision|V|HVS 4 and 5 MOC v0.1 slide 12, step 7 and Local Market Adaptation 4
+MB-02|Validate Existing Justification in Plan|Validate plan details, justification and financial elements in the latest approved plan|Market Planning Lead / Market Finance Lead|||C1|HVS 4 and 5 MOC v0.1 slide 12, steps 4a and 4b
+MB-05|Record and Communicate Decision|Record decisions and actions in the mobilisation tracker and communicate them|Governance SPOC & Market Finance Lead|Mobilisation tracker|Decision recorded|C1|HVS 4 and 5 MOC v0.1 slide 12, steps 8 and 9
+MB-06|Initiate Required Financial Setup|Initiate the required financial setup through the shared SAP/WBS and budget setup subprocess|Market Finance Lead|||C2|HVS 4 and 5 MOC v0.1 slide 12, step 10`,
+    gws: { "MB-01": { q: "Can mobilisation proceed directly from the approved plan?", main: "No", br: [{ l: "Yes: direct mobilisation route", to: "@MB-02" }] },
+           "MB-03": { q: "Does the SAB process apply?", main: "Yes", br: [{ l: "No: applicable approval process", to: "@MB-04" }] },
+           "MB-04": { q: "Approved?", main: "Approved", mainTo: "@MB-05", br: [{ l: "Rejected with actions", to: "@MB-03" }] },
+           "MB-05": { q: "Is SAP/WBS or budget setup required?", main: "Yes", br: [{ l: "No", to: "@Mob-delivery-route" }] },
+           "MB-06": { id: "Mob-delivery-route", q: "Delivery route?", main: "Project (G2 to G6)", br: [{ l: "BAU / SIR", to: "end:BAU/SIR integrated delivery, not full project gating" }] } },
+    jumps: { "SAB-5": "MB-05" },
+    startLabel: "Approved investment or in-year plan change, with the applicable spend-approval evidence",
+    conf: "confirmed", confShort: "Documented, SAB conditional", confNote: "Mobilisation and the five SAB stages follow the independently authored HVS original. SAB is not mandatory for every investment. Entry criteria and decision thresholds remain for process-owner confirmation." };
+
+  var om = { key: "om", name: "Order Management", src: HVSD + ", slides 5 to 7",
+    laneOrder: ["Order Requester", "Networks Order Manager", "Networks Function SME", "Delivery Manager"],
+    obj: "Conditional: entered only where the documented Order Management route applies. Order assurance, internal or external checks, functional acceptance in Pega, overall acceptance, WBS and budget arrangements through the shared subprocess, and handover to the delivery queue.",
+    tasks: `OM-01|Create or Update Order in Networks Front Door|Create or update the order in the Networks Front Door|Order Requester|Networks Front Door (Pega)||C1|HVS 4 and 5 MOC v0.1 slide 6, step 1
+OM-02|Submit Order|Submit the order in Pega|Order Requester|Pega||C1|HVS 4 and 5 MOC v0.1 slide 6, step 1
+OM-03|Order Assurance|The Networks Order Manager reviews the submission and completes order assurance|Networks Order Manager|Pega||C1|HVS 4 and 5 MOC v0.1 slide 6, step 2
+OM-04|Validate Commercial and Contractual Evidence|External: validate signed contract details, funding, agreed SLAs, scope and volumes of the contract|Networks Order Manager|Pega||C1|HVS 4 and 5 MOC v0.1 slide 6, step 3
+OM-05|Obtain WBS Information (External)|WBS codes are provided by IP&H, supported by the Network Market Planner and Group Network Finance|Networks Order Manager / IP&H|||C1|HVS 4 and 5 MOC v0.1 slide 7, box 9
+OM-06|Validate Business Case and Budget Evidence|Internal: confirm an approved business case is attached and the work is approved by local market governance with allocated budget|Networks Order Manager|Pega||C1|HVS 4 and 5 MOC v0.1 slide 6, step 4
+OM-07|Identify WBS Information from Business Case (Internal)|WBS codes are detailed in the business case|Networks Order Manager|||C1|HVS 4 and 5 MOC v0.1 slide 7, box 9
+OM-08|Decompose Order into Service Elements|Decompose the order and record it in Pega|Networks Order Manager|Pega||C1|HVS 4 and 5 MOC v0.1 slide 7, box 6
+OM-09|Route Elements to Impacted Functions|Recording the order in Pega routes each service element to the impacted functions|Networks Order Manager|Pega||C1|HVS 4 and 5 MOC v0.1 slide 7, box 6
+OM-10|Functions Validate Requirements|Each impacted function reviews the order against the quotation (volume, resources, scheduling)|Networks Function SME|Pega||C1|HVS 4 and 5 MOC v0.1 slide 7, box 7
+OM-11|Confirm Resource Commitments|Secure resources for delivery (hard book) and commit resources and schedule|Networks Function SME|WFM||C1|HVS 4 and 5 MOC v0.1 slide 7, box 7
+OM-12|Record Functional Acceptance in Pega|Each impacted function records its functional acceptance in Pega|Networks Function SME|Pega|Functional acceptance|C1|HVS 4 and 5 MOC v0.1 slide 7, box 8
+OM-13|Confirm Overall Order Acceptance|The Networks Order Manager confirms overall order acceptance in Pega|Networks Order Manager|Pega|Order accepted|C1|HVS 4 and 5 MOC v0.1 slide 7, box 8
+OM-14|Complete WBS and Budget Arrangements|Complete the applicable WBS and budget arrangements through the shared SAP/WBS and budget setup subprocess|Networks Order Manager|||C2|HVS 4 and 5 MOC v0.1 slide 7, boxes 9 and 10
+OM-15|Move Accepted Order to Delivery Queue|The accepted order moves to the delivery queue for handover to delivery|Networks Order Manager|Pega||C1|HVS 4 and 5 MOC v0.1 slide 7
+OM-16|Delivery Manager Picks Up Order|The Delivery Manager picks up the order, confirms SoWs, requests a PO if applicable and updates delivery tracking in Pega|Delivery Manager|Pega||C1|HVS 4 and 5 MOC v0.1 slide 7, box 10`,
+    gws: { "OM-03": { q: "Internal or external order?", main: "External", br: [{ l: "Internal", to: "@OM-06" }] },
+           "OM-12": { q: "Have all required functions accepted?", main: "Yes", br: [{ l: "No: return to the relevant function", to: "@OM-10" }] } },
+    jumps: { "OM-05": "OM-08" },
+    conf: "confirmed", confShort: "Documented, conditional route", confNote: "Activities follow the independently authored HVS original (C1; C2 where wording is consolidated). The route applies only where documented; which off-plan investments use it is still a validation point." };
 
   // ---------- delivery G2-G6 ----------
   var DROLE = { "EIM/EDM": "Engineering Delivery Manager (EDM)", "Team in Vertical": "Team in NSE Vertical" };
@@ -1100,30 +1143,59 @@ MOB-02|Initiate Required Financial Setup|Initiate the required financial setup (
   dlm2.conf = "provisional"; dlm2.confNote = dlm1.confNote;
 
   // ---------- linked, recurring and conditional subprocesses ----------
-  var wbsts = { key: "wbsts", name: "SAP project, WBS and budget setup", src: "Placeholder: source to be established", laneOrder: [PO],
-    obj: "Called from mobilisation (initiate required financial setup). SAP project definition, CAPEX WBS, timesheet WBS, SAP MDG and budget-loading activities require confirmation from independently authored SAP, Finance and Mobilisation procedures.",
-    tasks: `WB-01|SAP Project, WBS and Budget Setup (to Confirm)|SAP project definition, CAPEX WBS, timesheet WBS, SAP MDG and budget-loading activities require confirmation from independently authored SAP, Finance and Mobilisation procedures|Process owner to confirm|SAP / SAP MDG||I`,
-    gws: {}, startLabel: "Called from mobilisation", endLabel: "Financial setup complete",
-    conf: "provisional", confNote: "Validation placeholder. HVS-derived WBS and budget steps are excluded." };
-  var proc = { key: "proc", name: "Procurement and PO route (conditional)", src: INT, laneOrder: ["Delivery Manager"],
-    obj: "Where supplier spend applies, the applicable authorised procurement procedure defines the route; delivery starts once the commercial or procurement conditions are met.",
-    tasks: `PR-01|Procurement Route per Authorised Procedure|Procurement route defined by the applicable authorised procurement procedure; route and ownership require source confirmation|Delivery Manager|||I
-PR-02|Confirm Commercial and Procurement Conditions|Delivery starts once the required commercial or procurement conditions are satisfied|Delivery Manager|||I`,
-    gws: {},
-    startLabel: "Conditional, before delivery starts", endLabel: "Conditions met; delivery can start",
-    conf: "provisional", confNote: "Procurement route and ownership require source confirmation; no unsupported procurement steps are shown." };
-  var finexec = { key: "finexec", name: "Supplier financial execution (subject to procurement scenario)", src: INT,
-    laneOrder: ["Authorised Receiver", "Service Manager", "Accounts Payable", "Finance"],
-    obj: "Conditional, not one universal sequence: record receipt when goods or services are accepted, match PO, receipt and invoice, resolve exceptions, pay, and update actuals and commitments.",
-    tasks: `FE-01|Record Goods or Service Receipt|When goods or services are accepted, record the receipt|Authorised Receiver|EVO||I
-FE-02|Receive Invoice|Receive the supplier invoice|Accounts Payable|Invoice process||I
-FE-03|Match PO, Receipt and Invoice|Match the PO, receipt and invoice|Accounts Payable|SAP / EVO||I
-FE-04|Resolve Exception|Resolve the matching exception|Service Manager|||I
-FE-05|Process Payment|Process payment under applicable terms|Finance|SAP||I
-FE-06|Update Actuals and Commitments|Update actuals and commitments|Finance|SAP||I`,
-    gws: { "FE-03": { q: "Match successful?", main: "Exception", br: [{ l: "Yes", to: "@FE-05" }] } }, jumps: { "FE-04": "FE-03" },
-    startLabel: "During delivery, per procurement scenario", endLabel: "Actuals and commitments updated",
-    conf: "provisional", confNote: "No verified procurement or finance source establishes one sequence; all steps stay I until validated." };
+  var wbsts = { key: "wbsts", name: "SAP/WBS and budget setup", src: HVSD + ", slides 7 and 8",
+    laneOrder: ["Networks Order Manager", "Service Owner", "Network Market Planning (NMP)", "IP&H", "Finance FDS / offshore team"],
+    obj: "Shared subprocess, called from mobilisation or Order Management. Timesheet WBS creation through SAP MDG, then a separate check of approved funding and spend authority, and CAPEX budget loading only where required. The timesheet WBS and the CAPEX WBS are not assumed to be the same.",
+    tasks: `WB-01|Confirm Accepted Order|The Networks Order Manager communicates that the WBS can be created|Networks Order Manager|||C1|HVS 4 and 5 MOC v0.1 slide 8
+WB-02|Review Booked Resources and Countries|Review booked resources to confirm the resource-country requirements; a separate WBS is needed per country|Service Owner|||C1|HVS 4 and 5 MOC v0.1 slide 8, box 1
+WB-03|Prepare SAP MDG Template|Prepare the MDG template for WBS creation, except the project code (NMP for local market delivery; Service Owner for central NSE delivery)|Network Market Planning (NMP)|Excel MDG template||C1|HVS 4 and 5 MOC v0.1 slide 8, box 2
+WB-04|Finalise Template and Check Existing Project|IP&H finalises the template with the project code and checks whether an SAP project already exists|IP&H|Excel MDG template||C1|HVS 4 and 5 MOC v0.1 slide 8, boxes 2 and 3
+WB-05|New Project Route|Create a new project and WBS(s) to cover all resource locations|IP&H|SAP MDG||C1|HVS 4 and 5 MOC v0.1 slide 8, box 3
+WB-06|Existing Project Route|If required, create new WBS(s) for an additional resource location|IP&H|SAP MDG||C1|HVS 4 and 5 MOC v0.1 slide 8, box 3
+WB-07|Upload Template into SAP MDG|Upload the template into SAP MDG|IP&H|SAP MDG||C1|HVS 4 and 5 MOC v0.1 slide 8, box 3
+WB-08|Monitor Creation and Update WBS Records|Monitor WBS creation and update the WBS database and Time Buddy records|IP&H|WBS database / Time Buddy||C1|HVS 4 and 5 MOC v0.1 slide 8, box 3
+WB-09|Share WBS Codes with Delivery Stakeholders|Share the WBS codes with delivery and timesheet teams|Networks Order Manager|||C1|HVS 4 and 5 MOC v0.1 slide 7, box 9; slide 8, box 4
+WB-10|Verify Approved Funding and Spend Authority|WBS structure established; approved budget allocation and spend authority verified separately|Networks Order Manager|||I|No independent page associated
+WB-11|Load Budget on Project CAPEX WBS|Where required, Finance FDS and the offshore team load budget on the Project CAPEX WBS, coordinated by the Networks Order Manager|Finance FDS / offshore team|SAP||V|HVS 4 and 5 MOC v0.1 slide 7, box 9 ("if required")
+WB-12|Confirm Financial Readiness|Confirm financial readiness for delivery|Networks Order Manager|||I|No independent page associated`,
+    gws: { "WB-04": { q: "Does an SAP project already exist?", main: "No", br: [{ l: "Yes", to: "@WB-06" }] },
+           "WB-10": { q: "CAPEX budget loading required?", main: "Yes", br: [{ l: "No", to: "@WB-12" }] } },
+    jumps: { "WB-05": "WB-07" },
+    startLabel: "Called from mobilisation or Order Management", endLabel: "Financial readiness confirmed",
+    conf: "confirmed", confShort: "Documented WBS steps, funding controls to confirm", confNote: "Timesheet WBS creation follows the independently authored HVS original. Funding verification and financial readiness stay I until the applicable SAP/Finance procedure is linked; budget loading is conditional (V).",
+    notes: { "WBS ownership (HVS slide 7, box 9)": ["External-order WBS information: IP&H, supported by the Network Market Planner and Group Network Finance", "Internal-order WBS information: identified through the approved business case", "WBS communication: Networks Order Manager", "Budget loading on CAPEX WBS: Finance FDS and offshore team, coordinated with the Networks Order Manager"],
+             "Distinct elements, not one universal sequence": ["Investment approval", "Spend authorisation", "SAP project definition", "CAPEX WBS", "Timesheet WBS", "Budget allocation", "Budget loading", "Budget transfer"] } };
+  var proc = { key: "proc", name: "Procurement and PO route (conditional)", src: "Procure to Pay Standard; Goods Receipting (GRN) Process",
+    laneOrder: ["Procurement / Commercial Owner to Confirm", "Supplier"],
+    obj: "Conditional: only where supplier procurement is required. Shows the documented procurement scenario from the Procure to Pay standard and GRN guide; it is not imposed on every procurement transaction.",
+    tasks: `PR-01|Confirm Procurement Requirement|Confirm that supplier procurement is required|Procurement / Commercial Owner to Confirm|||I|Procure to Pay Standard (page reference to associate before promotion)
+PR-02|Confirm Supplier Quotation and Approved Scope|Confirm the supplier quotation and approved scope|Procurement / Commercial Owner to Confirm|||I|Procure to Pay Standard (page reference to associate before promotion)
+PR-03|Raise Shopping Cart|Raise the shopping cart where required|Procurement / Commercial Owner to Confirm|EVO||I|Goods Receipting (GRN) Process (page reference to associate before promotion)
+PR-04|Obtain Shopping Cart Approval|Obtain shopping cart approval|Procurement / Commercial Owner to Confirm|EVO||I|Goods Receipting (GRN) Process (page reference to associate before promotion)
+PR-05|Generate Purchase Order|Generate the purchase order|Procurement / Commercial Owner to Confirm|SAP / EVO||I|Goods Receipting (GRN) Process (page reference to associate before promotion)
+PR-06|Issue PO to Supplier|Issue the purchase order to the supplier|Procurement / Commercial Owner to Confirm|SAP / EVO||I|Goods Receipting (GRN) Process (page reference to associate before promotion)
+PR-07|Supplier Delivers Goods or Services|The supplier delivers the goods or services|Supplier|||I|Goods Receipting (GRN) Process (page reference to associate before promotion)
+PR-08|Confirm Delivery or Service Acceptance|Confirm delivery or service acceptance|Procurement / Commercial Owner to Confirm|||I|Goods Receipting (GRN) Process (page reference to associate before promotion)`,
+    gws: { START: { q: "Is supplier procurement required?", main: "Yes", br: [{ l: "No: bypass procurement", to: "end:Procurement not required" }] },
+           "PR-02": { q: "Shopping cart required?", main: "Yes", br: [{ l: "No", to: "@PR-05" }] } },
+    startLabel: "Conditional, before delivery starts", endLabel: "Goods or services accepted",
+    conf: "provisional", confShort: "Documented scenario, page links pending", confNote: "Activities follow the Procure to Pay standard and GRN guide for their documented scenario. They stay I until each is linked to its source page; the procurement owner is still to confirm." };
+  var finexec = { key: "finexec", name: "Supplier financial execution (subject to procurement scenario)", src: "Goods Receipting (GRN) Process; FM.02.03.04.02 Match Invoice to Purchase Order",
+    laneOrder: ["Authorised Receiver", "Finance / Procurement Role to Confirm"],
+    obj: "Scenario-dependent: the authorised receiver validates delivery and records goods receipt per the applicable procedure; the invoice is matched two-way (invoice to PO) or three-way (invoice, PO and GRN) as the matching procedure requires; exceptions are resolved; payment follows authorisation; actuals and commitments are updated.",
+    tasks: `FE-01|Validate Delivery|The authorised receiver validates the delivered goods or services|Authorised Receiver|EVO||I|Goods Receipting (GRN) Process (page reference to associate before promotion)
+FE-02|Record Goods Receipt|Record the goods receipt according to the applicable procedure|Authorised Receiver|EVO||I|Goods Receipting (GRN) Process (page reference to associate before promotion)
+FE-03|Receive Supplier Invoice|Receive the supplier invoice|Finance / Procurement Role to Confirm|Invoice process||I|FM.02.03.04.02 Match Invoice to Purchase Order (page reference to associate before promotion)
+FE-04|Two-way Match|Match the invoice against the PO, for the transactions the procedure specifies|Finance / Procurement Role to Confirm|SAP / EVO||I|FM.02.03.04.02 Match Invoice to Purchase Order (page reference to associate before promotion)
+FE-05|Three-way Match|Match the invoice, PO and GRN, for the applicable transactions|Finance / Procurement Role to Confirm|SAP / EVO||I|FM.02.03.04.02 Match Invoice to Purchase Order (page reference to associate before promotion)
+FE-06|Resolve Exception|Resolve the exception through the applicable resolution procedure, then return to matching|Finance / Procurement Role to Confirm|||I|FM.02.03.04.02 Match Invoice to Purchase Order (page reference to associate before promotion)
+FE-07|Process Payment|Payment follows the applicable authorisation|Finance / Procurement Role to Confirm|SAP||I|No independent page associated
+FE-08|Update Actuals and Commitments|Update financial actuals and commitments|Finance / Procurement Role to Confirm|SAP||I|No independent page associated`,
+    gws: { "FE-03": { id: "Matching-route", q: "Which matching procedure applies?", main: "Two-way", br: [{ l: "Three-way", to: "@FE-05" }] },
+           "FE-05": { id: "Match-result", q: "Match successful?", main: "Exception", br: [{ l: "Matched", to: "@FE-07" }] } },
+    jumps: { "FE-04": "Match-result", "FE-06": "Matching-route" },
+    startLabel: "Goods or services delivered", endLabel: "Actuals and commitments updated",
+    conf: "provisional", confShort: "Documented scenario, page links pending", confNote: "Three-way matching is not mandatory for every transaction. Activities stay I until linked to the GRN guide and FM.02.03.04.02 pages; payment and actuals have no independent source yet." };
   var gov = { key: "gov", name: "Parent recurring governance process", src: INT,
     laneOrder: ["NMP", "BP&A", "Vertical SPOCs", "Finance & Planning", "Demand Governance Team"],
     obj: "Monthly, for all active investments and delivery: pre-closure, closure, forecast update, actuals and commitments review, variance commentary and Market Interlock, with corrective action or replanning where needed.",
@@ -1143,13 +1215,16 @@ RG-06|Market Interlock|Run the monthly Market Interlock (child subprocess D3)|De
   var preclose = recurring("preclose", "Every month (recurring)", "Vertical pre-closure report received");
   var close = recurring("close", "Month N to N+1 (recurring)", "Consolidated financial view published");
   var interlock = recurring("interlock", "Every month (recurring)", "Post-meeting actions tracked");
-  var fclose = { key: "fclose", name: "Financial close (separate from G6)", src: INT, laneOrder: ["Finance", "Finance & SAP Support"],
-    obj: "After G6, reconcile actuals and commitments, resolve remaining procurement items, and close or update financial structures where the governing process requires it.",
-    tasks: `FC-01|Reconcile Actuals and Commitments|Reconcile actuals and commitments|Finance|SAP||I
-FC-02|Resolve Remaining Procurement Items|Review outstanding POs and invoices|Finance|SAP||I
-FC-03|Close or Update Financial Structures|Close or update project/WBS structures where the governing process requires it|Finance & SAP Support|SAP||I`,
-    gws: {}, startLabel: "After G6 completion (not a G6 prerequisite)", endLabel: "Financial close complete",
-    conf: "provisional", confNote: "No mandatory financial-close checklist is implied; SAP and WBS closure rules are unverified." };
+  var fclose = { key: "fclose", name: "Financial close (separate from G6)", src: INT, laneOrder: ["Finance role to confirm"],
+    obj: "Separate from G6 delivery completion, which covers technical and operational completion. Reconciliation can start before G6, and G6 does not wait for every financial-close activity. Activities follow the applicable Finance/SAP procedure, which is not yet available.",
+    tasks: `FC-01|Reconcile Actual Expenditure|Reconcile actual expenditure|Finance role to confirm|SAP||I|No independent page associated
+FC-02|Review Outstanding Commitments|Review outstanding commitments|Finance role to confirm|SAP||I|No independent page associated
+FC-03|Resolve Open POs and Invoices|Resolve open purchase orders and invoices|Finance role to confirm|SAP / EVO||I|No independent page associated
+FC-04|Treat Remaining Budget|Treat the remaining budget|Finance role to confirm|SAP||I|No independent page associated
+FC-05|Update SAP/WBS Status|Apply the applicable SAP/WBS status updates|Finance role to confirm|SAP||I|No independent page associated
+FC-06|Confirm Financial Close|Formal financial-close confirmation|Finance role to confirm|||I|No independent page associated`,
+    gws: {}, startLabel: "Alongside and after delivery, per Finance/SAP procedure", endLabel: "Financial close confirmed",
+    conf: "provisional", confNote: "All steps I: the procurement sources cover transaction controls but do not establish the SAP project/WBS financial-close procedure." };
   var benefits = { key: "benefits", name: "Benefits and KPI monitoring (where applicable)", src: INT, laneOrder: ["Benefits owner to confirm"],
     obj: "Optional and ongoing, where a benefits owner and measurement plan exist. Detailed activities are restored only once an independently authored benefits-management process is found.",
     tasks: `BN-01|Benefits and KPI Monitoring (to Confirm)|Requires confirmation of the responsible owner, baseline, measurement frequency, reporting forum and closure criteria|Benefits owner to confirm|||I`,
@@ -1160,7 +1235,7 @@ FC-03|Close or Update Financial Structures|Close or update project/WBS structure
     ["wbsts", "called from mobilisation", "Linked subprocess", "A"], ["proc", "conditional, before delivery starts", "Conditional subprocess", "B"],
     ["finexec", "runs during active delivery", "Conditional subprocess", "C"], ["gov", "recurring monthly, all active work", "Recurring subprocess", "D"],
     ["preclose", "child of D, recurring", "Child subprocess", "D1"], ["close", "child of D, recurring", "Child subprocess", "D2"], ["interlock", "child of D, recurring", "Child subprocess", "D3"],
-    ["fclose", "triggered after G6, where applicable", "Post-delivery subprocess", "E"], ["benefits", "optional and ongoing", "Optional subprocess", "F"]];
+    ["fclose", "alongside and after delivery; not a G6 prerequisite", "Post-delivery subprocess", "E"], ["benefits", "optional and ongoing", "Optional subprocess", "F"]];
   var LIB = { nep: nep, dblrp1: db1, dblrp2: db2, rolling: rolling, select: select, intake: intake, impact: impact, dmd2: dmd2, mobready: mobready,
     om: om, dlm1: dlm1, dlm2: dlm2, wbsts: wbsts, proc: proc, finexec: finexec, gov: gov,
     preclose: preclose, close: close, interlock: interlock, fclose: fclose, benefits: benefits };
@@ -1199,11 +1274,12 @@ FC-03|Close or Update Financial Structures|Close or update project/WBS structure
   D.off.title = "In-year demand route (off-plan)"; D.off.start = "Demand raised on the Single Front Door";
   D.off.scope = "Demand outside the approved DB is submitted and triaged, assessed at G0 to G2 and approved through the Demand Board and in-year change. Order Management applies only where its route is documented; otherwise the work goes through mobilisation. Linked subprocesses run alongside.";
   rolling.gws = rolling.gws || {};
-  rolling.gws["RF-09"] = { q: "Does the documented Order Management route apply?", main: "Yes", br: [{ l: "No", to: "phase:mobready" }, { l: "Unable to determine", to: "end:Process-owner validation required" }] };
+  rolling.gws["RF-09"] = { q: "Does the documented Order Management route apply?", main: "Yes", br: [{ l: "No", to: "phase:mobready" }, { l: "Unknown", to: "end:Process-owner validation required" }] };
   LIB.rolling = rolling;
   assemble(D.off, ["intake", "impact", "dmd2", "rolling", "om", "mobready", "dlm1", "dlm2"],
     ["intake", "impact", { gw: "Covered by an approved investment?", main: "No", br: [{ l: "Yes: mobilise from approved plan", to: "@mobready" }] },
-     "dmd2", "rolling", { gw: "Does the documented Order Management route apply?", main: "Yes", br: [{ l: "No", to: "@mobready" }, { l: "Unable to determine", to: "end:Process-owner validation required" }] },
+     "dmd2", { gw: "Does the approved demand require an in-year plan change?", main: "Yes", br: [{ l: "No: bypass NCAR and rolling plan", to: "@OM-route" }] },
+     "rolling", { id: "OM-route", gw: "Does the documented Order Management route apply?", main: "Yes", br: [{ l: "No", to: "@mobready" }, { l: "Unknown", to: "end:Process-owner validation required" }] },
      "om", "mobready", GDEL, "dlm1", "dlm2"], {});
 })(typeof SNIP_DATA !== "undefined" ? SNIP_DATA : require("./data.js"));
 
@@ -1240,7 +1316,7 @@ var BPMN = (function () {
     if (ph._tasks) return ph._tasks;
     ph._tasks = ph.tasks.trim().split("\n").map(function (line) {
       var f = line.split("|");
-      var t = { id: f[0].trim(), name: f[1], activity: f[2], team: f[3], tool: f[4], output: f[5] || "", status: (f[6] || "").trim(), phase: ph.n };
+      var t = { id: f[0].trim(), name: f[1], activity: f[2], team: f[3], tool: f[4], output: f[5] || "", status: (f[6] || "").trim(), ref: (f[7] || "").trim(), phase: ph.n };
       var first = t.team.split(" / ")[0].trim();
       t.conf = /^(C1|C2|V)$/.test(t.status) ? "supported" : "provisional"; t.confNote = ph.confNote || "";
       t.lane = (ph.lanes && ph.lanes[t.id]) || (ph.laneOrder && ph.laneOrder.indexOf(t.team) >= 0 ? t.team : ph.laneOrder && ph.laneOrder.indexOf(first) >= 0 ? first : laneOf(t.team));
@@ -1260,7 +1336,7 @@ var BPMN = (function () {
     var pos = {}; nodes.forEach(function (n, i) { pos[n.id] = i; });
     function cutOk(i) { // cut before node i
       if (!(nodes[i].type === "task" || nodes[i].type === "sub" || nodes[i].type === "end")) return false;
-      return !nodes.some(function (n, j) { return n.jump && j < i && pos[n.jump] >= i; });
+      return !nodes.some(function (n, j) { return n.jump && pos[n.jump] !== undefined && ((j < i && pos[n.jump] >= i) || (j >= i && pos[n.jump] < i)); });
     }
     var cuts = [], acc = 0, target = total / k;
     for (var i = 0; i < nodes.length && cuts.length < k - 1; i++) {
@@ -1300,9 +1376,11 @@ var BPMN = (function () {
     nodes.push(ph.startLabel || ph.n === 1
       ? { id: "START", type: "start", lane: tasks[0].lane, label: ph.startLabel || plan.start }
       : { id: "IN", type: "linkIn", lane: tasks[0].lane, label: "From " + (plan.phases[prevN - 1].code || prevN) + " · " + plan.phases[prevN - 1].name, fromPhase: prevN });
+    if (ph.gws && ph.gws.START) nodes = nodes.concat(gwNodes(ph.gws.START, tasks[0].lane));
     tasks.forEach(function (t) {
       nodes.push({ id: t.id, type: "task", lane: t.lane, label: t.name, task: t, jump: ph.jumps && ph.jumps[t.id] });
       if (ph.gws && ph.gws[t.id]) nodes = nodes.concat(gwNodes(ph.gws[t.id], t.lane));
+      if (ph.ends && ph.ends[t.id]) nodes.push({ id: t.id + "_END", type: "end", lane: t.lane, label: ph.ends[t.id] });
     });
     var tail = nodes[nodes.length - 1].lane;
     var nx = plan.phases[(ph.nextN || ph.n + 1) - 1];
@@ -1561,7 +1639,7 @@ var BPMN = (function () {
       var name = t ? n.id + " " + n.label : n.label;
       x.push("    <bpmn:" + tag(n) + ' id="' + id + '" name="' + esc(name) + '"' + (t ? ">" : "/>"));
       if (t) {
-        x.push("      <bpmn:documentation>" + esc("Phase " + t.phase + ". " + t.activity + ". Team: " + t.team + ". Tool: " + t.tool + (t.output ? ". Output: " + t.output : "") + (t.status ? ". Status: " + t.status : "") + ". Confidence: " + t.conf + (t.confNote ? " (" + t.confNote + ")" : "")) + "</bpmn:documentation>");
+        x.push("      <bpmn:documentation>" + esc("Phase " + t.phase + ". " + t.activity + ". Team: " + t.team + ". Tool: " + t.tool + (t.output ? ". Output: " + t.output : "") + (t.status ? ". Status: " + t.status : "") + ". Evidence: " + t.status + (t.ref ? ". Source: " + t.ref : "")) + "</bpmn:documentation>");
         x.push("    </bpmn:task>");
       }
     });
@@ -1664,7 +1742,7 @@ if (typeof module !== "undefined") module.exports = BPMN;
     }
     $("detail").innerHTML = '<p class="eyebrow">' + t.id + " · " + phase().tag + "</p><h3>" + t.name + "</h3><dl>" +
       "<dt>Activity</dt><dd>" + t.activity + "</dd><dt>Team</dt><dd>" + t.team + "</dd><dt>Swimlane</dt><dd>" + t.lane + "</dd>" +
-      "<dt>Tool</dt><dd>" + (t.tool || "—") + "</dd>" + "<dt>Source note</dt><dd>" + t.confNote + "</dd>" + (t.output ? "<dt>Output</dt><dd>" + t.output + "</dd>" : "") +
+      "<dt>Tool</dt><dd>" + (t.tool || "—") + "</dd>" + (t.ref ? "<dt>Source reference</dt><dd>" + t.ref + "</dd>" : "") + "<dt>Subprocess note</dt><dd>" + t.confNote + "</dd>" + (t.output ? "<dt>Output</dt><dd>" + t.output + "</dd>" : "") +
       (t.status ? '<dt>Evidence</dt><dd><span class="st st-' + t.status + '-t">' + t.status + "</span> " + STATUS[t.status] + "</dd>" : "") + "</dl>";
   }
 
