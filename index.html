@@ -6,7 +6,7 @@
 <style>[hidden]{display:none!important}body{margin:0}</style>
 </head>
 <body>
-<title>SNIP Investment Lifecycle BPMN</title>
+<title>Network Planning Process Landscape</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap">
@@ -101,9 +101,9 @@ svg.bpmn { display: block; font-family: var(--f-body); }
 .t-id { font: 500 10px var(--f-mono); fill: var(--muted); letter-spacing: .03em; }
 .t-name { font: 600 12px var(--f-body); fill: var(--ink); }
 .t-tool { font: 400 10px var(--f-mono); fill: var(--muted); }
-.pill { fill: none; stroke-width: 1.2; } .pill-C { stroke: var(--c); } .pill-V { stroke: var(--v); } .pill-T { stroke: var(--t); }
+.pill { fill: none; stroke-width: 1.2; } .pill-C1, .pill-C2 { stroke: var(--c); } .pill-V { stroke: var(--v); } .pill-I { stroke: var(--t); } .pill-U { stroke: var(--end); }
 .pill-t { font: 600 9px var(--f-mono); }
-.st-C .pill-t { fill: var(--c); } .st-V .pill-t { fill: var(--v); } .st-T .pill-t { fill: var(--t); }
+.st-C1 .pill-t, .st-C2 .pill-t { fill: var(--c); } .st-V .pill-t { fill: var(--v); } .st-I .pill-t { fill: var(--t); } .st-U .pill-t { fill: var(--end); }
 .plus { fill: none; stroke: var(--edge); stroke-width: 1.2; } .plus-m { stroke: var(--edge); stroke-width: 1.4; }
 .gw-shape { fill: var(--surface); stroke: var(--gw); stroke-width: 1.8; }
 .gw-x { stroke: var(--gw); stroke-width: 2.4; stroke-linecap: round; }
@@ -138,7 +138,7 @@ tbody tr:hover td { background: var(--lane-b); }
 tbody tr.is-sel td { background: var(--accent-soft); }
 tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
 .st { display: inline-block; font: 600 11px var(--f-mono); border: 1.2px solid currentColor; border-radius: 4px; padding: 0 5px; }
-.st-C-t { color: var(--c); } .st-V-t { color: var(--v); } .st-T-t { color: var(--t); }
+.st-C1-t, .st-C2-t { color: var(--c); } .st-V-t { color: var(--v); } .st-I-t { color: var(--t); } .st-U-t { color: var(--end); }
 
 .detail dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 14px; margin: 0; font-size: 14px; }
 .detail dt { font: 500 11px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
@@ -155,28 +155,28 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
   <header class="top">
     <div>
       <div class="brandbar" aria-hidden="true"></div>
-      <p class="eyebrow">SNIP · End-to-end network investment lifecycle</p>
-      <h1>Network investment process in BPMN 2.0</h1>
-      <p class="lede">The on-plan and off-plan demand journeys, drawn as BPMN pools with swimlanes per team, including the governance flows from Booklet_NPDDT_v10.11 and the HVS mobilisation pack. Solid borders are confirmed from an independent source; dashed borders are provisional. Pick a journey, open a phase in the lifecycle strip, then select a task to see its activity, tool and output.</p>
+      <p class="eyebrow">Vodafone AS-IS network planning process landscape</p>
+      <h1>Network planning process landscape</h1>
+      <p class="lede">Documented planning, demand, governance, mobilisation, delivery and financial-management processes, including conditional and recurring interactions, drawn in BPMN 2.0 with swimlanes per role. Every step carries its evidence code.</p>
     </div>
     <div class="slider" id="slider" role="tablist" aria-label="Demand journey" data-pos="0">
       <span class="thumb" aria-hidden="true"></span>
-      <button role="tab" id="tab-on" data-plan="on" aria-selected="true">On-plan<small id="cnt-on"></small></button>
-      <button role="tab" id="tab-off" data-plan="off" aria-selected="false">Off-plan<small id="cnt-off"></small></button>
+      <button role="tab" id="tab-on" data-plan="on" aria-selected="true">Planned (on-plan)<small id="cnt-on"></small></button>
+      <button role="tab" id="tab-off" data-plan="off" aria-selected="false">In-year (off-plan)<small id="cnt-off"></small></button>
     </div>
   </header>
 
   <section class="card" id="lifecycle" role="tabpanel" aria-labelledby="tab-on">
     <div class="card-head">
       <div>
-        <p class="eyebrow" id="lc-eyebrow">Level 3 · lifecycle</p>
+        <p class="eyebrow" id="lc-eyebrow">Level 3 · process landscape</p>
         <h2 id="lc-title">On-plan demand</h2>
         <p class="sub" id="lc-scope"></p>
       </div>
       <div class="stats" id="lc-stats"></div>
     </div>
     <div class="frame" id="lc-frame"></div>
-    <p class="hint">Each box is a collapsed sub-process. Select one to open its task-level diagram below. Long flows wrap onto rows joined by link events.</p>
+    <p class="hint">The route shows the subprocesses an investment passes through; the bottom band holds linked, recurring and conditional subprocesses that run alongside it and are never steps in the route. Select any box to open its task-level diagram.</p>
   </section>
 
   <section class="card" id="phase">
@@ -200,11 +200,13 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
       <span><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="none" stroke="var(--link)" stroke-width="1.3"/><circle cx="11" cy="11" r="6.5" fill="none" stroke="var(--link)" stroke-width="1.3"/></svg>Link event: next row, or another phase (select to jump)</span>
       <span><svg width="22" height="22" viewBox="0 0 22 22"><path d="M11 2 L20 11 L11 20 L2 11Z" fill="none" stroke="var(--gw)" stroke-width="1.8"/><path d="M8 8 L14 14 M14 8 L8 14" stroke="var(--gw)" stroke-width="2"/></svg>Exclusive gateway</span>
       <span><svg width="34" height="10" viewBox="0 0 34 10"><path d="M1 5 H32" stroke="var(--edge)" stroke-width="1.4" stroke-dasharray="5 4"/></svg>Rework loop</span>
-      <span><b class="st st-C-t">C</b> Confirmed</span>
-      <span><b class="st st-V-t">V</b> Variable</span>
-      <span><b class="st st-T-t">T</b> Target</span>
-      <span><svg width="30" height="16" viewBox="0 0 30 16"><rect x="1" y="1" width="28" height="14" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.3"/></svg>Confirmed source</span>
-      <span><svg width="30" height="16" viewBox="0 0 30 16"><rect x="1" y="1" width="28" height="14" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.3" stroke-dasharray="5 3"/></svg>Provisional, to verify</span>
+      <span><b class="st st-C1-t">C1</b> Directly documented</span>
+      <span><b class="st st-C2-t">C2</b> Source-supported consolidation</span>
+      <span><b class="st st-V-t">V</b> Documented conditional or market variation</span>
+      <span><b class="st st-I-t">I</b> Inferred integration point, to confirm</span>
+      <span><b class="st st-U-t">U</b> Unsupported by the authorised sources</span>
+      <span><svg width="30" height="16" viewBox="0 0 30 16"><rect x="1" y="1" width="28" height="14" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.3"/></svg>C1, C2 or V</span>
+      <span><svg width="30" height="16" viewBox="0 0 30 16"><rect x="1" y="1" width="28" height="14" rx="4" fill="none" stroke="var(--muted)" stroke-width="1.3" stroke-dasharray="5 3"/></svg>I or U, to verify</span>
     </div>
   </section>
 
@@ -212,7 +214,7 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
     <section class="card">
       <h2>Phase tasks</h2>
       <div class="tbl-wrap"><table>
-        <thead><tr><th>ID</th><th>Task</th><th>Team</th><th>Tool</th><th>Output</th><th>Status</th><th>Confidence</th></tr></thead>
+        <thead><tr><th>ID</th><th>Task</th><th>Team</th><th>Tool</th><th>Output</th><th>Evidence</th></tr></thead>
         <tbody id="rows"></tbody>
       </table></div>
     </section>
@@ -222,7 +224,7 @@ tbody tr.is-sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
     </div>
   </div>
 
-  <p class="foot">Sources: Booklet_NPDDT_v10.11 (independently authored copy in the Demand Harmonisation SharePoint; NEP, DB/LRP and rolling forecast are confirmed from it); the SNIP End-to-End Network Investment Lifecycle analysis (a consolidated model, provisional); and the HVS 4 and 5 Mobilisation Capability pack (provisional until an independently authored original is confirmed). Solid borders mark steps traceable to an eligible independent source; dashed borders mark steps still to verify. Swimlanes group each task under its lead team; the full team is in the task detail.</p>
+  <p class="foot">AS-IS sources: Booklet_NPDDT_v10.11 (independently authored copy in the Demand Harmonisation SharePoint) for NEP, DB/LRP, in-year plan change, demand management, delivery and monthly governance; NSE E2E Project Delivery Process_2025 and RACI for G0 to G2 feasibility (FA activities). Detail from the HVS 4 and 5 Mobilisation Capability pack stays I until an independently authored original is confirmed. Steps marked I are provisional integration steps, not confirmed by the authorised source set; target-state activities are excluded. Swimlanes group each task under its lead role; the full team is in the task detail.</p>
 </div>
 
 <script>
@@ -996,6 +998,209 @@ FA.04|Feasibility Assessment|Assess delivery feasibility|Solution Authority||G2 
   });
 })(typeof SNIP_DATA !== "undefined" ? SNIP_DATA : require("./data.js"));
 
+// AS-IS process landscape: linked subprocesses with C1/C2/V/I/U evidence codes.
+// Runs after data.js and booklet.js, and rebuilds both routes from their phases.
+(function (D) {
+  var PICK = {}; ["on", "off"].forEach(function (k) { D[k].phases.forEach(function (p) { if (!PICK[p.key]) PICK[p.key] = p; }); });
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function lines(p) { return p.tasks.trim().split("\n"); }
+  // Set evidence codes: def for every task, overrides by ID.
+  function codes(p, def, over) {
+    p.tasks = lines(p).map(function (l) { var f = l.split("|"); while (f.length < 7) f.push(""); f[6] = (over && over[f[0]]) || def; return f.join("|"); }).join("\n");
+    return p;
+  }
+  function drop(p, ids) { p.tasks = lines(p).filter(function (l) { return ids.indexOf(l.split("|")[0]) < 0; }).join("\n"); ids.forEach(function (id) { if (p.gws) delete p.gws[id]; if (p.jumps) delete p.jumps[id]; }); return p; }
+  function swap(p, id, line) { p.tasks = lines(p).map(function (l) { return l.split("|")[0] === id ? line : l; }).join("\n"); return p; }
+  function rename(p, map) { Object.keys(map).forEach(function (a) { p.tasks = p.tasks.split(a).join(map[a]); if (p.laneOrder) p.laneOrder = p.laneOrder.map(function (l) { return l === a ? map[a] : l; }); }); return p; }
+  var BOOK = "Booklet_NPDDT_v10.11", HVS = "HVS 4 and 5 Mobilisation Capability pack", NSE = "NSE E2E Project Delivery Process_2025 and RACI", INT = "Provisional integration step";
+  var NOTE_I = "Provisional integration step, not confirmed by the authorised source set.";
+  var NOTE_HVS = "Detail from the HVS 4 and 5 pack; its authorship includes the analyst, so steps stay I until an independently authored original is confirmed.";
+
+  // ---------- planning ----------
+  var nep = codes(clone(PICK.nep), "C1"); nep.conf = "confirmed"; nep.confNote = "Confirmed against " + BOOK + ", independently authored copy in the Demand Harmonisation SharePoint.";
+  var db1 = codes(clone(PICK.dblrp1), "C1"); db1.conf = "confirmed"; db1.confNote = nep.confNote;
+  var db2 = codes(clone(PICK.dblrp2), "C1"); db2.conf = "confirmed"; db2.confNote = nep.confNote + " Includes the documented alternative-scenario route.";
+  var rolling = codes(clone(PICK.rolling), "C1"); rolling.name = "In-year plan change (rolling forecast)"; rolling.conf = "confirmed"; rolling.confNote = nep.confNote;
+
+  // ---------- select approved investment (on-plan) ----------
+  var select = codes(drop(clone(PICK.activation), ["ON-031", "ON-033", "ON-034", "ON-036", "ON-037"]), "I");
+  select.name = "Select approved investment"; select.src = INT; select.conf = "provisional"; select.confNote = NOTE_I;
+  select.obj = "Select an approved DB/LRP investment for execution and raise the mobilisation request. Funding, technical and resource checks happen once, in later subprocesses.";
+
+  // ---------- demand submission and triage (off-plan) ----------
+  var intake = { key: "intake", name: "Demand submission and triage", src: BOOK + " (WS4 original to confirm)",
+    laneOrder: ["Requestor", "Demand Assurance Manager (DAM)", "NW Vertical Function SPOC"],
+    obj: "Raise the demand on the Single Front Door, register it, check completeness, triage and classify it, identify impacted functions, then return, reject or progress it to impact assessment.",
+    tasks: `IN-01|Complete Required Demand Submission Information|Business need, request type, impacted markets, sponsor, required date, initial effort, funding position, dependencies and supporting evidence|Requestor|Single Front Door (Pega)||C2
+IN-02|Raise Demand on Single Front Door|Submit the demand on the Single Front Door (G0); merges OFF-011 and DM-01|Requestor|Single Front Door (Pega)|G0|C2
+IN-03|Generate Demand Reference|Register the demand for tracking|Demand Assurance Manager (DAM)|Pega|Demand reference|I
+IN-04|DAM Completeness Check|Check that the submission is complete|Demand Assurance Manager (DAM)|Pega||C2
+IN-05|DAM Triage and Classification|Triage the demand and confirm its classification and route; merges OFF-013, OFF-014 and DM-02|Demand Assurance Manager (DAM)|Pega||C2
+IN-06|Identify Impacted Functions|Identify the impacted NW functions and verticals|Demand Assurance Manager (DAM)|Pega||C2
+IN-07|Cross-functional Handshake|Handshake with other NW function PS or vertical SPOC for cross-functional demand|NW Vertical Function SPOC|||C2`,
+    gws: { "IN-04": { q: "Demand complete?", main: "Yes", br: [{ l: "No: return to requestor", to: "@IN-01" }] },
+           "IN-06": { q: "Cross-functional?", main: "Yes", br: [{ l: "No", to: "@Triage-outcome" }] },
+           "IN-07": { id: "Triage-outcome", q: "Triage outcome?", main: "Progress", br: [{ l: "Reject", to: "end:Demand rejected" }] } },
+    conf: "provisional", confNote: "Single Front Door, DAM triage and Demand Board detail follows the booklet; the independent WS4 original is not established, so nothing here is C1." };
+
+  // ---------- G0-G2 impact assessment and feasibility (both routes) ----------
+  var impact = { key: "impact", name: "G0 to G2 impact assessment and feasibility", src: NSE + "; " + BOOK,
+    laneOrder: ["Market Delivery Manager (MDM)", "Engineering Delivery Manager (EDM)", "Solution Authority", "Team in NSE Vertical", "IT", "Demand Governance Team"],
+    obj: "Accept the delivery request, allocate the EDM, team and Solution Authority, assess functional, technical, security and operational impact, estimate cost and resources, check budget and priority, and consolidate the impact assessment.",
+    tasks: `FA.01.01|Accept Request and Initiate EDM Allocation|Accept the request and initiate EDM allocation|Market Delivery Manager (MDM)|||C1
+FA.01.02|EDM Appointment|Appoint the Engineering Delivery Manager|Market Delivery Manager (MDM)|||C1
+FA.02.01|Team and Solution Authority Allocation|Allocate the delivery team and the Solution Authority|Engineering Delivery Manager (EDM)|||C1
+IA-01|Functional Impact Assessment|NW vertical teams and other NW functions assess impact (from DM-05, DM-06)|Team in NSE Vertical|||C2
+IA-02|IT Impact Assessment|IT assesses impact where IT dependencies exist (from DM-07)|IT|||C2
+IA-03|Technical Feasibility and HLD|Technical feasibility, high-level design or solution definition (from DM-08, DM-10)|Solution Authority|||C2
+FA.03.xx|Security, Privacy, Resilience and Operations Impact|Security, privacy, resilience and operations-impact activities|Team in NSE Vertical|||C1
+FA.04.xx|Feasibility Analysis and Cost Estimation|Feasibility analysis and cost estimation|Solution Authority|||C1
+IA-04|Resource Estimate|Estimate delivery resources; WFM detail not evidenced|Engineering Delivery Manager (EDM)|WFM||I
+IA-05|Budget and Priority Check|Check budget availability and priority with the market sponsor and NSE Planning (from DM-12, DM-13)|Demand Governance Team|||C2
+IA-06|Consolidated Impact Assessment|Consolidate the impact assessment; for in-year demand, submit it to the Demand Board (from DM-14)|Demand Governance Team||G2 submission|C2`,
+    gws: {}, conf: "provisional",
+    confNote: "FA activities confirmed against " + NSE + "; local role variations require market confirmation. Activity owners placed per role names given in the review, to check against the RACI." };
+
+  // ---------- demand approval (off-plan) ----------
+  var dmd2 = codes(drop(clone(PICK.dmd2), ["DM-22", "DM-23"]), "C2", { "DM-17": "V", "DM-19": "V" });
+  dmd2.name = "Demand approval: Demand Board, NCAR and NPRB"; dmd2.conf = "provisional";
+  dmd2.confNote = "NCAR and NPRB are conditional governance interfaces (V); entry criteria, thresholds and forum order are not confirmed.";
+
+  // ---------- mobilisation and delivery readiness (both routes) ----------
+  var mobready = { key: "mobready", name: "Mobilisation and delivery readiness", src: HVS,
+    laneOrder: ["Requester for Mobilisation", "Governance SPOC & Market Finance Lead", "Market Planning Lead", "Market Finance Lead", "Decision Makers (market RAPID)", "Delivery Manager", "Resource Management (WFM)"],
+    obj: "Request mobilisation, decide whether it can proceed from the latest approved plan, validate and decide where needed, record the decision, then set up WBS and budget, confirm resources and suppliers, and hand over to delivery.",
+    tasks: `MR-01|Request Mobilisation|Submit the mobilisation request (PPM tool, email or SharePoint form, by market)|Requester for Mobilisation|||I
+MR-02|Validate and Refine Mobilisation Documentation|Validate plan details, justification and financial elements; refine documentation with stakeholder feedback, financial assurance and vertical alignment|Market Planning Lead / Market Finance Lead|||I
+MR-03|Review and Decide|Review the mobilisation request and decide; decision authority per market RAPID; G2 approval if applicable|Decision Makers (market RAPID)||G2 if applicable|I
+MR-04|Record and Communicate Decision|Record the decision and actions in the mobilisation tracker and communicate them|Governance SPOC & Market Finance Lead|Mobilisation tracker|Decision recorded|I
+MR-05|Confirm Delivery Owner|Confirm the accountable delivery owner|Delivery Manager|||I
+MR-06|Provide WBS and Load Budget Where Required|Create or reuse the required project/WBS structure and load budget where required (WBS provision subprocess)|Market Finance Lead|SAP MDG / SAP||I
+MR-07|Confirm Resources and Supplier Requirements|Hard booking where applicable; confirm supplier requirements (procurement subprocess where needed)|Resource Management (WFM)|WFM||I
+MR-08|Handover to Delivery|Hand over to delivery|Delivery Manager||Ready to deliver|I`,
+    gws: { "MR-01": { q: "Mobilise directly from latest approved plan?", main: "No", br: [{ l: "Yes: direct mobilisation route", to: "@MR-04" }] },
+           "MR-03": { q: "Approved?", main: "Approved", br: [{ l: "Rejected with actions", to: "@MR-02" }] } },
+    conf: "provisional", confNote: NOTE_HVS + " Replaces the separate budget mobilisation, mobilisation and readiness phases; decision authority follows the market RAPID." };
+
+  // ---------- order management (off-plan, conditional) ----------
+  var ocapture = codes(clone(PICK.ocapture), "I"); ocapture.conf = "provisional"; ocapture.confNote = NOTE_HVS + " Applies only where the Order Management route applies.";
+  var oaccept = clone(PICK.oaccept);
+  drop(oaccept, ["OA-10", "OA-11"]);
+  swap(oaccept, "OA-09", "OA-09|WBS and Budget Arrangements Where Required|Arrange the WBS and, where required, budget load on the Project CAPEX WBS (WBS provision subprocess)|Networks Order Manager|SAP MDG / SAP|T3 to T4|I");
+  swap(oaccept, "OA-13", "OA-13|Confirm Current SoW|The Delivery Manager picks up the order from the delivery queue and confirms the current SoW; the applicable PO route follows (procurement subprocess)|Delivery Manager|Pega||I");
+  codes(oaccept, "I"); oaccept.conf = "provisional"; oaccept.confNote = NOTE_HVS;
+
+  // ---------- delivery G2-G6 ----------
+  var DROLE = { "EIM/EDM": "Engineering Delivery Manager (EDM)", "Team in Vertical": "Team in NSE Vertical" };
+  var dlm1 = rename(codes(drop(clone(PICK.dlm1), ["DLM-00"]), "C2"), DROLE); dlm1.name = "Project delivery design (G2 to G3)";
+  dlm1.conf = "provisional"; dlm1.confNote = "Booklet delivery flow (C2), to align with " + NSE + " and its MDM, EDM and Solution Authority RACI. EIM kept only where the booklet shows it.";
+  var dlm2 = rename(codes(clone(PICK.dlm2), "C2"), DROLE); dlm2.name = "Build, test, go-live and G6 completion";
+  swap(dlm2, "DLM-18", "DLM-18|Project Closing and Completion Documentation|Project closing: completion documentation and delivery record (G6 completion)|Engineering Delivery Manager (EDM)||G6 completion|C2");
+  swap(dlm2, "DLM-19", "DLM-19|EDM PM Performance Review|EDM project manager performance review|Market Delivery Manager (MDM)||Project closure|C2");
+  dlm2.conf = "provisional"; dlm2.confNote = dlm1.confNote;
+
+  // ---------- linked, recurring and conditional subprocesses ----------
+  var wbsts = codes(clone(PICK.wbsts), "I"); wbsts.conf = "provisional"; wbsts.confNote = NOTE_HVS + " SAP project definition, CAPEX WBS and timesheet WBS creation and reuse rules to confirm.";
+  wbsts.startLabel = "Called from Mobilisation or Order acceptance"; wbsts.endLabel = "WBS codes shared; budget loaded where required";
+  var proc = { key: "proc", name: "Procurement and PO route (conditional)", src: INT, laneOrder: ["Delivery Manager", "Procurement"],
+    obj: "The Delivery Manager confirms the current SoW; where supplier spend applies the procurement PO route runs; delivery starts once the commercial or procurement conditions are met.",
+    tasks: `PR-01|Confirm Current SoW|The Delivery Manager confirms the current SoW|Delivery Manager|||I
+PR-02|Raise Shopping Cart|Create the procurement request|Delivery Manager|EVO||U
+PR-03|Approve Shopping Cart|Complete procurement approval|Procurement|EVO||U
+PR-04|Generate and Issue PO|Create the PO and issue it to the supplier|Procurement|SAP / EVO||U
+PR-05|Confirm Commercial and Procurement Conditions|Delivery starts once the required commercial or procurement conditions are satisfied|Delivery Manager|||I`,
+    gws: { "PR-01": { q: "Procurement PO route applies?", main: "Yes", br: [{ l: "No: customer PO or no supplier spend", to: "@PR-05" }] } },
+    startLabel: "Triggered from mobilisation or order acceptance", endLabel: "Conditions met; delivery can start",
+    conf: "provisional", confNote: "One PO route only. The shopping-cart steps are unsupported (U) until an authorised procurement source confirms them." };
+  var finexec = { key: "finexec", name: "Supplier financial execution (subject to procurement scenario)", src: INT,
+    laneOrder: ["Authorised Receiver", "Service Manager", "Accounts Payable", "Finance"],
+    obj: "Conditional, not one universal sequence: record receipt when goods or services are accepted, match PO, receipt and invoice, resolve exceptions, pay, and update actuals and commitments.",
+    tasks: `FE-01|Record Goods or Service Receipt|When goods or services are accepted, record the receipt|Authorised Receiver|EVO||I
+FE-02|Receive Invoice|Receive the supplier invoice|Accounts Payable|Invoice process||I
+FE-03|Match PO, Receipt and Invoice|Match the PO, receipt and invoice|Accounts Payable|SAP / EVO||I
+FE-04|Resolve Exception|Resolve the matching exception|Service Manager|||I
+FE-05|Process Payment|Process payment under applicable terms|Finance|SAP||I
+FE-06|Update Actuals and Commitments|Update actuals and commitments|Finance|SAP||I`,
+    gws: { "FE-03": { q: "Match successful?", main: "Exception", br: [{ l: "Yes", to: "@FE-05" }] } }, jumps: { "FE-04": "FE-03" },
+    startLabel: "During delivery, per procurement scenario", endLabel: "Actuals and commitments updated",
+    conf: "provisional", confNote: "No verified procurement or finance source establishes one sequence; all steps stay I until validated." };
+  var gov = { key: "gov", name: "Recurring financial and performance governance", src: INT,
+    laneOrder: ["NMP", "BP&A", "Vertical SPOCs", "Finance & Planning", "Demand Governance Team"],
+    obj: "Monthly, for all active investments and delivery: pre-closure, closure, forecast update, actuals and commitments review, variance commentary and Market Interlock, with corrective action or replanning where needed.",
+    tasks: `RG-01|Month Pre-closure|Run the month pre-closure (detailed subprocess)|NMP|SAP||I
+RG-02|Month Closure|Run the month closure (detailed subprocess)|NMP|SAP||I
+RG-03|Forecast Update|Reflect the latest financial position in the forecast|Finance & Planning|||I
+RG-04|Actuals and Commitments Review|Review actuals and commitments against budget|BP&A|SAP||I
+RG-05|Variance Commentary|Explain variances with mitigation actions|Vertical SPOCs|||I
+RG-06|Market Interlock|Run the monthly Market Interlock (detailed subprocess)|Demand Governance Team|Microsoft Teams||I`,
+    gws: { "RG-06": { q: "Corrective action or replanning needed?", main: "No", br: [{ l: "Yes", to: "goto:To in-year plan change (rolling forecast, NCAR)" }] } },
+    startLabel: "Monthly cycle, for active investments", endLabel: "Monthly cycle complete",
+    conf: "provisional", confNote: "Recurring and parallel, never a predecessor of G6. The governing procedure for each monthly activity is not yet evidenced." };
+  function recurring(key, start, end) {
+    var p = codes(clone(PICK[key]), "I"); p.startLabel = start; p.endLabel = end; p.conf = "provisional";
+    p.confNote = "Detailed recurring flow from the booklet; kept outside the lifecycle and not certified until its governing procedure is evidenced."; return p;
+  }
+  var preclose = recurring("preclose", "Every month (recurring)", "Vertical pre-closure report received");
+  var close = recurring("close", "Month N to N+1 (recurring)", "Consolidated financial view published");
+  var interlock = recurring("interlock", "Every month (recurring)", "Post-meeting actions tracked");
+  var fclose = { key: "fclose", name: "Financial close (separate from G6)", src: INT, laneOrder: ["Finance", "Finance & SAP Support"],
+    obj: "After G6, reconcile actuals and commitments, resolve remaining procurement items, and close or update financial structures where the governing process requires it.",
+    tasks: `FC-01|Reconcile Actuals and Commitments|Reconcile actuals and commitments|Finance|SAP||I
+FC-02|Resolve Remaining Procurement Items|Review outstanding POs and invoices|Finance|SAP||I
+FC-03|Close or Update Financial Structures|Close or update project/WBS structures where the governing process requires it|Finance & SAP Support|SAP||I`,
+    gws: {}, startLabel: "After G6 completion (not a G6 prerequisite)", endLabel: "Financial close complete",
+    conf: "provisional", confNote: "No mandatory financial-close checklist is implied; SAP and WBS closure rules are unverified." };
+  var benefits = { key: "benefits", name: "Benefits and KPI monitoring (where applicable)", src: INT, laneOrder: ["Sponsor & Planning", "Business Owner", "Delivery & Planning"],
+    obj: "Optional and ongoing: where a benefits owner and measurement plan exist, compare planned and realised benefits and capture lessons.",
+    tasks: `BN-01|Compare Planned Benefits|Review the original investment justification|Sponsor & Planning|Business case||I
+BN-02|Measure Realised Benefits|Assess delivered outcomes against targets|Business Owner|KPI reporting||I
+BN-03|Capture Lessons Learned|Record improvement opportunities|Delivery & Planning|Knowledge repository||I`,
+    gws: {}, startLabel: "Where a benefits owner and measurement plan exist", endLabel: "Benefits reported",
+    conf: "provisional", confNote: "Not a universal gate and not part of the lifecycle end point; procedure to confirm." };
+
+  var LINKED = [
+    ["wbsts", "called from mobilisation and order acceptance"], ["proc", "conditional, before delivery starts"],
+    ["finexec", "conditional, during delivery"], ["gov", "recurring monthly, all active work"],
+    ["preclose", "part of recurring governance"], ["close", "part of recurring governance"], ["interlock", "part of recurring governance"],
+    ["fclose", "after G6, separate from completion"], ["benefits", "optional and ongoing"]];
+  var LIB = { nep: nep, dblrp1: db1, dblrp2: db2, rolling: rolling, select: select, intake: intake, impact: impact, dmd2: dmd2, mobready: mobready,
+    ocapture: ocapture, oaccept: oaccept, dlm1: dlm1, dlm2: dlm2, wbsts: wbsts, proc: proc, finexec: finexec, gov: gov,
+    preclose: preclose, close: close, interlock: interlock, fclose: fclose, benefits: benefits };
+  var END = "Delivery completed and operationally handed over; financial close managed separately";
+  var GDEL = { id: "Delivery-route", gw: "Delivery route?", main: "Project (G2 to G6)", br: [{ l: "BAU / SIR", to: "end:BAU/SIR integrated delivery, not full project gating" }] };
+
+  function assemble(plan, route, overview, next) {
+    var keys = route.concat(LINKED.map(function (l) { return l[0]; }));
+    plan.phases = keys.map(function (k) { var p = clone(LIB[k]); p.key = k; delete p._tasks; return p; });
+    var num = {}; plan.phases.forEach(function (p, i) { p.n = i + 1; num[p.key] = i + 1; });
+    plan.phases.forEach(function (p) {
+      if (next[p.key]) p.nextN = num[next[p.key]];
+      if (next["prev:" + p.key]) p.prevN = num[next["prev:" + p.key]];
+      Object.keys(p.gws || {}).forEach(function (id) { [].concat(p.gws[id]).forEach(function (g) { g.br.forEach(function (b) { var m = /^phase:(\w+)$/.exec(b.to); if (m && num[m[1]]) b.to = "phase:" + num[m[1]]; }); }); });
+    });
+    plan.phases[num[route[route.length - 1]] - 1].endLabel = END;
+    plan.overview = overview.map(function (o) {
+      if (typeof o === "string") return { ph: num[o] };
+      if (o.ph) return { ph: num[o.ph], jump: o.jump };
+      return { id: o.id, gw: o.gw, main: o.main, br: o.br.map(function (b) { var m = /^@(\w+)$/.exec(b.to); return { l: b.l, to: m ? "@P" + num[m[1]] : b.to }; }) };
+    });
+    plan.linked = LINKED.map(function (l) { return { ph: num[l[0]], via: l[1] }; });
+    plan.end = END;
+  }
+
+  D.on.title = "Planned investment route (on-plan)"; D.on.start = "Strategic network planning cycle starts";
+  D.on.scope = "Investments built into the approved NEP and DB/LRP are selected, assessed at G0 to G2, mobilised and delivered. Recurring governance, supplier financial execution, financial close and benefits run as linked subprocesses, not as steps in the route.";
+  assemble(D.on, ["nep", "dblrp1", "dblrp2", "select", "impact", "mobready", "dlm1", "dlm2"],
+    ["nep", { gw: "NEP agreed and approved?", main: "Yes", br: [{ l: "No: refine", to: "@nep" }] }, "dblrp1", "dblrp2", "select", "impact", "mobready", GDEL, "dlm1", "dlm2"], {});
+
+  D.off.title = "In-year demand route (off-plan)"; D.off.start = "Demand raised on the Single Front Door";
+  D.off.scope = "Demand outside the approved DB is submitted and triaged, assessed at G0 to G2 and approved through the Demand Board and in-year change. Order Management applies only where its route is documented; otherwise the work goes through mobilisation. Linked subprocesses run alongside.";
+  assemble(D.off, ["intake", "impact", "dmd2", "rolling", "ocapture", "oaccept", "mobready", "dlm1", "dlm2"],
+    ["intake", "impact", { gw: "Covered by an approved investment?", main: "No", br: [{ l: "Yes: mobilise from approved plan", to: "@mobready" }] },
+     "dmd2", "rolling", { gw: "Order Management route applies?", main: "Yes", br: [{ l: "No", to: "@mobready" }] },
+     "ocapture", { ph: "oaccept", jump: "Delivery-route" }, "mobready", GDEL, "dlm1", "dlm2"], { oaccept: "dlm1", "prev:mobready": "rolling" });
+})(typeof SNIP_DATA !== "undefined" ? SNIP_DATA : require("./data.js"));
+
 </script>
 <script>
 // BPMN layout + SVG rendering + BPMN 2.0 XML export. Pure string output, runs in browser and node.
@@ -1031,8 +1236,7 @@ var BPMN = (function () {
       var f = line.split("|");
       var t = { id: f[0].trim(), name: f[1], activity: f[2], team: f[3], tool: f[4], output: f[5] || "", status: (f[6] || "").trim(), phase: ph.n };
       var first = t.team.split(" / ")[0].trim();
-      t.conf = ph.conf || "provisional"; t.confNote = ph.confNote || "";
-      if (ph.src && t.conf === "provisional") t.status = "";
+      t.conf = /^(C1|C2|V)$/.test(t.status) ? "supported" : "provisional"; t.confNote = ph.confNote || "";
       t.lane = (ph.lanes && ph.lanes[t.id]) || (ph.laneOrder && ph.laneOrder.indexOf(t.team) >= 0 ? t.team : ph.laneOrder && ph.laneOrder.indexOf(first) >= 0 ? first : laneOf(t.team));
       return t;
     });
@@ -1071,8 +1275,8 @@ var BPMN = (function () {
         if (m.jump && !ids[m.jump]) delete m.jump;
         return m;
       });
-      if (b > 0) chunk.unshift({ id: "CONT_IN_" + b, type: "linkIn", lane: chunk[0].lane, label: "Continued from row " + b, cont: true });
-      if (b < starts.length - 1) chunk.push({ id: "CONT_OUT_" + b, type: "linkOut", lane: chunk[chunk.length - 1].lane, label: "Continues in row " + (b + 2), cont: true });
+      if (b > 0 && !g.noFlow) chunk.unshift({ id: "CONT_IN_" + b, type: "linkIn", lane: chunk[0].lane, label: "Continued from row " + b, cont: true });
+      if (b < starts.length - 1 && !g.noFlow) chunk.push({ id: "CONT_OUT_" + b, type: "linkOut", lane: chunk[chunk.length - 1].lane, label: "Continues in row " + (b + 2), cont: true });
       out.push({ nodes: chunk, mode: g.mode, plan: g.plan, lanes: g.lanes });
     });
     return out;
@@ -1086,18 +1290,18 @@ var BPMN = (function () {
   // mode: "phase" (one phase, link events at the edges) | "flat" (whole plan, for export)
   function buildPhase(plan, ph) {
     var tasks = parseTasks(ph), nodes = [];
-    var last = ph.n === plan.phases.length;
-    nodes.push(ph.n === 1
-      ? { id: "START", type: "start", lane: tasks[0].lane, label: plan.start }
-      : { id: "IN", type: "linkIn", lane: tasks[0].lane, label: "From Phase " + (ph.n - 1) });
+    var last = ph.n === plan.phases.length || !!ph.endLabel, prevN = ph.prevN || ph.n - 1;
+    nodes.push(ph.startLabel || ph.n === 1
+      ? { id: "START", type: "start", lane: tasks[0].lane, label: ph.startLabel || plan.start }
+      : { id: "IN", type: "linkIn", lane: tasks[0].lane, label: "From Phase " + prevN + " · " + plan.phases[prevN - 1].name, fromPhase: prevN });
     tasks.forEach(function (t) {
       nodes.push({ id: t.id, type: "task", lane: t.lane, label: t.name, task: t, jump: ph.jumps && ph.jumps[t.id] });
       if (ph.gws && ph.gws[t.id]) nodes = nodes.concat(gwNodes(ph.gws[t.id], t.lane));
     });
     var tail = nodes[nodes.length - 1].lane;
-    var nx = plan.phases[ph.n];
+    var nx = plan.phases[(ph.nextN || ph.n + 1) - 1];
     nodes.push(last
-      ? { id: "END", type: "end", lane: tail, label: plan.end }
+      ? { id: "END", type: "end", lane: tail, label: ph.endLabel || plan.end }
       : { id: "OUT", type: "linkOut", lane: tail, label: "To Phase " + nx.n + " · " + nx.name, toPhase: nx.n });
     return { nodes: nodes, mode: "phase", plan: plan, lanes: ph.laneOrder };
   }
@@ -1123,16 +1327,24 @@ var BPMN = (function () {
   }
 
   function buildOverview(plan) {
-    var lane = plan.title + " lifecycle", nodes = [];
+    var lane = plan.title, nodes = [];
     nodes.push({ id: "START", type: "start", lane: lane, label: plan.start });
     plan.overview.forEach(function (o) {
       if (o.ph) {
         var ph = plan.phases[o.ph - 1];
-        nodes.push({ id: "P" + ph.n, type: "sub", lane: lane, label: ph.name, ph: ph.n, count: parseTasks(ph).length, conf: ph.conf });
-      } else nodes.push({ id: "GW_" + (++gwSeq), type: "gw", lane: lane, label: o.gw, main: o.main, br: copyBr(o.br) });
+        nodes.push({ id: "P" + ph.n, type: "sub", lane: lane, label: ph.name, ph: ph.n, count: parseTasks(ph).length, conf: ph.conf, jump: o.jump });
+      } else nodes.push({ id: o.id || "GW_" + (++gwSeq), type: "gw", lane: lane, label: o.gw, main: o.main, br: copyBr(o.br) });
     });
     nodes.push({ id: "END", type: "end", lane: lane, label: plan.end });
     return { nodes: nodes, mode: "overview", plan: plan, lanes: [lane] };
+  }
+  // Linked, recurring and conditional subprocesses: shown beside the route, never as a sequence.
+  function buildLinked(plan) {
+    var lane = "Linked and recurring subprocesses", nodes = (plan.linked || []).map(function (o) {
+      var ph = plan.phases[o.ph - 1];
+      return { id: "P" + ph.n, type: "sub", lane: lane, label: ph.name, ph: ph.n, count: parseTasks(ph).length, conf: ph.conf, via: o.via, noFlow: true };
+    });
+    return { nodes: nodes, mode: "overview", plan: plan, lanes: [lane], noFlow: true };
   }
 
   // ---------- layout ----------
@@ -1161,8 +1373,8 @@ var BPMN = (function () {
     // edges
     var edges = [];
     nodes.forEach(function (n, i) {
-      if (n.type === "end" || n.type === "linkOut" || i === nodes.length - 1) return;
-      var tgt = (n.jump && byId[n.jump]) || nodes[i + 1];
+      if (n.noFlow || n.type === "end" || n.type === "linkOut" || i === nodes.length - 1) return;
+      var tgt = (n.jump && (byId[n.jump] || (n.jump === "OUT" && byId.END))) || nodes[i + 1];
       if (!(n.type === "gw" && n.main == null)) edges.push({ s: n, t: tgt, label: n.type === "gw" ? n.main : "", kind: "main" });
       (n.br || []).forEach(function (b) {
         if (b.node) edges.push({ s: n, t: b.node, label: b.l, kind: "term" });
@@ -1268,7 +1480,7 @@ var BPMN = (function () {
       s.push('<rect class="box" x="' + (x - n.w / 2) + '" y="' + (y - n.h / 2) + '" width="' + n.w + '" height="' + n.h + '" rx="10"/>');
       if (n.type === "task") {
         s.push('<text class="t-id" x="' + (x - n.w / 2 + 9) + '" y="' + (y - n.h / 2 + 15) + '">' + n.id + "</text>");
-        if (t.status) s.push('<rect class="pill pill-' + t.status + '" x="' + (x + n.w / 2 - 24) + '" y="' + (y - n.h / 2 + 6) + '" width="16" height="13" rx="3"/><text class="pill-t" x="' + (x + n.w / 2 - 16) + '" y="' + (y - n.h / 2 + 16) + '" text-anchor="middle">' + t.status + "</text>");
+        if (t.status) s.push('<rect class="pill pill-' + t.status + '" x="' + (x + n.w / 2 - 30) + '" y="' + (y - n.h / 2 + 6) + '" width="22" height="13" rx="3"/><text class="pill-t" x="' + (x + n.w / 2 - 19) + '" y="' + (y - n.h / 2 + 16) + '" text-anchor="middle">' + t.status + "</text>");
         var lines = wrap(n.label, 21).slice(0, 2);
         s.push(textLines(lines, x, y + (lines.length === 1 ? 2 : -5), 14, "t-name"));
         var tool = t.tool.length > 26 ? t.tool.slice(0, 25) + "…" : t.tool;
@@ -1279,6 +1491,7 @@ var BPMN = (function () {
         s.push('<text class="t-tool" x="' + (x + n.w / 2 - 9) + '" y="' + (y - n.h / 2 + 15) + '" text-anchor="end">' + n.count + " tasks</text>");
         var l2 = wrap(n.label, 20).slice(0, 3);
         s.push(textLines(l2, x, y + (l2.length === 1 ? 4 : l2.length === 2 ? -3 : -10), 14, "t-name"));
+        if (n.via) s.push(textLines(wrap(n.via, 26), x, y + n.h / 2 + 14, 12, "t-tool"));
         s.push('<rect class="plus" x="' + (x - 7) + '" y="' + (y + n.h / 2 - 16) + '" width="14" height="14" rx="2"/><path class="plus-m" d="M' + (x - 4) + "," + (y + n.h / 2 - 9) + " h8 M" + x + "," + (y + n.h / 2 - 13) + ' v8"/>');
       }
       s.push("</g>");
@@ -1290,7 +1503,7 @@ var BPMN = (function () {
       s.push("</g>");
     } else {
       var cls = "ev ev-" + n.type, r = 17;
-      s.push('<g class="' + cls + '"' + (n.toPhase ? ' data-goto="' + n.toPhase + '" tabindex="0" role="button"' : "") + (n.type === "linkIn" && !n.cont && opts.fromPhase ? ' data-goto="' + opts.fromPhase + '" tabindex="0" role="button"' : "") + ">");
+      s.push('<g class="' + cls + '"' + (n.toPhase ? ' data-goto="' + n.toPhase + '" tabindex="0" role="button"' : "") + (n.type === "linkIn" && !n.cont && (n.fromPhase || opts.fromPhase) ? ' data-goto="' + (n.fromPhase || opts.fromPhase) + '" tabindex="0" role="button"' : "") + ">");
       s.push('<circle class="ev-c" cx="' + x + '" cy="' + y + '" r="' + r + '"/>');
       if (n.type === "linkIn" || n.type === "linkOut") {
         s.push('<circle class="ev-c2" cx="' + x + '" cy="' + y + '" r="' + (r - 3.5) + '"/>');
@@ -1327,8 +1540,8 @@ var BPMN = (function () {
     var pid = "Process_" + plan.key, all = L.nodes.concat(L.terms);
     function tag(n) { return { task: "task", gw: "exclusiveGateway", start: "startEvent", end: "endEvent" }[n.type]; }
     x.push('<?xml version="1.0" encoding="UTF-8"?>');
-    x.push('<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_' + plan.key + '" targetNamespace="http://snip.example/bpmn" exporter="SNIP process map" exporterVersion="1.0">');
-    x.push('  <bpmn:collaboration id="Collab_' + plan.key + '"><bpmn:participant id="Pool_' + plan.key + '" name="SNIP · ' + esc(plan.title) + '" processRef="' + pid + '"/></bpmn:collaboration>');
+    x.push('<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_' + plan.key + '" targetNamespace="http://example.org/as-is-bpmn" exporter="AS-IS process landscape" exporterVersion="1.0">');
+    x.push('  <bpmn:collaboration id="Collab_' + plan.key + '"><bpmn:participant id="Pool_' + plan.key + '" name="AS-IS · ' + esc(plan.title) + '" processRef="' + pid + '"/></bpmn:collaboration>');
     x.push('  <bpmn:process id="' + pid + '" name="' + esc(plan.title) + '" isExecutable="false">');
     x.push("    <bpmn:laneSet id=\"LaneSet_" + plan.key + "\">");
     L.lanes.forEach(function (l, i) {
@@ -1369,7 +1582,7 @@ var BPMN = (function () {
     return x.join("\n");
   }
 
-  return { K: K, SIZE: SIZE, bands: bands, layout: layout, buildPhase: buildPhase, buildOverview: buildOverview, buildFlat: buildFlat, renderDiagram: renderDiagram, renderLaneHeads: renderLaneHeads, parseTasks: parseTasks, toXml: toXml };
+  return { K: K, SIZE: SIZE, bands: bands, buildLinked: buildLinked, layout: layout, buildPhase: buildPhase, buildOverview: buildOverview, buildFlat: buildFlat, renderDiagram: renderDiagram, renderLaneHeads: renderLaneHeads, parseTasks: parseTasks, toXml: toXml };
 })();
 if (typeof module !== "undefined") module.exports = BPMN;
 
@@ -1387,7 +1600,7 @@ if (typeof module !== "undefined") module.exports = BPMN;
   function inner(s) { return s.replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, ""); }
   // Split the flow into rows of at most 9 columns; every row is drawn at the same scale and fits the frame width.
   function fill(frame, g, pool, opts) {
-    var bs = B.bands(g, 9), Ls = bs.map(B.layout), hw = B.K.headW;
+    var bs = [].concat(g).reduce(function (a, x) { return a.concat(B.bands(x, 9)); }, []), Ls = bs.map(B.layout), hw = B.K.headW;
     var maxW = Math.max.apply(null, Ls.map(function (L) { return L.width + hw; }));
     frame.innerHTML = Ls.map(function (L, i) {
       var W = L.width + hw, label = Ls.length > 1 ? pool + " · row " + (i + 1) + " of " + Ls.length : pool;
@@ -1406,18 +1619,18 @@ if (typeof module !== "undefined") module.exports = BPMN;
     $("lc-scope").textContent = p.scope;
     var tasks = 0, gws = 0;
     p.phases.forEach(function (ph) { tasks += B.parseTasks(ph).length; Object.keys(ph.gws || {}).forEach(function (k) { gws += [].concat(ph.gws[k]).length; }); });
-    $("lc-stats").innerHTML = "<span><b>" + p.phases.length + "</b> phases</span><span><b>" + tasks + "</b> tasks</span><span><b>" + gws + "</b> decision points</span>";
+    $("lc-stats").innerHTML = "<span><b>" + p.phases.length + "</b> subprocesses</span><span><b>" + tasks + "</b> tasks</span><span><b>" + gws + "</b> decision points</span>";
     $("chips").innerHTML = p.phases.map(function (ph) { return '<button class="chip" type="button" data-ph="' + ph.n + '"><b>P' + ph.n + "</b>" + ph.name + "</button>"; }).join("");
   }
 
   function renderOverview() {
-    fill($("lc-frame"), B.buildOverview(plan()), "SNIP", { selected: state.ph, aria: plan().title + " lifecycle" });
+    fill($("lc-frame"), [B.buildOverview(plan()), B.buildLinked(plan())], "AS-IS", { selected: state.ph, aria: plan().title + " landscape" });
   }
 
   function renderPhase() {
     var p = plan(), ph = phase();
-    $("ph-eyebrow").textContent = "Level 4 · phase " + ph.n + " of " + p.phases.length + (ph.src ? " · from the " + ph.src : "");
-    $("ph-title").textContent = "Phase " + ph.n + " · " + ph.name;
+    $("ph-eyebrow").textContent = "Level 4 · subprocess " + ph.n + " of " + p.phases.length + (ph.src ? " · from the " + ph.src : "");
+    $("ph-title").textContent = ph.n + " · " + ph.name;
     $("ph-obj").textContent = ph.obj;
     $("ph-conf").innerHTML = '<span class="badge ' + ph.conf + '">' + ph.conf + "</span><span>" + ph.confNote + "</span>";
     $("prev").disabled = ph.n === 1;
@@ -1426,7 +1639,7 @@ if (typeof module !== "undefined") module.exports = BPMN;
     fill($("ph-frame"), B.buildPhase(p, ph), p.label + " · Phase " + ph.n, { selected: state.task, fromPhase: ph.n > 1 ? ph.n - 1 : null, aria: "Phase " + ph.n + " " + ph.name });
     var tasks = B.parseTasks(ph);
     $("rows").innerHTML = tasks.map(function (t) {
-      return '<tr data-task="' + t.id + '"' + (t.id === state.task ? ' class="is-sel"' : "") + '><td class="id">' + t.id + "</td><td>" + t.name + "</td><td>" + t.team + "</td><td>" + t.tool + "</td><td>" + (t.output || "—") + "</td><td>" + (t.status ? '<span class="st st-' + t.status + '-t">' + t.status + "</span>" : "—") + '</td><td><span class="badge ' + t.conf + '">' + t.conf + "</span></td></tr>";
+      return '<tr data-task="' + t.id + '"' + (t.id === state.task ? ' class="is-sel"' : "") + '><td class="id">' + t.id + "</td><td>" + t.name + "</td><td>" + t.team + "</td><td>" + t.tool + "</td><td>" + (t.output || "—") + "</td><td>" + (t.status ? '<span class="st st-' + t.status + '-t">' + t.status + "</span>" : "—") + "</td></tr>";
     }).join("");
     renderDetail();
     var notes = ph.notes || {};
@@ -1435,7 +1648,7 @@ if (typeof module !== "undefined") module.exports = BPMN;
     $("notes").innerHTML = keys.map(function (k) { return "<div><h4>" + k + "</h4><ul>" + notes[k].map(function (n) { return "<li>" + n + "</li>"; }).join("") + "</ul></div>"; }).join("");
   }
 
-  var STATUS = { C: "Confirmed by documentation", V: "Variable by demand type, market or route", T: "Target design, not confirmed as implemented" };
+  var STATUS = { C1: "Directly documented activity, owner and sequence", C2: "Source-supported consolidation or rewording", V: "Documented conditional or market variation", I: "Inferred integration point requiring confirmation", U: "Unsupported by the authorised sources" };
   function renderDetail() {
     var t = state.task && B.parseTasks(phase()).filter(function (x) { return x.id === state.task; })[0];
     if (!t) {
@@ -1444,8 +1657,8 @@ if (typeof module !== "undefined") module.exports = BPMN;
     }
     $("detail").innerHTML = '<p class="eyebrow">' + t.id + " · Phase " + t.phase + "</p><h3>" + t.name + "</h3><dl>" +
       "<dt>Activity</dt><dd>" + t.activity + "</dd><dt>Team</dt><dd>" + t.team + "</dd><dt>Swimlane</dt><dd>" + t.lane + "</dd>" +
-      "<dt>Tool</dt><dd>" + t.tool + "</dd>" + '<dt>Confidence</dt><dd><span class="badge ' + t.conf + '">' + t.conf + "</span> " + t.confNote + "</dd>" + (t.output ? "<dt>Output</dt><dd>" + t.output + "</dd>" : "") +
-      (t.status ? '<dt>Status</dt><dd><span class="st st-' + t.status + '-t">' + t.status + "</span> " + STATUS[t.status] + "</dd>" : "") + "</dl>";
+      "<dt>Tool</dt><dd>" + (t.tool || "—") + "</dd>" + "<dt>Source note</dt><dd>" + t.confNote + "</dd>" + (t.output ? "<dt>Output</dt><dd>" + t.output + "</dd>" : "") +
+      (t.status ? '<dt>Evidence</dt><dd><span class="st st-' + t.status + '-t">' + t.status + "</span> " + STATUS[t.status] + "</dd>" : "") + "</dl>";
   }
 
   function setPlan(k) {
@@ -1484,7 +1697,7 @@ if (typeof module !== "undefined") module.exports = BPMN;
   $("rows").addEventListener("click", function (e) { var r = e.target.closest("tr"); if (r) selectTask(r.dataset.task); });
   window.addEventListener("hashchange", function () { setPlan(location.hash === "#off-plan" ? "off" : "on"); });
 
-  ["on", "off"].forEach(function (k) { var t = 0; D[k].phases.forEach(function (ph) { t += B.parseTasks(ph).length; }); $("cnt-" + k).textContent = D[k].phases.length + " phases · " + t + " tasks"; });
+  ["on", "off"].forEach(function (k) { var t = 0; D[k].phases.forEach(function (ph) { t += B.parseTasks(ph).length; }); $("cnt-" + k).textContent = D[k].phases.length + " subprocesses · " + t + " tasks"; });
   renderPlan(); renderOverview(); renderPhase();
 })();
 </script>

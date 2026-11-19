@@ -1,10 +1,9 @@
-# SNIP network investment process (BPMN 2.0)
+# Vodafone AS-IS network planning process landscape (BPMN 2.0)
 
-The SNIP end-to-end network investment lifecycle, as BPMN 2.0 swimlane diagrams.
+Documented planning, demand, governance, mobilisation, delivery and financial-management processes, including conditional and recurring interactions.
 
-- `index.html` – interactive page with an On-plan / Off-plan slider, a lifecycle view (Level 3) and task-level phase diagrams (Level 4).
-- `SNIP-BPMN-flowcharts.pptx` – clickable PowerPoint flowcharts (Home, On-plan, Off-plan and one slide per phase).
+- `index.html` – interactive landscape: planned (on-plan) and in-year (off-plan) routes, linked and recurring subprocesses, and a swimlane diagram per subprocess.
+- `AS-IS-Network-Planning-Process-Landscape.pptx` – clickable PowerPoint version (Home, On-plan, Off-plan on every slide).
 - `snip-on-plan.bpmn`, `snip-off-plan.bpmn` – BPMN 2.0 XML for Camunda Modeler, bpmn.io, Signavio and similar tools.
 
-## Publish with GitHub Pages
-Settings → Pages → Source: "Deploy from a branch" → `main` / root.
+Evidence codes: C1 directly documented, C2 source-supported consolidation, V documented conditional or market variation, I inferred integration point (to confirm), U unsupported by the authorised sources. Target-state activities are excluded.
